@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Pentagon.Data.EntityFramework</RootNamespace>
+    <RootNamespace>Pentagon.EntityFrameworkCore</RootNamespace>
     <Authors>Michal Pokorný</Authors>
-    <Product>Pentagon.EntityFrameworkCore.Abstractions</Product>
-    <Description>Provides abstraction for Pentagon.Data.EntityFramework library.</Description>
+    <Description>Provides abstraction for Pentagon.EntityFrameworkCore library.</Description>
     <Copyright>Copyright (c) Michal Pokorný. All Rights Reserved.</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>1.2.8</Version>
     <LangVersion>7.1</LangVersion>
+    <PackageProjectUrl>https://github.com/Micle257/Pentagon.EntityFrameworkCore</PackageProjectUrl>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
