@@ -20,8 +20,7 @@
         /// <param name="isNoTracking">If set to <c>true</c> is no tracking.</param>
         public GetAllSpecification([NotNull] Expression<Func<TEntity, object>> order, bool isDescending ) 
         {
-            Require.NotNull(() => order);
-            Order = order;
+            Order = order ?? throw new ArgumentNullException(nameof(order));
             IsDescending = isDescending;
         }
 

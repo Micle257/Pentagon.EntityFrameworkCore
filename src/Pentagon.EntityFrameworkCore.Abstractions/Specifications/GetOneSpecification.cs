@@ -30,8 +30,7 @@
         /// <param name="criteria">The criteria.</param>
         public GetOneSpecification([NotNull] Expression<Func<TEntity, bool>> criteria)
         {
-            Require.NotNull(() => criteria);
-            Criteria = criteria;
+            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
         }
 
         /// <inheritdoc />

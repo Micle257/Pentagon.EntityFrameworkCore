@@ -51,10 +51,8 @@
         /// <param name="pageIndex">Index of the page.</param>
         public GetPageSpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageIndex)
         {
-            Require.NotNull(() => criteria);
-            Require.NotNull(() => order);
-            Criteria = criteria;
-            Order = order;
+            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
+            Order = order ?? throw new ArgumentNullException(nameof(order));
             IsDescending = isDescending;
             PageSize = pageSize;
             PageIndex = pageIndex;

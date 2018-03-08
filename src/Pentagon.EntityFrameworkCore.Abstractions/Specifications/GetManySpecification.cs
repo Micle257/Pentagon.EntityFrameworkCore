@@ -49,10 +49,8 @@
         /// <param name="isDescending">If set to <c>true</c> is descending.</param>
         public GetManySpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending)
         {
-            Require.NotNull(() => criteria);
-            Require.NotNull(() => order);
-            Criteria = criteria;
-            Order = order;
+            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
+            Order = order ?? throw new ArgumentNullException(nameof(order));
             IsDescending = isDescending;
         }
     }

@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pentagon.EntityFrameworkCore.Abstractions\Pentagon.EntityFrameworkCore.Abstractions.csproj" />
-    <ProjectReference Include="..\Pentagon.Extensions.DependencyInjection\Pentagon.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
 </Project>
