@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions.Specifications
+namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
 {
     using System;
     using System.Collections.Generic;

@@ -4,18 +4,13 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions
+namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Entities;
     using Repositories;
-    public interface IDatabaseCommitManager
-    {
-        event EventHandler<ManagerCommitEventArgs> Commiting;
-        void RaiseCommit(Type contextType, Type entityType, IEnumerable<Entry> entries);
-    }
+
     /// <summary> Represents a session with database provider and it is used to save data from related repositories. </summary>
     public interface IUnitOfWork : IDisposable
     {

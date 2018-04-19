@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Synchonization
+namespace Pentagon.EntityFrameworkCore.Synchonization
 {
     using System;
     using System.Collections.Generic;
@@ -14,6 +14,8 @@ namespace Pentagon.Data.EntityFramework.Synchonization
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Repositories;
+    using Specifications;
+    using Synchronization;
 
     /// <summary> Represents a synchronization session. </summary>
     /// <typeparam name="T"> The type of the entity. </typeparam>

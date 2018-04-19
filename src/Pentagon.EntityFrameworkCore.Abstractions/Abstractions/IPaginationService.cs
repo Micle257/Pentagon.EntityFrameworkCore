@@ -1,6 +1,5 @@
-namespace Pentagon.Data.EntityFramework.Abstractions {
+namespace Pentagon.EntityFrameworkCore.Abstractions {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;

@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions
+namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     /// <summary> Represents a service for update and insert behavior of database context. </summary>
     public interface IDbContextUpdateService

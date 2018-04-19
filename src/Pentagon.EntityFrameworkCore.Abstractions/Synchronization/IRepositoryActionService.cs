@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Synchonization {
+namespace Pentagon.EntityFrameworkCore.Synchronization {
     using System.Collections.Generic;
     using Abstractions.Entities;
 

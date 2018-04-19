@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions.Entities
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
 {
     /// <summary>
     /// Represents an entity, that supports deleted flag.

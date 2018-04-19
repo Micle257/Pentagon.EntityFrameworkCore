@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Repositories
+namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using System.Collections.Concurrent;
@@ -17,17 +17,6 @@ namespace Pentagon.Data.EntityFramework.Repositories
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Pentagon.Extensions.DependencyInjection;
-    
-    [Register(RegisterType.Singleton, typeof(IDatabaseCommitManager))]
-    public class DatabaseCommitManager : IDatabaseCommitManager
-    {
-       public event EventHandler<ManagerCommitEventArgs> Commiting;
-
-        public void RaiseCommit(Type contextType, Type entityType,IEnumerable<Entry> entries)
-        {
-            Commiting?.Invoke(this, new ManagerCommitEventArgs(contextType,entityType,entries.ToArray()));
-        }
-    }
 
     /// <summary> Represents an unit of work that communicate with a database and manage repository changes to the database. </summary>
     /// <typeparam name="TContext"> The type of the db context. </typeparam>

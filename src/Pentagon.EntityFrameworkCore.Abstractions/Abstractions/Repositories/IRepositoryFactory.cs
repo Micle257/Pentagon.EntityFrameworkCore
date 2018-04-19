@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions.Repositories
+namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
 {
     using Entities;
     using JetBrains.Annotations;

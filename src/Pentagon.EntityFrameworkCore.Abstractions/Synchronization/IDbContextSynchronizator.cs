@@ -4,12 +4,12 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions
+namespace Pentagon.EntityFrameworkCore.Synchronization
 {
     using System;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using Entities;
+    using Abstractions.Entities;
 
     /// <summary> Represent a remote-local database synchronization service. </summary>
     public interface IDbContextSynchronizator

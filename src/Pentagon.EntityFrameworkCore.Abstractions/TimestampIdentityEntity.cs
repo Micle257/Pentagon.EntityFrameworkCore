@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
     /// <summary> Represents an identity entity with numeric key. </summary>
     /// <typeparam name="TUserKey"> The type of the user key. </typeparam>

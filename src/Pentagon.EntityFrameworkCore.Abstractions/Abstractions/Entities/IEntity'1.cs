@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions.Entities
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
 {
     /// <summary> Represents an entity with typed id (e.g. int, string, etc.). </summary>
     /// <typeparam name="TId"> The type of the identifier. </typeparam>

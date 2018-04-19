@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Abstractions.Repositories {
+namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories {
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;

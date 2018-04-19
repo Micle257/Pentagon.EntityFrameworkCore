@@ -1,6 +1,5 @@
-namespace Pentagon.Data.EntityFramework {
+namespace Pentagon.EntityFrameworkCore {
     using System;
-    using Abstractions;
     using Abstractions.Entities;
 
     /// <summary> Represents an typed entity, with support for synchronization. </summary>

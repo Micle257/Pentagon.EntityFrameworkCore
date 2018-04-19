@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Synchonization {
+namespace Pentagon.EntityFrameworkCore.Synchronization {
     public enum RepositoryType
     {
         Unspecified,

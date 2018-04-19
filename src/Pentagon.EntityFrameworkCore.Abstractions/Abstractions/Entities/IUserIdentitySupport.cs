@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Abstractions.Entities {
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities {
     public interface IUserIdentitySupport<TUserId, TUser>
     {
         TUserId UserId { get; set; }

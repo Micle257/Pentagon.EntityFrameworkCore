@@ -4,9 +4,8 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
-    using Abstractions;
     using Abstractions.Entities;
 
     /// <summary> Provides information about <see cref="IEntity" /> that changes its state. </summary>

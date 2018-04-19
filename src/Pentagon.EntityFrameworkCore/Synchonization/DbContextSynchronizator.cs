@@ -4,15 +4,15 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Synchonization
+namespace Pentagon.EntityFrameworkCore.Synchonization
 {
     using System;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using Abstractions;
     using Abstractions.Entities;
     using Pentagon.Extensions.DependencyInjection;
-    
+    using Synchronization;
+
     /// <summary> Provides logic for synchronization local database with remote database. </summary>
     [Register(RegisterType.Transient, typeof(IDbContextSynchronizator))]
     public class DbContextSynchronizator : IDbContextSynchronizator

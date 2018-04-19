@@ -1,7 +1,6 @@
-namespace Pentagon.Data.EntityFramework.Abstractions
+namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System.Collections.Generic;
-    using Entities;
 
     public interface IPagedList<TEntity>
 

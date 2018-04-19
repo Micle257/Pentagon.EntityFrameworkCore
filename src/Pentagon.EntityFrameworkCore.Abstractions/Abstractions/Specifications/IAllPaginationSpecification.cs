@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Abstractions.Specifications {
+namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications {
     using Entities;
 
     /// <summary> Represents an entity specification for query pipeline, that is capable of pagination all pages. </summary>

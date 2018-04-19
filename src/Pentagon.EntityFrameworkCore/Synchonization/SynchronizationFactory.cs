@@ -1,7 +1,8 @@
-namespace Pentagon.Data.EntityFramework.Synchonization {
+namespace Pentagon.EntityFrameworkCore.Synchonization {
     using Abstractions;
     using Abstractions.Entities;
     using Pentagon.Extensions.DependencyInjection;
+    using Synchronization;
 
     [Register(RegisterType.Transient, typeof(ISynchronizationFactory))]
     public class SynchronizationFactory : ISynchronizationFactory

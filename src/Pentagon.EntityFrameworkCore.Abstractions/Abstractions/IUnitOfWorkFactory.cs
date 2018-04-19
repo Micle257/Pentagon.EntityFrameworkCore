@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions
+namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     /// <summary> Represents a scoped factory for an <see cref="IUnitOfWork{TContext}" />. </summary>
     /// <typeparam name="TContext"> The type of the context. </typeparam>

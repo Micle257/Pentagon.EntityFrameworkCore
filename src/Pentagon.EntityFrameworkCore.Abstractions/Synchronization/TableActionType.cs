@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Synchonization
+namespace Pentagon.EntityFrameworkCore.Synchronization
 {
     /// <summary> Represents a Sql table action. </summary>
     public enum TableActionType

@@ -1,4 +1,4 @@
-﻿namespace Pentagon.Data.EntityFramework {
+﻿namespace Pentagon.EntityFrameworkCore.Specifications {
     using System;
     using System.Collections.Generic;
     using System.Linq;

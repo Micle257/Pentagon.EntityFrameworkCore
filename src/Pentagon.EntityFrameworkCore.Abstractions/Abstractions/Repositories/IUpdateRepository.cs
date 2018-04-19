@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Abstractions.Repositories {
+namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories {
     using System.Threading.Tasks;
     using Entities;
     using JetBrains.Annotations;

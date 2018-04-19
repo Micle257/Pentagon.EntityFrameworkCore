@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Repositories
+namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using System.Collections.Generic;

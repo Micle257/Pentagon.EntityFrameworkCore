@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Abstractions.Entities {
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities {
     using System;
 
     /// <summary>
@@ -9,14 +9,6 @@ namespace Pentagon.Data.EntityFramework.Abstractions.Entities {
         /// <summary> Gets or sets the deleted time. </summary>
         /// <value> The <see cref="DateTimeOffset" />. </value>
         DateTimeOffset? DeletedAt { get; set; }
-    }
-
-    public interface IDeleteTimeStampIdentitySupport<TUserId> : IDeleteTimeStampIdentitySupport
-        where TUserId : struct
-    {
-        /// <summary> Gets or sets the user that deleted this entity. </summary>
-        /// <value> The nullable <see cref="TUserId" />. </value>
-        new TUserId? DeletedBy { get; set; }
     }
 
     public interface IDeleteTimeStampIdentitySupport

@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions.Entities
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
 {
     using System;
     using System.ComponentModel.DataAnnotations;
@@ -21,19 +21,6 @@ namespace Pentagon.Data.EntityFramework.Abstractions.Entities
         /// <summary> Gets or sets the last updated time. </summary>
         /// <value> The <see cref="DateTimeOffset" />. </value>
         DateTimeOffset? LastUpdatedAt { get; set; }
-    }
-
-    public interface ITimeStampIdentitySupport<TUserId> : ITimeStampIdentitySupport
-            where TUserId : struct
-    {
-        /// <summary> Gets or sets the user that created this entity. </summary>
-        /// <value> The <see cref="object" />. </value>
-        [Required]
-        TUserId CreatedBy { get; set; }
-
-        /// <summary> Gets or sets the user that last updated this entity. </summary>
-        /// <value> The <see cref="object" />. </value>
-        TUserId? UpdatedBy { get; set; }
     }
 
     public interface ITimeStampIdentitySupport 

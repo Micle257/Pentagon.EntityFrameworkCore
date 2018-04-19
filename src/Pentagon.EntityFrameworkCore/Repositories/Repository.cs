@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Repositories
+namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using System.Collections.Generic;
@@ -18,7 +18,8 @@ namespace Pentagon.Data.EntityFramework.Repositories
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    
+    using Specifications;
+
     /// <summary> Represents a repository for the entity framework provider. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
     public class Repository<TEntity> : IRepository<TEntity>

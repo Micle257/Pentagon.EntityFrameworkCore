@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions
+namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     /// <summary> Represents a local (on client) database context. </summary>
     public interface ILocalContext : IApplicationContext { }

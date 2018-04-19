@@ -4,9 +4,8 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
-    using Abstractions;
     using Abstractions.Entities;
 
     /// <summary> Represents an identity type entity, with synchronization support. </summary>

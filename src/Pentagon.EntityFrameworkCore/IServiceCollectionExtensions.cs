@@ -1,13 +1,12 @@
-﻿namespace Pentagon.Data.EntityFramework
+﻿namespace Pentagon.EntityFrameworkCore
 {
-    using System;
     using Abstractions;
     using Abstractions.Repositories;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
-    using Pentagon.Extensions.DependencyInjection;
     using Repositories;
     using Synchonization;
+    using Synchronization;
 
     public static class IServiceCollectionExtensions
     {

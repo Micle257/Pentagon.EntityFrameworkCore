@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace Pentagon.Data.EntityFramework
     using Pentagon.Extensions.DependencyInjection;
 
     /// <summary> Represents an implementation of <see cref="IDbContextIdentityService" /> for entity framework core. </summary>
-    /// <seealso cref="Pentagon.Data.EntityFramework.Abstractions.IDbContextIdentityService" />
+    /// <seealso cref="IDbContextIdentityService" />
     [Register(RegisterType.Singleton, typeof(IDbContextIdentityService))]
     public class DbContextIdentityService : IDbContextIdentityService
     {

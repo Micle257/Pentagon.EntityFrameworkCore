@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Synchonization {
+namespace Pentagon.EntityFrameworkCore.Synchronization {
     using Abstractions.Entities;
 
     public struct RepositoryAction<T>

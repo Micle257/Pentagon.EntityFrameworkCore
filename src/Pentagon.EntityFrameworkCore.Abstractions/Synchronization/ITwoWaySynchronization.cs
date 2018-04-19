@@ -1,4 +1,4 @@
-namespace Pentagon.Data.EntityFramework.Synchonization {
+namespace Pentagon.EntityFrameworkCore.Synchronization {
     using System;
     using System.Linq.Expressions;
     using System.Threading.Tasks;

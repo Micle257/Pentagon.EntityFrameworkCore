@@ -4,11 +4,10 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
     using System.Collections.Generic;
     using Abstractions;
-    using Abstractions.Entities;
 
     /// <summary> Represents a manager for managing paging for a collection. </summary>
     /// <typeparam name="TEntity"> The type of the element. </typeparam>
