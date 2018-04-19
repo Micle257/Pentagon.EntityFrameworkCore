@@ -13,7 +13,6 @@ namespace Pentagon.Data.EntityFramework
     /// <summary> Represents a manager for managing paging for a collection. </summary>
     /// <typeparam name="TEntity"> The type of the element. </typeparam>
     public class PagedList<TEntity> : IPagedList<TEntity>
-        where TEntity : IEntity
     {
         /// <summary> Initializes a new instance of the <see cref="PagedList{T}" /> class. </summary>
         /// <param name="source"> The source collection. </param>

@@ -4,7 +4,6 @@ namespace Pentagon.Data.EntityFramework.Abstractions
     using Entities;
 
     public interface IPagedList<TEntity>
-        where TEntity : IEntity
 
     {
         /// <summary> Gets the source collection. </summary>

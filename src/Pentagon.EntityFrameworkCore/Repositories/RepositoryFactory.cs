@@ -50,6 +50,8 @@ namespace Pentagon.Data.EntityFramework.Repositories
 
             Require.IsType(() => context, out DbContext dbContext);
 
+            return new Repository<TEntity>(_loggerFactory.CreateLogger<Repository<TEntity>>(), _paginationService, dbContext);
+
             var type = typeof(TEntity);
 
             if (!_repositories.ContainsKey((type,dbContext)))

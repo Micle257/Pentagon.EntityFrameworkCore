@@ -21,14 +21,7 @@ namespace Pentagon.Data.EntityFramework.Abstractions.Repositories
     {
         /// <summary> Occurs when the commit begins. </summary>
         event EventHandler<CommitEventArgs> Commiting;
-
-        /// <summary>
-        /// Apply the extra query to the request pipeline.
-        /// </summary>
-        /// <param name="function">The function.</param>
-        /// <returns>The <see cref="IRepository{TEntity}"/> that called this method.</returns>
-        IRepository<TEntity> Query(Func<IQueryable<TEntity>, IQueryable<TEntity>> function);
-
+        
         /// <summary>
         /// Gets the selected entity.
         /// </summary>
@@ -37,7 +30,7 @@ namespace Pentagon.Data.EntityFramework.Abstractions.Repositories
         /// <returns>
         /// An awaitable <see cref="Task{TEntity}" />.
         /// </returns>
-        Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector, bool trackChanges = false);
+        Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector);
 
         Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification)
             where TSpecification : ICriteriaSpecification<TEntity>;
@@ -48,18 +41,16 @@ namespace Pentagon.Data.EntityFramework.Abstractions.Repositories
         Task<TEntity> GetByIdAsync(object id);
 
         /// <summary> Gets all entities in the set. </summary>
-        /// <param name="asNoTracking">If set to <c>true</c> the entities won't be track by change tracker.</param>
         /// <returns> A <see cref="Task" /> that represents an asynchronous operation, result is an iterator of the <see cref="TEntity" />. </returns>
-        Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false);
+        Task<IEnumerable<TEntity>> GetAllAsync();
 
         Task<IEnumerable<TEntity>> GetAllAsync<TSpecification>(TSpecification specification)
             where TSpecification : IOrderSpecification<TEntity>;
 
         /// <summary> Gets all selected entities from the set. </summary>
         /// <param name="entitiesSelector"> The entities selector. </param>
-        /// <param name="asNoTracking">If set to <c>true</c> the entities won't be track by change tracker.</param>
         /// <returns> An awaitable enumerable of the <see cref="TEntity" />. </returns>
-        Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector, bool asNoTracking = false);
+        Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector);
 
         Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification)
             where TSpecification : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
@@ -76,5 +67,39 @@ namespace Pentagon.Data.EntityFramework.Abstractions.Repositories
 
         /// <summary> Removes all rows from repository. </summary>
         void Truncate();
+
+        Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate);
+
+        Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification)
+                where TSpecification : ICriteriaSpecification<TEntity>;
+
+        Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector);
+
+        Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+                where TSpecification : IOrderSpecification<TEntity>;
+
+        Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entitiesSelector);
+
+        Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+                where TSpecification : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
+
+        Task<IEnumerable<IPagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+                                                                                                     Expression<Func<TEntity, bool>> criteria,
+                                                                                                     Expression<Func<TEntity, object>> orderExpression,
+                                                                                                     bool isDescendingOrder,
+                                                                                                     int pageSize);
+
+        Task<IEnumerable<IPagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+                where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
+
+        Task<IPagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+                                                                                    Expression<Func<TEntity, bool>> criteria,
+                                                                                    Expression<Func<TEntity, object>> order,
+                                                                                    bool isDescendingOrder,
+                                                                                    int pageSize,
+                                                                                    int pageIndex);
+
+        Task<IPagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>;
     }
 }
