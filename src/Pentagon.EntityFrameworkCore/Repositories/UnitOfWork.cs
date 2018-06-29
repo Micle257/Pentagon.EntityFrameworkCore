@@ -16,11 +16,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions.Repositories;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-    using Pentagon.Extensions.DependencyInjection;
 
     /// <summary> Represents an unit of work that communicate with a database and manage repository changes to the database. </summary>
     /// <typeparam name="TContext"> The type of the db context. </typeparam>
-    [Register(RegisterType.Transient, typeof(IUnitOfWork<>))]
     public class UnitOfWork<TContext> : IUnitOfWork<TContext>
         where TContext : class, IApplicationContext
     {

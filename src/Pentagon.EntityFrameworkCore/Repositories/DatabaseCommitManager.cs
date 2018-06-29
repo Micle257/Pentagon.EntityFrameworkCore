@@ -3,9 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Abstractions;
-    using Pentagon.Extensions.DependencyInjection;
 
-    [Register(RegisterType.Singleton, typeof(IDatabaseCommitManager))]
     public class DatabaseCommitManager : IDatabaseCommitManager
     {
         public event EventHandler<ManagerCommitEventArgs> Commiting;

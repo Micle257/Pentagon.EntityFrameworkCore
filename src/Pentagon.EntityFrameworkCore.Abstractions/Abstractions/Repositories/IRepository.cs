@@ -10,6 +10,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
+    using Collections;
     using Entities;
     using Specifications;
 
@@ -82,23 +83,23 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
 
-        Task<IEnumerable<IPagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+        Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                                      Expression<Func<TEntity, bool>> criteria,
                                                                                                      Expression<Func<TEntity, object>> orderExpression,
                                                                                                      bool isDescendingOrder,
                                                                                                      int pageSize);
 
-        Task<IEnumerable<IPagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+        Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
 
-        Task<IPagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+        Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                     Expression<Func<TEntity, bool>> criteria,
                                                                                     Expression<Func<TEntity, object>> order,
                                                                                     bool isDescendingOrder,
                                                                                     int pageSize,
                                                                                     int pageIndex);
 
-        Task<IPagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+        Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>;
     }
 }

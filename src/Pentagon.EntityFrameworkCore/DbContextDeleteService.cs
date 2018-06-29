@@ -11,12 +11,10 @@ namespace Pentagon.EntityFrameworkCore
     using Abstractions;
     using Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
-    using Pentagon.Extensions.DependencyInjection;
 
     /// <summary>
     /// Represents an implementation of <see cref="IDbContextDeleteService"/> for entity framework core.
     /// </summary>
-    [Register(RegisterType.Singleton, typeof(IDbContextDeleteService))]
     public class DbContextDeleteService : IDbContextDeleteService
     {
         /// <inheritdoc />

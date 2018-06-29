@@ -12,11 +12,9 @@ namespace Pentagon.EntityFrameworkCore
     using Abstractions;
     using Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
-    using Pentagon.Extensions.DependencyInjection;
 
     /// <summary> Represents an implementation of <see cref="IDbContextIdentityService" /> for entity framework core. </summary>
     /// <seealso cref="IDbContextIdentityService" />
-    [Register(RegisterType.Singleton, typeof(IDbContextIdentityService))]
     public class DbContextIdentityService : IDbContextIdentityService
     {
         /// <inheritdoc />

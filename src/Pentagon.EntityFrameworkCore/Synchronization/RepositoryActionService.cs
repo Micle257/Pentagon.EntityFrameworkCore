@@ -1,11 +1,8 @@
-namespace Pentagon.EntityFrameworkCore.Synchonization {
+namespace Pentagon.EntityFrameworkCore.Synchronization {
     using System;
     using System.Collections.Generic;
     using Abstractions.Entities;
-    using Pentagon.Extensions.DependencyInjection;
-    using Synchronization;
 
-    [Register(RegisterType.Transient, typeof(IRepositoryActionService))]
     public class RepositoryActionService : IRepositoryActionService
     {
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInOneWayMode<TEntity>(EntityPair<TEntity> pair)

@@ -48,27 +48,27 @@
         /// <param name="order">The order.</param>
         /// <param name="isDescending">If set to <c>true</c> is descending.</param>
         /// <param name="pageSize">Size of the page.</param>
-        /// <param name="pageIndex">Index of the page.</param>
-        public GetPageSpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageIndex)
+        /// <param name="pageNumber">Index of the page.</param>
+        public GetPageSpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageNumber)
         {
             Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
             Order = order ?? throw new ArgumentNullException(nameof(order));
             IsDescending = isDescending;
             PageSize = pageSize;
-            PageIndex = pageIndex;
+            PageNumber = pageNumber;
         }
 
         /// <inheritdoc />
         public int PageSize { get; set; }
 
         /// <inheritdoc />
-        public int PageIndex { get; set; }
+        public int PageNumber { get; set; }
 
         /// <inheritdoc />
         public IQueryable<TEntity> ApplyPagination(IQueryable<TEntity> query)
         {
-            if (PageSize > 0 && PageIndex >= 0)
-                query = query.Skip((PageIndex - 1) * PageSize).Take(PageSize);
+            if (PageSize > 0 && PageNumber >0)
+                query = query.Skip((PageNumber - 1) * PageSize).Take(PageSize);
 
             return query;
         }

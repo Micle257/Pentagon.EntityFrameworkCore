@@ -9,7 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications {
     {
         /// <summary> Gets the index of the page. </summary>
         /// <value> The <see cref="int" />. </value>
-        int PageIndex { get; set; }
+        int PageNumber { get; set; }
 
         /// <summary> Applies the pagination specification to the query. </summary>
         /// <param name="query"> The query. </param>

@@ -15,6 +15,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions.Entities;
     using Abstractions.Repositories;
     using Abstractions.Specifications;
+    using Collections;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -257,13 +258,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         #region GetAllPages
 
-        public Task<IEnumerable<IPagedList<TEntity>>> GetAllPagesAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> orderExpression, bool isDescendingOrder, int pageSize)
+        public Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> orderExpression, bool isDescendingOrder, int pageSize)
         {
             return GetAllPagesAsync(e => e, criteria, orderExpression, isDescendingOrder, pageSize);
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<IPagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+        public Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                             Expression<Func<TEntity, bool>> criteria,
                                                                                             Expression<Func<TEntity, object>> orderExpression,
                                                                                             bool isDescendingOrder,
@@ -273,19 +274,19 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             return GetAllPagesAsync(selector, specification);
         }
 
-        public Task<IEnumerable<IPagedList<TEntity>>> GetAllPagesAsync<TSpecification>(TSpecification specification)
+        public Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync<TSpecification>(TSpecification specification)
                 where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             return GetAllPagesAsync(e => e, specification);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<IPagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+        public async Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             var set = _query;
             var index = 1;
-            var result = new List<IPagedList<TSelectEntity>>();
+            var result = new List<PagedList<TSelectEntity>>();
 
             set = specification.Apply(set);
 
@@ -306,13 +307,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         #region GetPage
 
-        public Task<IPagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex)
+        public Task<PagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex)
         {
             return GetPageAsync(e => e, criteria, order, isDescendingOrder, pageSize, pageIndex);
         }
 
         /// <inheritdoc />
-        public Task<IPagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+        public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                            Expression<Func<TEntity, bool>> criteria,
                                                                            Expression<Func<TEntity, object>> order,
                                                                            bool isDescendingOrder,
@@ -323,14 +324,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             return GetPageAsync(selector, specification);
         }
 
-        public Task<IPagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification)
+        public Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>
         {
             return GetPageAsync(e => e, specification);
         }
 
         /// <inheritdoc />
-        public Task<IPagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+        public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>
         {
             var set = _query;

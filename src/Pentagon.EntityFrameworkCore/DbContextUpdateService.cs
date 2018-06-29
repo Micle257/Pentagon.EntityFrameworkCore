@@ -11,12 +11,10 @@ namespace Pentagon.EntityFrameworkCore
     using Abstractions;
     using Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
-    using Pentagon.Extensions.DependencyInjection;
 
     /// <summary>
     /// Represents an implementation of <see cref="IDbContextUpdateService"/> for entity framework core.
     /// </summary>
-    [Register(RegisterType.Singleton, typeof(IDbContextUpdateService))]
     public class DbContextUpdateService : IDbContextUpdateService
     {
         /// <inheritdoc />

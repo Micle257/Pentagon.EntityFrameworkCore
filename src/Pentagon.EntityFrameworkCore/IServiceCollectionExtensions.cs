@@ -5,7 +5,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Repositories;
-    using Synchonization;
     using Synchronization;
 
     public static class IServiceCollectionExtensions
@@ -54,7 +53,7 @@
                 where TContext : class, IApplicationContext
         {
             // UoW
-            builder.AddDbContext<TDbContext, TContext>()
+            builder.AddAppDbContext<TDbContext, TContext>()
                    .AddDbContextServices()
                    .AddRepositoryFactory()
                    .AddPagination()
@@ -86,7 +85,7 @@
             return builder;
         }
 
-        public static IServiceCollection AddDbContext<TDbContext, TContext>(this IServiceCollection builder)
+        public static IServiceCollection AddAppDbContext<TDbContext, TContext>(this IServiceCollection builder)
             where TDbContext : DbContext, TContext
                 where TContext : class, IApplicationContext
         {

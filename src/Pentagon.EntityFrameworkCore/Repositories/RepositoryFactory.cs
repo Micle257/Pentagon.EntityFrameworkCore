@@ -14,10 +14,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using Pentagon.Extensions.DependencyInjection;
 
     /// <summary> Represents a repository factory for <see cref="IApplicationContext" />. </summary>
-    [Register(RegisterType.Transient, typeof(IRepositoryFactory))]
     public class RepositoryFactory : IRepositoryFactory
     {
         /// <summary> The logger factory. </summary>
