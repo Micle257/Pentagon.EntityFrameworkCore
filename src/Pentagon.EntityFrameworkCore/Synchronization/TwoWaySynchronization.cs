@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-//  <copyright file="SynchronizationSession.cs">
+//  <copyright file="TwoWaySynchronization.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
@@ -22,18 +22,18 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
             where T : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
     {
         readonly IRepositoryActionService _actionService;
-        
-        public TwoWaySynchronization(IRepositoryActionService actionService,IUnitOfWorkFactory<IRemoteContext> remoteFactory, IUnitOfWorkFactory<ILocalContext> localFactory)
+
+        readonly IUnitOfWorkFactory<IRemoteContext> _remoteFactory;
+
+        readonly IUnitOfWorkFactory<ILocalContext> _localFactory;
+
+        public TwoWaySynchronization(IRepositoryActionService actionService, IUnitOfWorkFactory<IRemoteContext> remoteFactory, IUnitOfWorkFactory<ILocalContext> localFactory)
         {
             _actionService = actionService;
             _remoteFactory = remoteFactory;
             _localFactory = localFactory;
         }
-        
-        readonly IUnitOfWorkFactory<IRemoteContext> _remoteFactory;
-        
-        readonly IUnitOfWorkFactory<ILocalContext> _localFactory;
-        
+
         public async Task SynchronizeAsync(Expression<Func<T, bool>> selector)
         {
             using (var local = _localFactory.Create())
@@ -74,11 +74,11 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
                 }
             }
         }
-        
+
         /// <summary> Gets the remote/local entity pairs. </summary>
         /// <param name="selector"> The selector for getting the data. </param>
         /// <returns> An awaitable list of the <see cref="EntityPair{T}" />. </returns>
-        public async Task<IList<EntityPair<T>>> GetDataPairsAsync(IRepository<T> localRepository,IRepository<T> remoteRepository,Expression<Func<T, bool>> selector)
+        public async Task<IList<EntityPair<T>>> GetDataPairsAsync(IRepository<T> localRepository, IRepository<T> remoteRepository, Expression<Func<T, bool>> selector)
         {
             var result = new List<EntityPair<T>>();
 

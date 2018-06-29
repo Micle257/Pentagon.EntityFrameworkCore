@@ -9,9 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    /// <summary>
-    /// Represents an entity, that supports marking by create stamp.
-    /// </summary>
+    /// <summary> Represents an entity, that supports marking by create stamp. </summary>
     public interface ICreateStampSupport
     {
         /// <summary> Gets or sets the unique identifier of the row. </summary>

@@ -3,6 +3,7 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
+
 namespace Pentagon.EntityFrameworkCore
 {
     using System;
@@ -31,11 +32,11 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         public static ModelBuilder SetupConcurrencyEntityDefaults<T>(this ModelBuilder builder)
-            where T : class, IConcurrencyStampSupport
+                where T : class, IConcurrencyStampSupport
         {
             builder.Entity<T>()
-                        .Property(p => p.ConcurrencyStamp)
-                        .HasDefaultValueSql("NEWID()");
+                   .Property(p => p.ConcurrencyStamp)
+                   .HasDefaultValueSql(sql: "NEWID()");
 
             return builder;
         }
@@ -44,13 +45,13 @@ namespace Pentagon.EntityFrameworkCore
         {
             builder.Entity(type)
                    .Property(nameof(IConcurrencyStampSupport.ConcurrencyStamp))
-                   .HasDefaultValueSql("NEWID()");
+                   .HasDefaultValueSql(sql: "NEWID()");
 
             return builder;
         }
 
         public static ModelBuilder SetupTimeSpanEntityDefaults<T>(this ModelBuilder builder)
-            where T : class, ITimeStampSupport
+                where T : class, ITimeStampSupport
         {
             builder.Entity<T>().SetupTimeSpanEntityDefaults();
 
@@ -63,13 +64,13 @@ namespace Pentagon.EntityFrameworkCore
 
             return builder;
         }
-        
+
         public static ModelBuilder SetupCreateStampEntityDefaults<T>(this ModelBuilder builder)
-            where T : class, ICreateStampSupport
+                where T : class, ICreateStampSupport
         {
             builder.Entity<T>()
                    .Property(p => p.CreateGuid)
-                   .HasDefaultValueSql("NEWID()");
+                   .HasDefaultValueSql(sql: "NEWID()");
 
             return builder;
         }
@@ -78,7 +79,7 @@ namespace Pentagon.EntityFrameworkCore
         {
             builder.Entity(type)
                    .Property(nameof(ICreateStampSupport.CreateGuid))
-                   .HasDefaultValueSql("NEWID()");
+                   .HasDefaultValueSql(sql: "NEWID()");
 
             return builder;
         }

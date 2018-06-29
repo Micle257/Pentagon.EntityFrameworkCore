@@ -6,9 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
 {
-    /// <summary>
-    /// Represents an entity, that supports deleted flag.
-    /// </summary>
+    /// <summary> Represents an entity, that supports deleted flag. </summary>
     public interface IDeletedFlagSupport
     {
         /// <summary> Gets or sets a value indicating whether this entity is marked as deleted when softly deleting entity, so the data of the entity aren't available. </summary>

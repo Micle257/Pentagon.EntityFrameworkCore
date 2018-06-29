@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore.Abstractions.Entities {
+// -----------------------------------------------------------------------
+//  <copyright file="ITimeStampIdentitySupport.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
+{
     using System.ComponentModel.DataAnnotations;
 
     public interface ITimeStampIdentitySupport<TUserId> : ITimeStampIdentitySupport

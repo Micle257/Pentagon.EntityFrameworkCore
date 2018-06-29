@@ -1,4 +1,11 @@
-﻿namespace Pentagon.EntityFrameworkCore.Specifications {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="GetPageSpecification.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Specifications
+{
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -10,8 +17,41 @@
     /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for paged operations. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
     public class GetPageSpecification<TEntity> : IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>, IPaginationSpecification<TEntity>
-        where TEntity : IEntity
+            where TEntity : IEntity
     {
+        /// <summary> Initializes a new instance of the <see cref="GetPageSpecification{TEntity}" /> class. </summary>
+        /// <param name="criteria"> The criteria. </param>
+        /// <param name="order"> The order. </param>
+        /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
+        /// <param name="pageSize"> Size of the page. </param>
+        /// <param name="pageNumber"> Index of the page. </param>
+        public GetPageSpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageNumber)
+        {
+            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
+            Order = order ?? throw new ArgumentNullException(nameof(order));
+            IsDescending = isDescending;
+            PageSize = pageSize;
+            PageNumber = pageNumber;
+        }
+
+        /// <inheritdoc />
+        public int PageSize { get; set; }
+
+        /// <inheritdoc />
+        public Expression<Func<TEntity, bool>> Criteria { get; }
+
+        /// <inheritdoc />
+        public bool IsDescending { get; }
+
+        /// <inheritdoc />
+        public Expression<Func<TEntity, object>> Order { get; }
+
+        /// <inheritdoc />
+        public int PageNumber { get; set; }
+
+        /// <inheritdoc />
+        public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
+
         /// <inheritdoc />
         public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
         {
@@ -30,44 +70,9 @@
         }
 
         /// <inheritdoc />
-        public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
-
-        /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Criteria { get; }
-
-        /// <inheritdoc />
-        public bool IsDescending { get; }
-
-        /// <inheritdoc />
-        public Expression<Func<TEntity, object>> Order { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GetPageSpecification{TEntity}"/> class.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        /// <param name="order">The order.</param>
-        /// <param name="isDescending">If set to <c>true</c> is descending.</param>
-        /// <param name="pageSize">Size of the page.</param>
-        /// <param name="pageNumber">Index of the page.</param>
-        public GetPageSpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageNumber)
-        {
-            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
-            Order = order ?? throw new ArgumentNullException(nameof(order));
-            IsDescending = isDescending;
-            PageSize = pageSize;
-            PageNumber = pageNumber;
-        }
-
-        /// <inheritdoc />
-        public int PageSize { get; set; }
-
-        /// <inheritdoc />
-        public int PageNumber { get; set; }
-
-        /// <inheritdoc />
         public IQueryable<TEntity> ApplyPagination(IQueryable<TEntity> query)
         {
-            if (PageSize > 0 && PageNumber >0)
+            if (PageSize > 0 && PageNumber > 0)
                 query = query.Skip((PageNumber - 1) * PageSize).Take(PageSize);
 
             return query;

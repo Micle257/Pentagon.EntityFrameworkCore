@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore {
+// -----------------------------------------------------------------------
+//  <copyright file="ManagerCommitEventArgs.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore
+{
     using System;
     using System.Collections.Generic;
 
@@ -7,7 +14,7 @@ namespace Pentagon.EntityFrameworkCore {
     {
         /// <summary> Initializes a new instance of the <see cref="CommitEventArgs" /> class. </summary>
         /// <param name="entries"> The entries. </param>
-        public ManagerCommitEventArgs(Type contextType,Type entityType,params Entry[] entries)
+        public ManagerCommitEventArgs(Type contextType, Type entityType, params Entry[] entries)
         {
             ContextType = contextType;
             EntityType = entityType;

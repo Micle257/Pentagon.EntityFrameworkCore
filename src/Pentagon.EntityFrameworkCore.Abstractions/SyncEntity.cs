@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore {
+// -----------------------------------------------------------------------
+//  <copyright file="SyncEntity.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore
+{
     using System;
     using Abstractions.Entities;
 
@@ -13,15 +20,15 @@ namespace Pentagon.EntityFrameworkCore {
         public Guid CreateGuid { get; set; }
 
         /// <inheritdoc />
-        public DateTimeOffset CreatedAt { get; set; }
-
-        /// <inheritdoc />
-        public DateTimeOffset? LastUpdatedAt { get; set; }
+        public bool IsDeletedFlag { get; set; }
 
         /// <inheritdoc />
         public DateTimeOffset? DeletedAt { get; set; }
 
         /// <inheritdoc />
-        public bool IsDeletedFlag { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+
+        /// <inheritdoc />
+        public DateTimeOffset? LastUpdatedAt { get; set; }
     }
 }

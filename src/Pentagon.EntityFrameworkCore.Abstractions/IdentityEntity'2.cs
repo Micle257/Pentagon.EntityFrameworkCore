@@ -12,16 +12,23 @@ namespace Pentagon.EntityFrameworkCore
     /// <typeparam name="TKey"> The type of the key. </typeparam>
     /// <typeparam name="TUserKey"> The type of the user key. </typeparam>
     public abstract class TimestampIdentityEntity<TKey, TUserKey> : SyncEntity<TKey>, ITimeStampIdentitySupport<TUserKey>, IDeleteTimeStampIdentitySupport<TUserKey>
-        where TUserKey : struct
+            where TUserKey : struct
     {
         /// <inheritdoc />
+        public TUserKey? DeletedBy { get; set; }
+
+        /// <inheritdoc />
         public TUserKey CreatedBy { get; set; }
-        
+
         /// <inheritdoc />
         public TUserKey? UpdatedBy { get; set; }
 
         /// <inheritdoc />
-        public TUserKey? DeletedBy { get; set; }
+        object IDeleteTimeStampIdentitySupport.DeletedBy
+        {
+            get => DeletedBy;
+            set => DeletedBy = (TUserKey?) value;
+        }
 
         /// <inheritdoc />
         object ITimeStampIdentitySupport.CreatedBy
@@ -35,13 +42,6 @@ namespace Pentagon.EntityFrameworkCore
         {
             get => UpdatedBy;
             set => UpdatedBy = (TUserKey?) value;
-        }
-
-        /// <inheritdoc />
-        object IDeleteTimeStampIdentitySupport.DeletedBy
-        {
-            get => DeletedBy;
-            set => DeletedBy = (TUserKey?) value;
         }
     }
 }

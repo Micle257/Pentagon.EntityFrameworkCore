@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore.Abstractions {
+// -----------------------------------------------------------------------
+//  <copyright file="IDatabaseCommitManager.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Abstractions
+{
     using System;
     using System.Collections.Generic;
 

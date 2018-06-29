@@ -15,7 +15,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     public class DbContextSynchronizator : IDbContextSynchronizator
     {
         readonly ISynchronizationFactory _factory;
-        
+
         public DbContextSynchronizator(ISynchronizationFactory factory)
         {
             _factory = factory;
@@ -26,11 +26,11 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         /// <param name="selector"> The selector. </param>
         /// <returns> <c> true </c> if synchronization succeed; otherwise <c> false </c>. </returns>
         public async Task<bool> SynchronizeAsync<T>(Expression<Func<T, bool>> selector = null)
-            where T : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
+                where T : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
         {
             if (selector == null)
                 selector = a => true;
-            
+
             var session = _factory.CreateTwoWay<T>();
 
             await session.SynchronizeAsync(selector).ConfigureAwait(false);

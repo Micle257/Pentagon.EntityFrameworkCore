@@ -1,4 +1,11 @@
-﻿namespace Pentagon.EntityFrameworkCore.Repositories {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="DatabaseCommitManager.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Repositories
+{
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -8,9 +15,9 @@
     {
         public event EventHandler<ManagerCommitEventArgs> Commiting;
 
-        public void RaiseCommit(Type contextType, Type entityType,IEnumerable<Entry> entries)
+        public void RaiseCommit(Type contextType, Type entityType, IEnumerable<Entry> entries)
         {
-            Commiting?.Invoke(this, new ManagerCommitEventArgs(contextType,entityType,entries.ToArray()));
+            Commiting?.Invoke(this, new ManagerCommitEventArgs(contextType, entityType, entries.ToArray()));
         }
     }
 }

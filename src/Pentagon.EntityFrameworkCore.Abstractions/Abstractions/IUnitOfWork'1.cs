@@ -11,7 +11,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     /// <summary> Represents an unit of work for data context and it is used to save data from related repositories. </summary>
     /// <typeparam name="TContext"> The type of the context. </typeparam>
     public interface IUnitOfWork<out TContext> : IUnitOfWork
-        where TContext : IApplicationContext
+            where TContext : IApplicationContext
     {
         /// <summary> Gets the context. </summary>
         /// <value> The <see cref="TContext" />. </value>

@@ -32,9 +32,9 @@ namespace Pentagon.EntityFrameworkCore
 
             foreach (var entry in entries)
             {
-                if ((entry.Entity is ITimeStampIdentitySupport entity))
+                if (entry.Entity is ITimeStampIdentitySupport entity)
                 {
-                    if (!entryMap.TryGetValue((IEntity)entity, out var userId))
+                    if (!entryMap.TryGetValue((IEntity) entity, out var userId))
                         continue;
 
                     switch (entry.State)
@@ -46,9 +46,10 @@ namespace Pentagon.EntityFrameworkCore
                             break;
                     }
                 }
-                if ((entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity))
+
+                if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
                 {
-                    if (!entryMap.TryGetValue((IEntity)deleteEntity, out var userId))
+                    if (!entryMap.TryGetValue((IEntity) deleteEntity, out var userId))
                         continue;
 
                     switch (entry.State)

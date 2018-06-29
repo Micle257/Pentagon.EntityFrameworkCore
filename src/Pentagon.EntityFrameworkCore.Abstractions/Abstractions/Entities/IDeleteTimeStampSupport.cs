@@ -1,9 +1,14 @@
-namespace Pentagon.EntityFrameworkCore.Abstractions.Entities {
+// -----------------------------------------------------------------------
+//  <copyright file="IDeleteTimeStampSupport.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
+{
     using System;
 
-    /// <summary>
-    /// Represents an entity, that supports delete time stamp.
-    /// </summary>
+    /// <summary> Represents an entity, that supports delete time stamp. </summary>
     public interface IDeleteTimeStampSupport
     {
         /// <summary> Gets or sets the deleted time. </summary>
@@ -15,6 +20,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities {
     {
         /// <summary> Gets or sets the user that deleted this entity. </summary>
         /// <value> The nullable <see cref="TUserId" />. </value>
-       object DeletedBy { get; set; }
+        object DeletedBy { get; set; }
     }
 }

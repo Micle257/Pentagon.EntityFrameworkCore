@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore.Synchronization {
+// -----------------------------------------------------------------------
+//  <copyright file="SynchronizationFactory.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Synchronization
+{
     using Abstractions;
     using Abstractions.Entities;
 
@@ -16,9 +23,6 @@ namespace Pentagon.EntityFrameworkCore.Synchronization {
         }
 
         public ITwoWaySynchronization<T> CreateTwoWay<T>()
-                where T : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
-        {
-            return new TwoWaySynchronization<T>(_actionService, _remote, _local);
-        }
+                where T : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new() => new TwoWaySynchronization<T>(_actionService, _remote, _local);
     }
 }

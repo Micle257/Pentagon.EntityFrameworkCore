@@ -19,7 +19,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
         /// <typeparam name="TId"> The type of the primary key. </typeparam>
         /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
         IRepository<TEntity> GetRepository<TEntity>()
-            where TEntity : class, IEntity, new();
+                where TEntity : class, IEntity, new();
 
         /// <summary> Commits the changes of this unit of work. </summary>
         /// <returns> An <see cref="int" />, that represents number of entities states written to the database. </returns>

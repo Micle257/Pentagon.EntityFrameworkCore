@@ -41,7 +41,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         /// <inheritdoc />
         public IRepository<TEntity> GetRepository<TEntity>(IApplicationContext context)
-            where TEntity : class, IEntity, new()
+                where TEntity : class, IEntity, new()
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -52,7 +52,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             var type = typeof(TEntity);
 
-            if (!_repositories.ContainsKey((type,dbContext)))
+            if (!_repositories.ContainsKey((type, dbContext)))
                 _repositories[(type, dbContext)] = new Repository<TEntity>(_loggerFactory.CreateLogger<Repository<TEntity>>(), _paginationService, dbContext);
 
             if (!(_repositories[(type, dbContext)] is IRepository<TEntity>))

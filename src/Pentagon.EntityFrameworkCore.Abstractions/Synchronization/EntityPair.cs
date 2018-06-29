@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore.Synchronization {
+// -----------------------------------------------------------------------
+//  <copyright file="EntityPair.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Synchronization
+{
     using Abstractions.Entities;
 
     public struct EntityPair<TEntity>

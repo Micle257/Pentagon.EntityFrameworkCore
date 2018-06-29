@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore.Abstractions.Entities {
+// -----------------------------------------------------------------------
+//  <copyright file="IDeleteTimeStampIdentitySupport.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
+{
     public interface IDeleteTimeStampIdentitySupport<TUserId> : IDeleteTimeStampIdentitySupport
             where TUserId : struct
     {

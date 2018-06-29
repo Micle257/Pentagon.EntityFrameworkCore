@@ -265,10 +265,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         /// <inheritdoc />
         public Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
-                                                                                            Expression<Func<TEntity, bool>> criteria,
-                                                                                            Expression<Func<TEntity, object>> orderExpression,
-                                                                                            bool isDescendingOrder,
-                                                                                            int pageSize)
+                                                                                           Expression<Func<TEntity, bool>> criteria,
+                                                                                           Expression<Func<TEntity, object>> orderExpression,
+                                                                                           bool isDescendingOrder,
+                                                                                           int pageSize)
         {
             var specification = new GetAllPagesSpecification<TEntity>(criteria, orderExpression, isDescendingOrder, pageSize);
             return GetAllPagesAsync(selector, specification);
@@ -314,11 +314,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         /// <inheritdoc />
         public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
-                                                                           Expression<Func<TEntity, bool>> criteria,
-                                                                           Expression<Func<TEntity, object>> order,
-                                                                           bool isDescendingOrder,
-                                                                           int pageSize,
-                                                                           int pageIndex)
+                                                                          Expression<Func<TEntity, bool>> criteria,
+                                                                          Expression<Func<TEntity, object>> order,
+                                                                          bool isDescendingOrder,
+                                                                          int pageSize,
+                                                                          int pageIndex)
         {
             var specification = new GetPageSpecification<TEntity>(criteria, order, isDescendingOrder, pageSize, pageIndex);
             return GetPageAsync(selector, specification);

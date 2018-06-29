@@ -11,12 +11,10 @@ namespace Pentagon.EntityFrameworkCore
     /// <summary> Provides information about <see cref="IEntity" /> that changes its state. </summary>
     public class Entry
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Entry" /> class.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="userId">The user identifier.</param>
+        /// <summary> Initializes a new instance of the <see cref="Entry" /> class. </summary>
+        /// <param name="entity"> The entity. </param>
+        /// <param name="state"> The state. </param>
+        /// <param name="userId"> The user identifier. </param>
         public Entry(IEntity entity, EntityStateType state, object userId = null)
         {
             Entity = entity;
@@ -28,12 +26,8 @@ namespace Pentagon.EntityFrameworkCore
         /// <value> The <see cref="EntityStateType" />. </value>
         public EntityStateType State { get; }
 
-        /// <summary>
-        /// Gets the user identifier.
-        /// </summary>
-        /// <value>
-        /// The <see cref="object"/>.
-        /// </value>
+        /// <summary> Gets the user identifier. </summary>
+        /// <value> The <see cref="object" />. </value>
         public object UserId { get; }
 
         /// <summary> Gets the entity. </summary>

@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     /// <summary> Represents a default implementation for an <see cref="IUnitOfWorkFactory{TContext}" />. </summary>
     /// <typeparam name="TContext"> The type of the context. </typeparam>
     public class UnitOfWorkFactory<TContext> : IUnitOfWorkFactory<TContext>
-        where TContext : class, IApplicationContext
+            where TContext : class, IApplicationContext
     {
         /// <summary> The repository factory. </summary>
         [NotNull]
@@ -38,15 +38,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         [NotNull]
         readonly IContextFactory<TContext> _contextFactory;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnitOfWorkFactory{TContext}" /> class.
-        /// </summary>
-        /// <param name="contextFactory">The context.</param>
-        /// <param name="repositoryFactory">The repository factory.</param>
-        /// <param name="updateService">The update service.</param>
-        /// <param name="deleteService">The delete service.</param>
-        /// <param name="identityService">The identity service.</param>
-        /// <param name="commitManager">The commit manager.</param>
+        /// <summary> Initializes a new instance of the <see cref="UnitOfWorkFactory{TContext}" /> class. </summary>
+        /// <param name="contextFactory"> The context. </param>
+        /// <param name="repositoryFactory"> The repository factory. </param>
+        /// <param name="updateService"> The update service. </param>
+        /// <param name="deleteService"> The delete service. </param>
+        /// <param name="identityService"> The identity service. </param>
+        /// <param name="commitManager"> The commit manager. </param>
         public UnitOfWorkFactory([NotNull] IContextFactory<TContext> contextFactory,
                                  [NotNull] IRepositoryFactory repositoryFactory,
                                  [NotNull] IDbContextUpdateService updateService,

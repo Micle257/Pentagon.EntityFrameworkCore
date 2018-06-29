@@ -18,6 +18,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
         [NotNull]
         IRepository<TEntity> GetRepository<TEntity>([NotNull] IApplicationContext context)
-            where TEntity : class, IEntity, new();
+                where TEntity : class, IEntity, new();
     }
 }

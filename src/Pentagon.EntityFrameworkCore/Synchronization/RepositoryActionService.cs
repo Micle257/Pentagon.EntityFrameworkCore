@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore.Synchronization {
+// -----------------------------------------------------------------------
+//  <copyright file="RepositoryActionService.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Synchronization
+{
     using System;
     using System.Collections.Generic;
     using Abstractions.Entities;
@@ -9,7 +16,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization {
                 where TEntity : class, IEntity, ITimeStampSupport, ICreateStampSupport
         {
             if (pair.Type == EntityPairType.Both && pair.Remote.CreateGuid != pair.Local.CreateGuid)
-                throw new ArgumentException("The given entities are not created from the same source.");
+                throw new ArgumentException(message: "The given entities are not created from the same source.");
 
             var comms = new List<RepositoryAction<TEntity>>();
 
@@ -25,9 +32,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization {
 
                 case EntityPairType.Both:
                     if (pair.Remote.LastUpdatedAt > pair.Local.LastUpdatedAt)
-                    {
                         comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Remote, TableActionType.Update));
-                    }
                     break;
             }
 
@@ -35,22 +40,17 @@ namespace Pentagon.EntityFrameworkCore.Synchronization {
         }
 
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInOneWayMode<TEntity>(TEntity remoteEntity, TEntity localEntity)
-                where TEntity : class, IEntity, ITimeStampSupport, ICreateStampSupport
-        {
-            return GetRepositoryActionsInOneWayMode(new EntityPair<TEntity>(localEntity, remoteEntity));
-        }
+                where TEntity : class, IEntity, ITimeStampSupport, ICreateStampSupport => GetRepositoryActionsInOneWayMode(new EntityPair<TEntity>(localEntity, remoteEntity));
 
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInTwoWayMode<TEntity>(TEntity remoteEntity, TEntity localEntity)
-                where TEntity : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport
-        {
-            return GetRepositoryActionsInTwoWayMode(new EntityPair<TEntity>(localEntity, remoteEntity));
-        }
+                where TEntity : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport =>
+                GetRepositoryActionsInTwoWayMode(new EntityPair<TEntity>(localEntity, remoteEntity));
 
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInTwoWayMode<TEntity>(EntityPair<TEntity> pair)
                 where TEntity : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport
         {
             if (pair.Type == EntityPairType.Both && pair.Remote.CreateGuid != pair.Local.CreateGuid)
-                throw new ArgumentException("The given entities are not created from the same source.");
+                throw new ArgumentException(message: "The given entities are not created from the same source.");
 
             var comms = new List<RepositoryAction<TEntity>>();
 

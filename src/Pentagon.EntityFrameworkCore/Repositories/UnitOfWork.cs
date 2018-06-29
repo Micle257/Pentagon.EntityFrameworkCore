@@ -20,7 +20,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     /// <summary> Represents an unit of work that communicate with a database and manage repository changes to the database. </summary>
     /// <typeparam name="TContext"> The type of the db context. </typeparam>
     public class UnitOfWork<TContext> : IUnitOfWork<TContext>
-        where TContext : class, IApplicationContext
+            where TContext : class, IApplicationContext
     {
         /// <summary> The repository factory. </summary>
         [NotNull]
@@ -34,26 +34,24 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         [NotNull]
         readonly IDbContextDeleteService _deleteService;
 
-        /// <summary>
-        /// The identity service.
-        /// </summary>
+        /// <summary> The identity service. </summary>
         [NotNull]
         readonly IDbContextIdentityService _identityService;
-        
+
         readonly IDatabaseCommitManager _commitManager;
 
         /// <summary> The database context. </summary>
         readonly DbContext _dbContext;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="repositoryFactory">The repository factory.</param>
-        /// <param name="updateService">The update service.</param>
-        /// <param name="deleteService">The delete service.</param>
-        /// <param name="identityService">The identity service.</param>
-        /// <param name="commitManager">The commit manager.</param>
+        readonly IDictionary<IEntity, object> EntryMap = new ConcurrentDictionary<IEntity, object>();
+
+        /// <summary> Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class. </summary>
+        /// <param name="context"> The context. </param>
+        /// <param name="repositoryFactory"> The repository factory. </param>
+        /// <param name="updateService"> The update service. </param>
+        /// <param name="deleteService"> The delete service. </param>
+        /// <param name="identityService"> The identity service. </param>
+        /// <param name="commitManager"> The commit manager. </param>
         public UnitOfWork([NotNull] TContext context,
                           [NotNull] IRepositoryFactory repositoryFactory,
                           [NotNull] IDbContextUpdateService updateService,
@@ -77,9 +75,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         /// <inheritdoc />
         public virtual IRepository<TEntity> GetRepository<TEntity>()
-            where TEntity : class, IEntity, new()
+                where TEntity : class, IEntity, new()
         {
-            var repo =  _repositoryFactory.GetRepository<TEntity>(Context);
+            var repo = _repositoryFactory.GetRepository<TEntity>(Context);
             try
             {
                 repo.Commiting -= OnCommiting;
@@ -88,25 +86,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             {
                 repo.Commiting += OnCommiting;
             }
+
             return repo;
         }
-
-        void OnCommiting(object sender, CommitEventArgs commitEventArgs)
-        {
-            foreach (var entry in commitEventArgs.Entries)
-            {
-                if (entry.UserId == null)
-                    continue;
-
-                EntryMap.Add(entry.Entity, entry.UserId);
-            }
-
-            var repo = sender.GetType().GenericTypeArguments.FirstOrDefault();
-
-            _commitManager?.RaiseCommit(typeof(TContext), repo, commitEventArgs.Entries);
-        }
-
-        IDictionary<IEntity,object> EntryMap = new ConcurrentDictionary<IEntity, object>();
 
         /// <inheritdoc />
         public int Commit()
@@ -115,18 +97,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 return 0;
 
             return _dbContext.SaveChanges();
-        }
-
-        bool CommitCore()
-        {
-            if (!_dbContext.ChangeTracker.HasChanges())
-                return false;
-            _updateService.Apply(Context);
-            _deleteService.Apply(Context, Context.HasHardDeleteBehavior);
-            _identityService.Apply(Context, EntryMap);
-            EntryMap.Clear();
-
-            return true;
         }
 
         /// <inheritdoc />
@@ -152,6 +122,33 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             if (disposing)
                 Context.Dispose();
+        }
+
+        void OnCommiting(object sender, CommitEventArgs commitEventArgs)
+        {
+            foreach (var entry in commitEventArgs.Entries)
+            {
+                if (entry.UserId == null)
+                    continue;
+
+                EntryMap.Add(entry.Entity, entry.UserId);
+            }
+
+            var repo = sender.GetType().GenericTypeArguments.FirstOrDefault();
+
+            _commitManager?.RaiseCommit(typeof(TContext), repo, commitEventArgs.Entries);
+        }
+
+        bool CommitCore()
+        {
+            if (!_dbContext.ChangeTracker.HasChanges())
+                return false;
+            _updateService.Apply(Context);
+            _deleteService.Apply(Context, Context.HasHardDeleteBehavior);
+            _identityService.Apply(Context, EntryMap);
+            EntryMap.Clear();
+
+            return true;
         }
     }
 }

@@ -12,9 +12,7 @@ namespace Pentagon.EntityFrameworkCore
     using Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
 
-    /// <summary>
-    /// Represents an implementation of <see cref="IDbContextUpdateService"/> for entity framework core.
-    /// </summary>
+    /// <summary> Represents an implementation of <see cref="IDbContextUpdateService" /> for entity framework core. </summary>
     public class DbContextUpdateService : IDbContextUpdateService
     {
         /// <inheritdoc />
@@ -32,7 +30,7 @@ namespace Pentagon.EntityFrameworkCore
 
             foreach (var entry in entries)
             {
-                var entity = (IEntity)entry.Entity;
+                var entity = (IEntity) entry.Entity;
                 if (entry.State == EntityState.Added)
                 {
                     if (entry.Entity is ITimeStampSupport entityTimed)

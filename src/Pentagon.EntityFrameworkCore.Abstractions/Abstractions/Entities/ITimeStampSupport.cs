@@ -9,9 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    /// <summary>
-    /// Represents an entity, that supports create and update time stamps.
-    /// </summary>
+    /// <summary> Represents an entity, that supports create and update time stamps. </summary>
     public interface ITimeStampSupport
     {
         /// <summary> Gets or sets the creation time. </summary>
@@ -23,7 +21,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
         DateTimeOffset? LastUpdatedAt { get; set; }
     }
 
-    public interface ITimeStampIdentitySupport 
+    public interface ITimeStampIdentitySupport
     {
         /// <summary> Gets or sets the user that created this entity. </summary>
         /// <value> The <see cref="object" />. </value>
