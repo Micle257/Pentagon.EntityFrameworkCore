@@ -12,6 +12,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
     using System.Threading.Tasks;
     using Collections;
     using Entities;
+    using JetBrains.Annotations;
     using Specifications;
 
     /// <summary> Provides a standard interface for repository which is data-access mechanism agnostic with typed identifier. </summary>
@@ -21,6 +22,12 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
     {
         /// <summary> Occurs when the commit begins. </summary>
         event EventHandler<CommitEventArgs> Commiting;
+
+        /// <summary>
+        /// Stop tracking the entity (detached from data source cache, eg. in EF Core detached from change tracker).
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        void Forget([NotNull] TEntity entity);
 
         /// <summary> Gets the selected entity. </summary>
         /// <param name="entitySelector"> The entity selector. </param>

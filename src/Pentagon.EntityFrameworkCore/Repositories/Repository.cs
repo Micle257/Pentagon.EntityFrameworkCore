@@ -18,10 +18,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Collections;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.Extensions.Logging;
     using Specifications;
 
-    /// <summary> Represents a repository for the entity framework provider. </summary>
+    /// <summary> Represents a repository for the entity framework provider. It has similar behavior like <see cref="DbSet{TEntity}"/>. Marks and gets data from database. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
     public class Repository<TEntity> : IRepository<TEntity>
             where TEntity : class, IEntity, new()
@@ -52,6 +53,19 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             DataContext = context ?? throw new ArgumentNullException(nameof(context));
             _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
             _query = _set;
+
+            DataContext.ChangeTracker.StateChanged += OnStateChanged;
+            DataContext.ChangeTracker.Tracked += OnTracked;
+        }
+
+        void OnTracked(object sender, EntityTrackedEventArgs args)
+        {
+
+        }
+
+        void OnStateChanged(object sender, EntityStateChangedEventArgs args)
+        {
+
         }
 
         /// <inheritdoc />
@@ -61,6 +75,18 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <value> The <see cref="DbContext" />. </value>
         [NotNull]
         public DbContext DataContext { get; }
+        
+        /// <inheritdoc />
+        public void Forget([NotNull] TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var entry = DataContext.Entry(entity);
+
+            if (entry != null)
+                entry.State = EntityState.Detached;
+        }
 
         /// <inheritdoc />
         public Task<TEntity> GetByIdAsync(object id) => _set.FindAsync(id);
@@ -75,14 +101,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public virtual void Insert(TEntity entity)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
+            //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
             _set.Add(entity);
         }
 
         /// <inheritdoc />
         public virtual void Insert<TUserId>(TEntity entity, TUserId userId)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added, userId)));
+            //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added, userId)));
             _set.Add(entity);
         }
 
@@ -99,14 +125,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public virtual void Update(TEntity entity)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified)));
+            //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified)));
             _set.Update(entity);
         }
 
         /// <inheritdoc />
         public void Update<TUserId>(TEntity entity, TUserId userId)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified, userId)));
+            // Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified, userId)));
             _set.Update(entity);
         }
 
@@ -120,14 +146,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public virtual void Delete(TEntity entity)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted)));
+            // Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted)));
             _set.Remove(entity);
         }
 
         /// <inheritdoc />
         public void Delete<TUserId>(TEntity entity, TUserId userId)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted, userId)));
+            //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted, userId)));
             _set.Remove(entity);
         }
 
