@@ -16,13 +16,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         /// <summary> Updates the specified entity. </summary>
         /// <param name="entity"> The entity. </param>
         void Update([NotNull] TEntity entity);
-
-        /// <summary> Updates the specified entity. </summary>
-        /// <typeparam name="TUserId"> The type of the user identifier. </typeparam>
-        /// <param name="entity"> The entity. </param>
-        /// <param name="userId"> The user identifier. </param>
-        void Update<TUserId>([NotNull] TEntity entity, [NotNull] TUserId userId);
-
+        
         /// <summary> Updates the array of entities. </summary>
         /// <param name="entities"> The array of the <see cref="TEntity" />. </param>
         /// <returns> An awaitable <see cref="Task" />. </returns>

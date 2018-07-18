@@ -110,14 +110,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
             _set.Add(entity);
         }
-
-        /// <inheritdoc />
-        public virtual void Insert<TUserId>(TEntity entity, TUserId userId)
-        {
-            //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added, userId)));
-            _set.Add(entity);
-        }
-
+        
         /// <inheritdoc />
         public virtual void InsertMany(params TEntity[] entities)
         {
@@ -134,14 +127,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified)));
             _set.Update(entity);
         }
-
-        /// <inheritdoc />
-        public void Update<TUserId>(TEntity entity, TUserId userId)
-        {
-            // Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified, userId)));
-            _set.Update(entity);
-        }
-
+        
         /// <inheritdoc />
         public void UpdateMany(params TEntity[] entities)
         {
@@ -155,14 +141,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             // Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted)));
             _set.Remove(entity);
         }
-
-        /// <inheritdoc />
-        public void Delete<TUserId>(TEntity entity, TUserId userId)
-        {
-            //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted, userId)));
-            _set.Remove(entity);
-        }
-
+        
         /// <inheritdoc />
         public void DeleteMany(params TEntity[] entities)
         {
