@@ -11,10 +11,18 @@ namespace Pentagon.EntityFrameworkCore
     using Abstractions;
     using Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
 
     /// <summary> Represents an implementation of <see cref="IDbContextDeleteService" /> for entity framework core. </summary>
     public class DbContextDeleteService : IDbContextDeleteService
     {
+        readonly ILogger<DbContextDeleteService> _logger;
+
+        public DbContextDeleteService(ILogger<DbContextDeleteService> logger)
+        {
+            _logger = logger;
+        }
+
         /// <inheritdoc />
         public void Apply(IApplicationContext appContext, bool? isHardDelete = null)
         {
@@ -36,6 +44,11 @@ namespace Pentagon.EntityFrameworkCore
                 {
                     if (entry.Entity is IDeletedFlagSupport entity)
                         entity.IsDeletedFlag = true;
+                    else
+                    {
+                        _logger.LogWarning("The database context is marked for soft deletion, but no IsDeletedFlag is available.");
+                        continue;
+                    }
 
                     if (entry.Entity is IDeleteTimeStampSupport entityTimed)
                         entityTimed.DeletedAt = DateTimeOffset.Now;
