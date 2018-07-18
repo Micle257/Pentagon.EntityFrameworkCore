@@ -15,20 +15,13 @@ namespace Pentagon.EntityFrameworkCore
             where TUserKey : struct
     {
         /// <inheritdoc />
-        public TUserKey? DeletedBy { get; set; }
-
-        /// <inheritdoc />
         public TUserKey CreatedBy { get; set; }
 
         /// <inheritdoc />
         public TUserKey? UpdatedBy { get; set; }
 
         /// <inheritdoc />
-        object IDeleteTimeStampIdentitySupport.DeletedBy
-        {
-            get => DeletedBy;
-            set => DeletedBy = (TUserKey?) value;
-        }
+        public TUserKey? DeletedBy { get; set; }
 
         /// <inheritdoc />
         object ITimeStampIdentitySupport.CreatedBy
@@ -42,6 +35,13 @@ namespace Pentagon.EntityFrameworkCore
         {
             get => UpdatedBy;
             set => UpdatedBy = (TUserKey?) value;
+        }
+
+        /// <inheritdoc />
+        object IDeleteTimeStampIdentitySupport.DeletedBy
+        {
+            get => DeletedBy;
+            set => DeletedBy = (TUserKey?) value;
         }
     }
 }
