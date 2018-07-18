@@ -32,7 +32,7 @@ namespace Pentagon.EntityFrameworkCore
         /// <typeparam name="TDbContextFactoryImplementation">The type of the factory for database and app contexts. </typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static IServiceCollection AddUnitOfWork<TDbContext, TContext, TDbContextFactoryImplementation>(this IServiceCollection builder)
+        public static IServiceCollection AddUnitOfWork<TDbContext, TContext, TDbContextFactoryImplementation>(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
                 where TDbContext : DbContext, TContext
                 where TContext : class, IApplicationContext
                 where TDbContextFactoryImplementation : class, IContextFactory<TContext>
@@ -40,35 +40,37 @@ namespace Pentagon.EntityFrameworkCore
             builder.AddLogging();
 
             // UoW
-            builder.AddAppContext<TContext, TDbContextFactoryImplementation>()
-                    .AddAppDbContext<TDbContext, TContext>()
+            builder.AddAppContext<TContext, TDbContextFactoryImplementation>(lifetime)
+                    .AddAppDbContext<TDbContext, TContext>(lifetime)
                    .AddDbContextServices()
                    .AddRepositoryFactory()
                    .AddPagination()
-                   .AddCommitManager();
-
-            builder.AddTransient<IUnitOfWork<TContext>, UnitOfWork<TContext>>();
+                   .AddCommitManager(lifetime);
+            
             builder.AddTransient<IUnitOfWorkFactory<TContext>, UnitOfWorkFactory<TContext>>();
+            
+            builder.Add(new ServiceDescriptor(typeof(IUnitOfWork<TContext>), typeof(UnitOfWork<TContext>), lifetime));
             builder.AddTransient<IUnitOfWorkScope<TContext>, UnitOfWorkScope<TContext>>();
 
             return builder;
         }
 
-        public static IServiceCollection AddAppContext<TContext, TFactoryImplementation>(this IServiceCollection builder)
+        public static IServiceCollection AddAppContext<TContext, TFactoryImplementation>(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
                 where TContext : class, IApplicationContext
                 where TFactoryImplementation : class, IContextFactory<TContext>
         {
-            builder.AddAppContext<TContext>();
+            builder.AddAppContext<TContext>(lifetime);
 
-            builder.AddSingleton<IContextFactory<TContext>, TFactoryImplementation>();
+            builder.AddTransient<IContextFactory<TContext>, TFactoryImplementation>();
 
             return builder;
         }
 
-        public static IServiceCollection AddAppContext<TContext>(this IServiceCollection builder)
+        public static IServiceCollection AddAppContext<TContext>(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
                 where TContext : class, IApplicationContext
         {
             builder.AddTransient(c => c.GetService<IContextFactory<TContext>>().CreateContext());
+            builder.Add(new ServiceDescriptor(typeof(TContext), c => c.GetService<IContextFactory<TContext>>().CreateContext(), lifetime));
 
             return builder;
         }
@@ -80,20 +82,20 @@ namespace Pentagon.EntityFrameworkCore
         /// <typeparam name="TContext">The type of the context.</typeparam>
         /// <param name="builder">The builder.</param>
         /// <returns>The service collection.</returns>
-        public static IServiceCollection AddAppDbContext<TDbContext, TContext>(this IServiceCollection builder)
+        public static IServiceCollection AddAppDbContext<TDbContext, TContext>(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
                 where TDbContext : DbContext, TContext
                 where TContext : class, IApplicationContext
         {
-            builder.AddTransient(c => c.GetService<TContext>() as TDbContext);
+            builder.Add(new ServiceDescriptor(typeof(TDbContext), c => c.GetService<TContext>() as TDbContext, lifetime));
 
             return builder;
         }
 
         internal static IServiceCollection AddDbContextServices(this IServiceCollection builder)
         {
-            builder.AddSingleton<IDbContextDeleteService, DbContextDeleteService>();
-            builder.AddSingleton<IDbContextIdentityService, DbContextIdentityService>();
-            builder.AddSingleton<IDbContextUpdateService, DbContextUpdateService>();
+            builder.AddTransient<IDbContextDeleteService, DbContextDeleteService>();
+            builder.AddTransient<IDbContextIdentityService, DbContextIdentityService>();
+            builder.AddTransient<IDbContextUpdateService, DbContextUpdateService>();
 
             return builder;
         }
@@ -112,9 +114,11 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
 
-        internal static IServiceCollection AddCommitManager(this IServiceCollection builder)
+        internal static IServiceCollection AddCommitManager(this IServiceCollection builder, ServiceLifetime lifetime)
         {
             builder.AddSingleton<IDatabaseCommitManager, DatabaseCommitManager>();
+
+            builder.Add(new ServiceDescriptor(typeof(IDatabaseCommitManager), typeof(DatabaseCommitManager), lifetime));
 
             return builder;
         }
