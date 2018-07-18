@@ -7,8 +7,8 @@ namespace Pentagon.Data.EntityFramework.Tests
 {
     using System;
     using System.Collections.Generic;
-    using Abstractions;
-    using Abstractions.Entities;
+    using EntityFrameworkCore;
+    using EntityFrameworkCore.Abstractions.Entities;
     using Xunit;
 
     public class DbContextIdentityServiceTests

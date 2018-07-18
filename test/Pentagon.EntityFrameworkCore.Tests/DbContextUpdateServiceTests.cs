@@ -6,6 +6,7 @@
 namespace Pentagon.Data.EntityFramework.Tests
 {
     using System;
+    using EntityFrameworkCore;
     using Xunit;
 
     public class DbContextUpdateServiceTests

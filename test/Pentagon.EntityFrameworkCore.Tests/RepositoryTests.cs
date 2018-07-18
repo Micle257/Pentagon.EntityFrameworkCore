@@ -6,8 +6,10 @@
 namespace Pentagon.Data.EntityFramework.Tests
 {
     using System.Linq;
+    using EntityFrameworkCore;
+    using EntityFrameworkCore.Repositories;
+    using EntityFrameworkCore.Specifications;
     using Microsoft.Extensions.Logging.Abstractions;
-    using Repositories;
     using Xunit;
 
     public class RepositoryTests

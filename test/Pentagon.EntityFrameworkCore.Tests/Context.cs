@@ -3,9 +3,80 @@ using Xunit;
 
 namespace Pentagon.Data.EntityFramework.Tests
 {
-    using Abstractions;
-    using Abstractions.Entities;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using EntityFrameworkCore;
+    using EntityFrameworkCore.Abstractions;
+    using EntityFrameworkCore.Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+
+    public class UnitOfWorkTests
+    {
+        [Fact]
+        public void Test()
+        {
+            var services = new ServiceCollection()
+                    .AddLogging();
+
+            services.AddUnitOfWork<Context, IApplicationContext, ContextFactory>();
+
+            var di = services.BuildServiceProvider();
+
+            var unit = di.GetRequiredService<IUnitOfWork<IApplicationContext>>();
+            var com = di.GetRequiredService<IDatabaseCommitManager>();
+
+            com.Commiting += (sender, args) =>
+                             {
+
+                             };
+
+            com.Commited += (sender, args) =>
+                            {
+
+                            };
+
+            var simpleRepo = unit.GetRepository<Simple>();
+
+            // add 
+            simpleRepo.Insert(new Simple { Data = "lol", Id = 1 });
+            simpleRepo.Insert(new Simple { Data = "more", Id = 2 });
+
+            unit.Commit();
+
+            //get 
+            var result = simpleRepo.GetAllAsync().Result.ToList();
+
+            // update
+            result[0].Data = "MO";
+            simpleRepo.Update(result[0]);
+            simpleRepo.Update(result[1]);
+
+            // delete
+            simpleRepo.Delete(result[1]);
+            unit.Commit();
+
+            ///////////////
+            using (var db = di.GetService<IUnitOfWorkScope<IApplicationContext>>().Get())
+            {
+                var r = db.GetRepository<Simple>();
+
+                var items = r.GetAllAsync().Result.ToList();
+
+                items[0].Data = "qweqwewqeqwe";
+            }
+        }
+    }
+
+    public class ContextFactory : IContextFactory<IApplicationContext>
+    {
+        /// <inheritdoc />
+        public IApplicationContext CreateContext(string[] args = null)
+        {
+            return new Context();
+        }
+    }
+
     public class Context : DbContext, IApplicationContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
