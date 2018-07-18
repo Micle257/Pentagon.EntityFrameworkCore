@@ -53,24 +53,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             DataContext = context ?? throw new ArgumentNullException(nameof(context));
             _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
             _query = _set;
-
-            DataContext.ChangeTracker.StateChanged += OnStateChanged;
-            DataContext.ChangeTracker.Tracked += OnTracked;
         }
-
-        void OnTracked(object sender, EntityTrackedEventArgs args)
-        {
-
-        }
-
-        void OnStateChanged(object sender, EntityStateChangedEventArgs args)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public event EventHandler<CommitEventArgs> Commiting;
-
+        
         /// <summary> Gets the data context. </summary>
         /// <value> The <see cref="DbContext" />. </value>
         [NotNull]
