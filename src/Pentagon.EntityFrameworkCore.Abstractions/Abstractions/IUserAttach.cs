@@ -4,9 +4,9 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
+namespace Pentagon.EntityFrameworkCore.Abstractions
 {
-    public interface IUserAttachRepository
+    public interface IUserAttach
     {
         bool IsUserAttached { get; }
 
