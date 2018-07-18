@@ -11,6 +11,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     public interface IUnitOfWorkScope<out TContext> : IDisposable
             where TContext : IApplicationContext
     {
+        object UserId { get; set; }
         IUnitOfWork<TContext> Get();
     }
 }

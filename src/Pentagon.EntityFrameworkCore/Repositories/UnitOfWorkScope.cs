@@ -23,6 +23,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _unitOfWorkFactory = unitOfWorkFactory;
         }
 
+        public object UserId { get; set; }
+
         /// <inheritdoc />
         public IUnitOfWork<TContext> Get()
         {
@@ -30,6 +32,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 throw new InvalidOperationException(message: "The unit of work is created for current scope.");
 
             _scopedUnitOfWork = _unitOfWorkFactory.Create();
+            _scopedUnitOfWork.UserId = UserId;
 
             return _scopedUnitOfWork;
         }

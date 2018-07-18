@@ -23,10 +23,10 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
 
         /// <summary> Commits the changes of this unit of work. </summary>
         /// <returns> An <see cref="int" />, that represents number of entities states written to the database. </returns>
-        int Commit();
+        bool Commit();
 
         /// <summary> Commits the changes of this unit of work asynchronously. </summary>
         /// <returns> A <see cref="Task" /> that represents asynchronous operation, result is a number of entities states written to the database. </returns>
-        Task<int> CommitAsync();
+        Task<bool> CommitAsync();
     }
 }
