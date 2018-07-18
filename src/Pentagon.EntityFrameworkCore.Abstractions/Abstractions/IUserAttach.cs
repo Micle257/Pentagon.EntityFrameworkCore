@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-//  <copyright file="IUserAttachRepository.cs">
+//  <copyright file="IUserAttach.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------

@@ -1,4 +1,11 @@
-﻿namespace Pentagon.EntityFrameworkCore {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="ConcurrencyConflictResolveResult.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore
+{
     using System.Collections.Generic;
     using Abstractions.Entities;
 

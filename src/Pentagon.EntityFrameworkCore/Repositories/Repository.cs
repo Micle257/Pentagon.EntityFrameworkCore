@@ -18,11 +18,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Collections;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Microsoft.Extensions.Logging;
     using Specifications;
 
-    /// <summary> Represents a repository for the entity framework provider. It has similar behavior like <see cref="DbSet{TEntity}"/>. Marks and gets data from database. </summary>
+    /// <summary> Represents a repository for the entity framework provider. It has similar behavior like <see cref="DbSet{TEntity}" />. Marks and gets data from database. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
     public class Repository<TEntity> : IRepository<TEntity>
             where TEntity : class, IEntity, new()
@@ -54,12 +53,12 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
             _query = _set;
         }
-        
+
         /// <summary> Gets the data context. </summary>
         /// <value> The <see cref="DbContext" />. </value>
         [NotNull]
         public DbContext DataContext { get; }
-        
+
         /// <inheritdoc />
         public void Forget([NotNull] TEntity entity)
         {
@@ -71,7 +70,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             if (entry != null)
                 entry.State = EntityState.Detached;
         }
-        
+
         /// <inheritdoc />
         public Task<TEntity> GetByIdAsync(object id) => _set.FindAsync(id);
 
@@ -88,7 +87,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
             _set.Add(entity);
         }
-        
+
         /// <inheritdoc />
         public virtual void InsertMany(params TEntity[] entities)
         {
@@ -105,7 +104,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified)));
             _set.Update(entity);
         }
-        
+
         /// <inheritdoc />
         public void UpdateMany(params TEntity[] entities)
         {
@@ -119,7 +118,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             // Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted)));
             _set.Remove(entity);
         }
-        
+
         /// <inheritdoc />
         public void DeleteMany(params TEntity[] entities)
         {

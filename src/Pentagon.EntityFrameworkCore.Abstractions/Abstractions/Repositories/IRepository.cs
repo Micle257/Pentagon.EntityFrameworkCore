@@ -20,10 +20,8 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
     public interface IRepository<TEntity> : IDeleteRepository<TEntity>, IInsertRepository<TEntity>, IUpdateRepository<TEntity>, IPagedRepository<TEntity>
             where TEntity : IEntity
     {
-        /// <summary>
-        /// Stop tracking the entity (detached from data source cache, eg. in EF Core detached from change tracker).
-        /// </summary>
-        /// <param name="entity">The entity.</param>
+        /// <summary> Stop tracking the entity (detached from data source cache, eg. in EF Core detached from change tracker). </summary>
+        /// <param name="entity"> The entity. </param>
         void Forget([NotNull] TEntity entity);
 
         /// <summary> Gets the selected entity. </summary>

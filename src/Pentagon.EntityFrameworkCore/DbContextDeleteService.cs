@@ -46,7 +46,7 @@ namespace Pentagon.EntityFrameworkCore
                         entity.IsDeletedFlag = true;
                     else
                     {
-                        _logger.LogWarning("The database context is marked for soft deletion, but no IsDeletedFlag is available.");
+                        _logger.LogWarning(message: "The database context is marked for soft deletion, but no IsDeletedFlag is available.");
                         continue;
                     }
 

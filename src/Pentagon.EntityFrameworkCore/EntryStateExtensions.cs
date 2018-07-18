@@ -1,4 +1,11 @@
-﻿namespace Pentagon.EntityFrameworkCore {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="EntryStateExtensions.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore
+{
     using Microsoft.EntityFrameworkCore;
 
     public static class EntryStateExtensions
@@ -16,7 +23,7 @@
 
                 case EntityState.Added:
                     return EntityStateType.Added;
-                    
+
                 default:
                     return EntityStateType.Unspecified;
             }

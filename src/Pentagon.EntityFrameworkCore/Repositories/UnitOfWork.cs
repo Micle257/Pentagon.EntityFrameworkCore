@@ -7,10 +7,7 @@
 namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Repositories;
@@ -26,7 +23,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> The repository factory. </summary>
         [NotNull]
         readonly IRepositoryFactory _repositoryFactory;
-        
+
         [NotNull]
         readonly IDatabaseCommitManager _commitManager;
 
@@ -55,6 +52,41 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _dbContext.ChangeTracker.Tracked += OnTracked;
         }
 
+        /// <inheritdoc />
+        public TContext Context { get; }
+
+        /// <inheritdoc />
+        public bool IsUserAttached => UserId != null;
+
+        /// <inheritdoc />
+        public object UserId { get; set; }
+
+        /// <inheritdoc />
+        public virtual IRepository<TEntity> GetRepository<TEntity>()
+                where TEntity : class, IEntity, new()
+        {
+            // get repository from factory
+            var repo = _repositoryFactory.GetRepository<TEntity>(Context);
+
+            return repo;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary> Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. </summary>
+        /// <param name="disposing"> The disposing. </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                Context.Dispose();
+        }
+
         void OnTracked(object sender, EntityTrackedEventArgs args)
         {
             var entity = args.Entry.Entity as IEntity;
@@ -79,41 +111,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 return;
 
             OnCommiting(new CommitEventArgs(new Entry(entity, state)));
-        }
-
-        /// <inheritdoc />
-        public TContext Context { get; }
-
-        /// <inheritdoc />
-        public bool IsUserAttached => UserId != null;
-
-        /// <inheritdoc />
-        public object UserId { get; set; }
-
-        /// <inheritdoc />
-        public virtual IRepository<TEntity> GetRepository<TEntity>()
-                where TEntity : class, IEntity, new()
-        {
-            // get repository from factory
-            var repo = _repositoryFactory.GetRepository<TEntity>(Context);
-
-            return repo;
-        }
-        
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary> Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. </summary>
-        /// <param name="disposing"> The disposing. </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-                Context.Dispose();
         }
 
         void OnCommiting(CommitEventArgs commitEventArgs)

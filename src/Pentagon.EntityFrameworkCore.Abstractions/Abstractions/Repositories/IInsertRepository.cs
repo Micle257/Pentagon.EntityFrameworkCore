@@ -15,7 +15,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         /// <summary> Adds the specified entity. </summary>
         /// <param name="entity"> The entity. </param>
         void Insert([NotNull] TEntity entity);
-        
+
         /// <summary> Adds the array of entities. </summary>
         /// <param name="entities"> The array of the <see cref="TEntity" />. </param>
         void InsertMany([NotNull] params TEntity[] entities);

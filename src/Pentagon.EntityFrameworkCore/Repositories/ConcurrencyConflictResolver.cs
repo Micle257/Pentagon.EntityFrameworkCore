@@ -1,4 +1,10 @@
-﻿namespace Pentagon.EntityFrameworkCore.Repositories
+﻿// -----------------------------------------------------------------------
+//  <copyright file="ConcurrencyConflictResolver.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using System.Collections.Generic;
@@ -25,7 +31,7 @@
                 throw new ArgumentNullException(nameof(dbContext));
 
             var localEntities = dbContext.ChangeTracker?.Entries()
-                                         .Where(e => e.Entity is IEntity && (e.State == EntityState.Modified))
+                                         .Where(e => e.Entity is IEntity && e.State == EntityState.Modified)
                                          .Select(a => a.Entity as IEntity)
                                          .ToList();
 
@@ -50,16 +56,14 @@
                 {
                     // if the concurrency ids are not equal...
                     if (!lc.ConcurrencyStamp.Equals(rc.ConcurrencyStamp))
-                    {
                         conflicts.Add((t.Local, t.Database));
-                    }
                 }
             }
 
             return new ConcurrencyConflictResolveResult
-            {
-                ConflictedEntities = conflicts
-            };
+                   {
+                           ConflictedEntities = conflicts
+                   };
         }
     }
 }
