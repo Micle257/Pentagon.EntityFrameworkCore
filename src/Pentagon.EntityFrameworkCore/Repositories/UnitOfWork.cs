@@ -78,14 +78,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TEntity : class, IEntity, new()
         {
             var repo = _repositoryFactory.GetRepository<TEntity>(Context);
-            try
-            {
-                repo.Commiting -= OnCommiting;
-            }
-            finally
-            {
-                repo.Commiting += OnCommiting;
-            }
+            repo.Commiting += OnCommiting;
 
             return repo;
         }
