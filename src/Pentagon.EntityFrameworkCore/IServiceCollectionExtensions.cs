@@ -37,6 +37,8 @@ namespace Pentagon.EntityFrameworkCore
                 where TContext : class, IApplicationContext
                 where TDbContextFactoryImplementation : class, IContextFactory<TContext>
         {
+            builder.AddLogging();
+
             // UoW
             builder.AddAppContext<TContext, TDbContextFactoryImplementation>()
                     .AddAppDbContext<TDbContext, TContext>()
