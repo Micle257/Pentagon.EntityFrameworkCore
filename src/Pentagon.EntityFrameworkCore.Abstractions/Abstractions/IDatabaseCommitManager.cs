@@ -12,6 +12,9 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     public interface IDatabaseCommitManager
     {
         event EventHandler<ManagerCommitEventArgs> Commiting;
+
+        event EventHandler<ManagerCommitEventArgs> Commited;
+
         void RaiseCommit(Type contextType, Type entityType, IEnumerable<Entry> entries);
     }
 }

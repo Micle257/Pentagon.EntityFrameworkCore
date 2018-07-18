@@ -13,7 +13,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
     public class DatabaseCommitManager : IDatabaseCommitManager
     {
+        /// <inheritdoc />
         public event EventHandler<ManagerCommitEventArgs> Commiting;
+
+        /// <inheritdoc />
+        public event EventHandler<ManagerCommitEventArgs> Commited;
 
         public void RaiseCommit(Type contextType, Type entityType, IEnumerable<Entry> entries)
         {
