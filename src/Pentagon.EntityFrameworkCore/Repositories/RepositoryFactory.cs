@@ -15,7 +15,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
-    /// <summary> Represents a repository factory for <see cref="IApplicationContext" />. </summary>
+    /// <summary> Represents a repository factory for <see cref="IApplicationContext" />. A new instance of <see cref="IRepository{TEntity}"/> is created per request. </summary>
     public class RepositoryFactory : IRepositoryFactory
     {
         /// <summary> The logger factory. </summary>
@@ -25,11 +25,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> The pagination service. </summary>
         [NotNull]
         readonly IPaginationService _paginationService;
-
-        /// <summary> The repository mappings. </summary>
-        [NotNull]
-        readonly IDictionary<(Type entity, object context), object> _repositories = new Dictionary<(Type entity, object context), object>();
-
+        
         /// <summary> Initializes a new instance of the <see cref="RepositoryFactory" /> class. </summary>
         /// <param name="logger"> The logger. </param>
         /// <param name="paginationService"> The pagination service. </param>
@@ -49,16 +45,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             Require.IsType(() => context, out DbContext dbContext);
 
             return new Repository<TEntity>(_loggerFactory.CreateLogger<Repository<TEntity>>(), _paginationService, dbContext);
-
-            var type = typeof(TEntity);
-
-            if (!_repositories.ContainsKey((type, dbContext)))
-                _repositories[(type, dbContext)] = new Repository<TEntity>(_loggerFactory.CreateLogger<Repository<TEntity>>(), _paginationService, dbContext);
-
-            if (!(_repositories[(type, dbContext)] is IRepository<TEntity>))
-                throw new ArgumentException(message: "The requested repository is not of return type.");
-
-            return (IRepository<TEntity>) _repositories[(type, dbContext)];
         }
     }
 }
