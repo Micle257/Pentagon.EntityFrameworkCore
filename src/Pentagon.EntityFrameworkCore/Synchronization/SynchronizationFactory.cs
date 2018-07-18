@@ -12,10 +12,10 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     public class SynchronizationFactory : ISynchronizationFactory
     {
         readonly IRepositoryActionService _actionService;
-        readonly IUnitOfWorkFactory<IRemoteContext> _remote;
-        readonly IUnitOfWorkFactory<ILocalContext> _local;
+        readonly IUnitOfWorkScope<IRemoteContext> _remote;
+        readonly IUnitOfWorkScope<ILocalContext> _local;
 
-        public SynchronizationFactory(IRepositoryActionService actionService, IUnitOfWorkFactory<IRemoteContext> remote, IUnitOfWorkFactory<ILocalContext> local)
+        public SynchronizationFactory(IRepositoryActionService actionService, IUnitOfWorkScope<IRemoteContext> remote, IUnitOfWorkScope<ILocalContext> local)
         {
             _actionService = actionService;
             _remote = remote;

@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using Abstractions;
+    using JetBrains.Annotations;
 
     public class UnitOfWorkScope<TContext> : IUnitOfWorkScope<TContext>
             where TContext : IApplicationContext
@@ -15,12 +16,16 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> The unit of work factory. </summary>
         readonly IUnitOfWorkFactory<TContext> _unitOfWorkFactory;
 
+        readonly IUnitOfWorkCommitExecutor<TContext> _commitExecutor;
+
         /// <summary> The scoped unit of work. </summary>
         IUnitOfWork<TContext> _scopedUnitOfWork;
 
-        public UnitOfWorkScope(IUnitOfWorkFactory<TContext> unitOfWorkFactory)
+        public UnitOfWorkScope([NotNull] IUnitOfWorkFactory<TContext> unitOfWorkFactory,
+                               [NotNull] IUnitOfWorkCommitExecutor<TContext> commitExecutor)
         {
-            _unitOfWorkFactory = unitOfWorkFactory;
+            _unitOfWorkFactory = unitOfWorkFactory ?? throw new ArgumentNullException(nameof(unitOfWorkFactory));
+            _commitExecutor = commitExecutor ?? throw new ArgumentNullException(nameof(commitExecutor));
         }
 
         public object UserId { get; set; }
@@ -43,7 +48,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             // if the scope is open
             if (_scopedUnitOfWork != null)
             {
-                _scopedUnitOfWork.Commit();
+                _commitExecutor.ExecuteCommitAsync(_scopedUnitOfWork).Wait(); // TODO handle error
                 _scopedUnitOfWork?.Dispose();
                 _scopedUnitOfWork = null;
             }

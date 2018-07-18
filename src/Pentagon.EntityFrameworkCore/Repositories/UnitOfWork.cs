@@ -26,18 +26,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> The repository factory. </summary>
         [NotNull]
         readonly IRepositoryFactory _repositoryFactory;
-
-        /// <summary> The update service. </summary>
-        [NotNull]
-        readonly IDbContextUpdateService _updateService;
-
-        /// <summary> The update service. </summary>
-        [NotNull]
-        readonly IDbContextDeleteService _deleteService;
-
-        /// <summary> The identity service. </summary>
-        [NotNull]
-        readonly IDbContextIdentityService _identityService;
         
         [NotNull]
         readonly IDatabaseCommitManager _commitManager;
@@ -48,15 +36,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class. </summary>
         /// <param name="context"> The context. </param>
         /// <param name="repositoryFactory"> The repository factory. </param>
-        /// <param name="updateService"> The update service. </param>
-        /// <param name="deleteService"> The delete service. </param>
-        /// <param name="identityService"> The identity service. </param>
         /// <param name="commitManager"> The commit manager. </param>
         public UnitOfWork([NotNull] TContext context,
                           [NotNull] IRepositoryFactory repositoryFactory,
-                          [NotNull] IDbContextUpdateService updateService,
-                          [NotNull] IDbContextDeleteService deleteService,
-                          [NotNull] IDbContextIdentityService identityService,
                           [NotNull] IDatabaseCommitManager commitManager)
         {
             if (context == null)
@@ -65,9 +47,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             Require.IsType(() => context, out _dbContext);
 
             _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
-            _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
-            _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
-            _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
 
             Context = context;
@@ -120,61 +99,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             return repo;
         }
-
-        /// <inheritdoc />
-        public bool Commit()
-        {
-            return CommitCore(() =>
-                              {
-                                  _dbContext.SaveChanges(false);
-                                  return Task.CompletedTask;
-                              }).Result;
-        }
-
-        IEnumerable<Entry> GetEntries()
-        {
-            foreach (var entry in _dbContext.ChangeTracker.Entries())
-            {
-                yield return new Entry(entry.Entity as IEntity, entry.State.ToEntityStateType());
-            }
-        }
-
-        /// <inheritdoc />
-        public Task<bool> CommitAsync()
-        {
-            return CommitCore(async () => await _dbContext.SaveChangesAsync(false).ConfigureAwait(false));
-        }
-
-        async Task<bool> CommitCore(Func<Task> saveCallback)
-        {
-            try
-            {
-                _dbContext.ChangeTracker.DetectChanges();
-
-                if (!_dbContext.ChangeTracker.HasChanges())
-                    return false;
-                
-                _updateService.Apply(Context);
-                _deleteService.Apply(Context, Context.HasHardDeleteBehavior);
-                _identityService.Apply(Context, UserId);
-
-                // save the database without appling changes
-                await saveCallback().ConfigureAwait(false);
-
-                // raise all changes
-                _commitManager.RaiseCommited(typeof(TContext), GetEntries());
-
-                // accept changes
-                _dbContext.ChangeTracker.AcceptAllChanges();
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-
+        
         /// <inheritdoc />
         public void Dispose()
         {

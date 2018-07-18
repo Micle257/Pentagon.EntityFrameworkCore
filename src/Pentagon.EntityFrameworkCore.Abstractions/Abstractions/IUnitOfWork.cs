@@ -7,7 +7,6 @@
 namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System;
-    using System.Threading.Tasks;
     using Entities;
     using Repositories;
 
@@ -20,13 +19,5 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
         /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
         IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new();
-
-        /// <summary> Commits the changes of this unit of work. </summary>
-        /// <returns> An <see cref="int" />, that represents number of entities states written to the database. </returns>
-        bool Commit();
-
-        /// <summary> Commits the changes of this unit of work asynchronously. </summary>
-        /// <returns> A <see cref="Task" /> that represents asynchronous operation, result is a number of entities states written to the database. </returns>
-        Task<bool> CommitAsync();
     }
 }

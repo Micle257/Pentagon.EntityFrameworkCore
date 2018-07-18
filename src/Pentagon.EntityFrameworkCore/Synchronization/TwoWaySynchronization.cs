@@ -23,11 +23,13 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     {
         readonly IRepositoryActionService _actionService;
 
-        readonly IUnitOfWorkFactory<IRemoteContext> _remoteFactory;
+        readonly IUnitOfWorkScope<IRemoteContext> _remoteFactory;
 
-        readonly IUnitOfWorkFactory<ILocalContext> _localFactory;
+        readonly IUnitOfWorkScope<ILocalContext> _localFactory;
 
-        public TwoWaySynchronization(IRepositoryActionService actionService, IUnitOfWorkFactory<IRemoteContext> remoteFactory, IUnitOfWorkFactory<ILocalContext> localFactory)
+        public TwoWaySynchronization(IRepositoryActionService actionService,
+                                     IUnitOfWorkScope<IRemoteContext> remoteFactory,
+                                     IUnitOfWorkScope<ILocalContext> localFactory)
         {
             _actionService = actionService;
             _remoteFactory = remoteFactory;
@@ -36,10 +38,14 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
 
         public async Task SynchronizeAsync(Expression<Func<T, bool>> selector)
         {
-            using (var local = _localFactory.Create())
+            using (_localFactory)
             {
-                using (var remote = _remoteFactory.Create())
+                var local = _localFactory.Get();
+
+                using (_remoteFactory)
                 {
+                    var remote = _remoteFactory.Get();
+
                     var localRepository = local.GetRepository<T>();
                     var remoteRepository = remote.GetRepository<T>();
 
@@ -68,9 +74,6 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
                             }
                         }
                     }
-
-                    await remote.CommitAsync().ConfigureAwait(false);
-                    await local.CommitAsync().ConfigureAwait(false);
                 }
             }
         }
