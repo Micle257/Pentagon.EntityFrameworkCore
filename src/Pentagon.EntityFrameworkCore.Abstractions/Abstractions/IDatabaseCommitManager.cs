@@ -16,5 +16,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
         event EventHandler<ManagerCommitEventArgs> Commited;
 
         void RaiseCommit(Type contextType, Type entityType, IEnumerable<Entry> entries);
+
+        void RaiseCommited(Type contextType, Type entityType, IEnumerable<Entry> entries);
     }
 }
