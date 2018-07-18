@@ -19,7 +19,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public event EventHandler<ManagerCommitEventArgs> Commited;
 
-        public void RaiseCommit(Type contextType, Type entityType, IEnumerable<Entry> entries)
+        public void RaiseCommiting(Type contextType, Type entityType, IEnumerable<Entry> entries)
         {
             Commiting?.Invoke(this, new ManagerCommitEventArgs(contextType, entityType, entries.ToArray()));
         }
