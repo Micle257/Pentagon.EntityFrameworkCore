@@ -48,6 +48,7 @@ namespace Pentagon.EntityFrameworkCore
                    .AddCommitManager(lifetime);
             
             builder.AddTransient<IUnitOfWorkFactory<TContext>, UnitOfWorkFactory<TContext>>();
+            builder.AddTransient<IConcurrencyConflictResolver<TContext>, ConcurrencyConflictResolver<TContext>>();
             
             builder.Add(new ServiceDescriptor(typeof(IUnitOfWork<TContext>), typeof(UnitOfWork<TContext>), lifetime));
             builder.AddTransient<IUnitOfWorkScope<TContext>, UnitOfWorkScope<TContext>>();
