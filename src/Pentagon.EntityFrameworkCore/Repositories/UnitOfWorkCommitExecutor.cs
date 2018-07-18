@@ -58,6 +58,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 var conflictResult = await _conflictResolver.ResolveAsync(unitOfWork.Context);
 
+                if (conflictResult.HasConflicts)
+                {
+                    // TODO resolve
+                    // collect them and send somehow to client to handle them
+                    return false;
+                }
+
                 _updateService.Apply(unitOfWork.Context);
                 _deleteService.Apply(unitOfWork.Context, unitOfWork.Context.HasHardDeleteBehavior);
                 _identityService.Apply(unitOfWork.Context, unitOfWork.UserId);

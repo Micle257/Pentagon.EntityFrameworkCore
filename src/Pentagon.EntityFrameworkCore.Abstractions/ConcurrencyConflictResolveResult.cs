@@ -6,6 +6,6 @@
     {
         public bool HasConflicts => ConflictedEntities?.Count != 0;
 
-        public List<IEntity> ConflictedEntities { get; set; }
+        public List<(IEntity Local, IEntity Database)> ConflictedEntities { get; set; }
     }
 }

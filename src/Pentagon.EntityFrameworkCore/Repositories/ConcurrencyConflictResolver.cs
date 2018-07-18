@@ -39,19 +39,19 @@
             }
 
             // tie together remote and local entities
-            var concat = localEntities.Zip(remoteEntries, (local, remote) => (local, remote));
+            var concat = localEntities.Zip(remoteEntries, (local, remote) => (Local: local, Database: remote));
 
-            var conflicts = new List<IEntity>();
+            var conflicts = new List<(IEntity Local, IEntity Database)>();
 
             foreach (var t in concat)
             {
                 // check if both compared enties supports concurrency checks
-                if (t.local is IConcurrencyStampSupport lc && t.remote is IConcurrencyStampSupport rc)
+                if (t.Local is IConcurrencyStampSupport lc && t.Database is IConcurrencyStampSupport rc)
                 {
                     // if the concurrency ids are not equal...
                     if (!lc.ConcurrencyStamp.Equals(rc.ConcurrencyStamp))
                     {
-                        conflicts.Add(t.local);
+                        conflicts.Add((t.Local, t.Database));
                     }
                 }
             }
