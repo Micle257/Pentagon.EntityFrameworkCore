@@ -24,12 +24,22 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
 
-        public static IServiceCollection AddUnitOfWork<TDbContext, TContext>(this IServiceCollection builder)
+        /// <summary>
+        /// Adds the unit of work services to <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <typeparam name="TDbContext">The type of the database context.</typeparam>
+        /// <typeparam name="TContext">The type of the context.</typeparam>
+        /// <typeparam name="TDbContextFactoryImplementation">The type of the factory for database and app contexts. </typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddUnitOfWork<TDbContext, TContext, TDbContextFactoryImplementation>(this IServiceCollection builder)
                 where TDbContext : DbContext, TContext
                 where TContext : class, IApplicationContext
+                where TDbContextFactoryImplementation : class, IContextFactory<TContext>
         {
             // UoW
-            builder.AddAppDbContext<TDbContext, TContext>()
+            builder.AddAppContext<TContext, TDbContextFactoryImplementation>()
+                    .AddAppDbContext<TDbContext, TContext>()
                    .AddDbContextServices()
                    .AddRepositoryFactory()
                    .AddPagination()
@@ -42,18 +52,18 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
 
-        public static IServiceCollection AddContext<TContext, TFactoryImplementation>(this IServiceCollection builder)
+        public static IServiceCollection AddAppContext<TContext, TFactoryImplementation>(this IServiceCollection builder)
                 where TContext : class, IApplicationContext
                 where TFactoryImplementation : class, IContextFactory<TContext>
         {
-            builder.AddContext<TContext>();
+            builder.AddAppContext<TContext>();
 
             builder.AddSingleton<IContextFactory<TContext>, TFactoryImplementation>();
 
             return builder;
         }
 
-        public static IServiceCollection AddContext<TContext>(this IServiceCollection builder)
+        public static IServiceCollection AddAppContext<TContext>(this IServiceCollection builder)
                 where TContext : class, IApplicationContext
         {
             builder.AddTransient(c => c.GetService<IContextFactory<TContext>>().CreateContext());
@@ -61,6 +71,13 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
 
+        /// <summary>
+        /// Adds the database context (<see cref="DbContext"/>) to service collection. The <see cref="DbContext"/> must implement <see cref="TContext"/>.
+        /// </summary>
+        /// <typeparam name="TDbContext">The type of the database context.</typeparam>
+        /// <typeparam name="TContext">The type of the context.</typeparam>
+        /// <param name="builder">The builder.</param>
+        /// <returns>The service collection.</returns>
         public static IServiceCollection AddAppDbContext<TDbContext, TContext>(this IServiceCollection builder)
                 where TDbContext : DbContext, TContext
                 where TContext : class, IApplicationContext
