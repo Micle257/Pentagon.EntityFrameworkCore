@@ -30,7 +30,6 @@ namespace Pentagon.EntityFrameworkCore
 
             foreach (var entry in entries)
             {
-                var entity = (IEntity) entry.Entity;
                 if (entry.State == EntityState.Added)
                 {
                     if (entry.Entity is ITimeStampSupport entityTimed)
@@ -40,9 +39,11 @@ namespace Pentagon.EntityFrameworkCore
                         createStamp.CreateGuid = Guid.NewGuid();
                 }
 
-                if (entry.Entity is ITimeStampSupport entityTimed2)
+                // set last updated at when the entity has modified
+                if (entry.State == EntityState.Modified && entry.Entity is ITimeStampSupport entityTimed2)
                     entityTimed2.LastUpdatedAt = DateTimeOffset.Now;
 
+                // generate new concurrency id both for add and update
                 if (entry.Entity is IConcurrencyStampSupport concurrency)
                     concurrency.ConcurrencyStamp = Guid.NewGuid();
             }
