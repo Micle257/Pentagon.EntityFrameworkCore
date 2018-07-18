@@ -75,12 +75,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <value> The <see cref="DbContext" />. </value>
         [NotNull]
         public DbContext DataContext { get; }
-
-        /// <inheritdoc />
-        public bool IsUserAttached => UserId != null;
-
-        /// <inheritdoc />
-        public object UserId { get; set; }
         
         /// <inheritdoc />
         public void Forget([NotNull] TEntity entity)

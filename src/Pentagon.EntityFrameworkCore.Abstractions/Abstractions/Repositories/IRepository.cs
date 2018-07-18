@@ -17,7 +17,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
 
     /// <summary> Provides a standard interface for repository which is data-access mechanism agnostic with typed identifier. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
-    public interface IRepository<TEntity> : IDeleteRepository<TEntity>, IInsertRepository<TEntity>, IUpdateRepository<TEntity>, IPagedRepository<TEntity>, IUserAttachRepository
+    public interface IRepository<TEntity> : IDeleteRepository<TEntity>, IInsertRepository<TEntity>, IUpdateRepository<TEntity>, IPagedRepository<TEntity>
             where TEntity : IEntity
     {
         /// <summary> Occurs when the commit begins. </summary>

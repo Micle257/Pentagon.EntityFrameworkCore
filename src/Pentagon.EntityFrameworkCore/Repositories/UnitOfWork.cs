@@ -90,6 +90,12 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public TContext Context { get; }
 
         /// <inheritdoc />
+        public bool IsUserAttached => UserId != null;
+
+        /// <inheritdoc />
+        public object UserId { get; set; }
+
+        /// <inheritdoc />
         public virtual IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new()
         {
