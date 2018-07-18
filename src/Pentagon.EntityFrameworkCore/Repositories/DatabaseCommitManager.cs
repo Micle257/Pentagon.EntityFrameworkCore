@@ -25,9 +25,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public void RaiseCommited(Type contextType, Type entityType, IEnumerable<Entry> entries)
+        public void RaiseCommited(Type contextType, IEnumerable<Entry> entries)
         {
-            Commited?.Invoke(this, new ManagerCommitEventArgs(contextType, entityType, entries.ToArray()));
+            Commited?.Invoke(this, new ManagerCommitEventArgs(contextType, null, entries.ToArray()));
         }
     }
 }

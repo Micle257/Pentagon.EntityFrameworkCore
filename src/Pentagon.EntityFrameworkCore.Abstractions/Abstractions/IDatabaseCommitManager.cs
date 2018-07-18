@@ -17,6 +17,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
 
         void RaiseCommiting(Type contextType, Type entityType, IEnumerable<Entry> entries);
 
-        void RaiseCommited(Type contextType, Type entityType, IEnumerable<Entry> entries);
+        void RaiseCommited(Type contextType, IEnumerable<Entry> entries);
     }
 }
