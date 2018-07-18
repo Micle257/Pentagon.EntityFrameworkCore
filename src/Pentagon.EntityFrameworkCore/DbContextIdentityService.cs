@@ -18,7 +18,7 @@ namespace Pentagon.EntityFrameworkCore
     public class DbContextIdentityService : IDbContextIdentityService
     {
         /// <inheritdoc />
-        public void Apply(IApplicationContext appContext, IDictionary<IEntity, object> entryMap)
+        public void Apply(IApplicationContext appContext, object userId)
         {
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (!(appContext is DbContext dbContext))
@@ -34,9 +34,6 @@ namespace Pentagon.EntityFrameworkCore
             {
                 if (entry.Entity is ITimeStampIdentitySupport entity)
                 {
-                    if (!entryMap.TryGetValue((IEntity) entity, out var userId))
-                        continue;
-
                     switch (entry.State)
                     {
                         case EntityState.Added:
@@ -49,9 +46,6 @@ namespace Pentagon.EntityFrameworkCore
 
                 if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
                 {
-                    if (!entryMap.TryGetValue((IEntity) deleteEntity, out var userId))
-                        continue;
-
                     switch (entry.State)
                     {
                         case EntityState.Deleted:
