@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore
     using Repositories;
     using Synchronization;
 
-    public static class IServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddDatabaseSynchronization(this IServiceCollection builder)
         {
@@ -36,8 +36,8 @@ namespace Pentagon.EntityFrameworkCore
                    .AddCommitManager();
 
             builder.AddTransient<IUnitOfWork<TContext>, UnitOfWork<TContext>>();
-
             builder.AddTransient<IUnitOfWorkFactory<TContext>, UnitOfWorkFactory<TContext>>();
+            builder.AddTransient<IUnitOfWorkScope<TContext>, UnitOfWorkScope<TContext>>();
 
             return builder;
         }
