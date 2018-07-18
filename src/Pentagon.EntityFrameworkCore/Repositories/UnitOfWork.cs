@@ -40,6 +40,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         readonly IDbContextIdentityService _identityService;
 
         readonly IDatabaseCommitManager _commitManager;
+        [NotNull]
+        readonly IConcurrencyConflictResolver<TContext> _conflictResolver;
 
         /// <summary> The database context. </summary>
         readonly DbContext _dbContext;
@@ -56,16 +58,21 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                           [NotNull] IDbContextUpdateService updateService,
                           [NotNull] IDbContextDeleteService deleteService,
                           [NotNull] IDbContextIdentityService identityService,
-                          [NotNull] IDatabaseCommitManager commitManager)
+                          [NotNull] IDatabaseCommitManager commitManager,
+                          [NotNull] IConcurrencyConflictResolver<TContext> conflictResolver)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
+
             Require.IsType(() => context, out _dbContext);
+
             _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
             _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
             _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
+            _conflictResolver = conflictResolver ?? throw new ArgumentNullException(nameof(conflictResolver));
+
             Context = context;
 
             _dbContext.ChangeTracker.StateChanged += OnStateChanged;
@@ -120,11 +127,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public bool Commit()
         {
-            return  CommitCore(() =>
-                               {
-                                    _dbContext.SaveChanges(false);
-                                   return Task.CompletedTask;
-                               }).Result;
+            return CommitCore(() =>
+                              {
+                                  _dbContext.SaveChanges(false);
+                                  return Task.CompletedTask;
+                              }).Result;
         }
 
         IEnumerable<Entry> GetEntries()
@@ -141,7 +148,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             return CommitCore(async () => await _dbContext.SaveChangesAsync(false).ConfigureAwait(false));
         }
 
-      async  Task<bool> CommitCore(Func<Task> saveCallback)
+        async Task<bool> CommitCore(Func<Task> saveCallback)
         {
             try
             {
@@ -149,6 +156,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 if (!_dbContext.ChangeTracker.HasChanges())
                     return false;
+
+
 
                 _updateService.Apply(Context);
                 _deleteService.Apply(Context, Context.HasHardDeleteBehavior);

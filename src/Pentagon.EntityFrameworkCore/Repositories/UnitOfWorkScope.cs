@@ -29,7 +29,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public IUnitOfWork<TContext> Get()
         {
             if (_scopedUnitOfWork != null)
-                throw new InvalidOperationException(message: "The unit of work is created for current scope.");
+                throw new InvalidOperationException(message: "The unit of work is created for scope, disposed it first.");
 
             _scopedUnitOfWork = _unitOfWorkFactory.Create();
             _scopedUnitOfWork.UserId = UserId;
