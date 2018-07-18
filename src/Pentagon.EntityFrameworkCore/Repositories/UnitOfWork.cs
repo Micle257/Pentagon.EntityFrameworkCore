@@ -38,10 +38,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> The identity service. </summary>
         [NotNull]
         readonly IDbContextIdentityService _identityService;
-
-        readonly IDatabaseCommitManager _commitManager;
+        
         [NotNull]
-        readonly IConcurrencyConflictResolver<TContext> _conflictResolver;
+        readonly IDatabaseCommitManager _commitManager;
 
         /// <summary> The database context. </summary>
         readonly DbContext _dbContext;
@@ -58,8 +57,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                           [NotNull] IDbContextUpdateService updateService,
                           [NotNull] IDbContextDeleteService deleteService,
                           [NotNull] IDbContextIdentityService identityService,
-                          [NotNull] IDatabaseCommitManager commitManager,
-                          [NotNull] IConcurrencyConflictResolver<TContext> conflictResolver)
+                          [NotNull] IDatabaseCommitManager commitManager)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -71,7 +69,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
             _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
-            _conflictResolver = conflictResolver ?? throw new ArgumentNullException(nameof(conflictResolver));
 
             Context = context;
 
@@ -156,9 +153,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 if (!_dbContext.ChangeTracker.HasChanges())
                     return false;
-
-
-
+                
                 _updateService.Apply(Context);
                 _deleteService.Apply(Context, Context.HasHardDeleteBehavior);
                 _identityService.Apply(Context, UserId);

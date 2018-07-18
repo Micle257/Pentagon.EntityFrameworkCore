@@ -66,6 +66,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public IUnitOfWork<TContext> Create() => new UnitOfWork<TContext>(_contextFactory.CreateContext(), _repositoryFactory, _updateService, _deleteService, _identityService, _commitManager);
+        public IUnitOfWork<TContext> Create() => new UnitOfWork<TContext>(_contextFactory.CreateContext(),
+                                                                          _repositoryFactory,
+                                                                          _updateService,
+                                                                          _deleteService,
+                                                                          _identityService,
+                                                                          _commitManager);
     }
 }
