@@ -44,8 +44,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> The database context. </summary>
         readonly DbContext _dbContext;
 
-        List<Entry> _entries = new List<Entry>();
-
         /// <summary> Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class. </summary>
         /// <param name="context"> The context. </param>
         /// <param name="repositoryFactory"> The repository factory. </param>
@@ -71,19 +69,33 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             Context = context;
 
             _dbContext.ChangeTracker.StateChanged += OnStateChanged;
+            _dbContext.ChangeTracker.Tracked += OnTracked;
         }
 
-        void OnStateChanged(object sender, EntityStateChangedEventArgs entityStateChangedEventArgs)
+        void OnTracked(object sender, EntityTrackedEventArgs args)
         {
-            ResetEntries();
+            var entity = args.Entry.Entity as IEntity;
+
+            // entity has been tracked (get, add ...), commited is like added (for UI change)
+            OnCommiting(new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
         }
 
-        void ResetEntries()
+        void OnStateChanged(object sender, EntityStateChangedEventArgs args)
         {
-            _entries = _dbContext.ChangeTracker
-                                 .Entries()
-                                 .Select(a => new Entry(a.Entity as IEntity, a.State.ToEntityStateType(), null))
-                                 .ToList();
+            var entity = args.Entry.Entity as IEntity;
+            var state = args.NewState.ToEntityStateType();
+            var oldState = args.OldState;
+
+            // if state has not changed for the API, cancel
+            if (state == 0)
+                return;
+
+            // if the change was from unchanged to added
+            // cancel call, because it is adding entity scenario and it would end up in two event fires
+            if (oldState == EntityState.Unchanged && state == EntityStateType.Added)
+                return;
+
+            OnCommiting(new CommitEventArgs(new Entry(entity, state)));
         }
 
         /// <inheritdoc />
@@ -102,32 +114,61 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             // get repository from factory
             var repo = _repositoryFactory.GetRepository<TEntity>(Context);
 
-            // attach event delegate to new repository
-            repo.Commiting += OnCommiting;
-
             return repo;
         }
 
         /// <inheritdoc />
-        public int Commit()
+        public bool Commit()
         {
-            if (!CommitCore())
-                return 0;
+            return  CommitCore(() =>
+                               {
+                                    _dbContext.SaveChanges(false);
+                                   return Task.CompletedTask;
+                               }).Result;
+        }
 
-            return _dbContext.SaveChanges();
+        IEnumerable<Entry> GetEntries()
+        {
+            foreach (var entry in _dbContext.ChangeTracker.Entries())
+            {
+                yield return new Entry(entry.Entity as IEntity, entry.State.ToEntityStateType());
+            }
         }
 
         /// <inheritdoc />
-        public async Task<int> CommitAsync()
+        public Task<bool> CommitAsync()
         {
-            if (!CommitCore())
-                return 0;
+            return CommitCore(async () => await _dbContext.SaveChangesAsync(false).ConfigureAwait(false));
+        }
 
-            var saveResult = await _dbContext.SaveChangesAsync();
-            
-            _commitManager.RaiseCommited(typeof(TContext), _entries);
+      async  Task<bool> CommitCore(Func<Task> saveCallback)
+        {
+            try
+            {
+                _dbContext.ChangeTracker.DetectChanges();
 
-            return saveResult;
+                if (!_dbContext.ChangeTracker.HasChanges())
+                    return false;
+
+                _updateService.Apply(Context);
+                _deleteService.Apply(Context, Context.HasHardDeleteBehavior);
+                _identityService.Apply(Context, UserId);
+
+                // save the database without appling changes
+                await saveCallback().ConfigureAwait(false);
+
+                // raise all changes
+                _commitManager.RaiseCommited(typeof(TContext), GetEntries());
+
+                // accept changes
+                _dbContext.ChangeTracker.AcceptAllChanges();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
 
         /// <inheritdoc />
@@ -146,29 +187,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 Context.Dispose();
         }
 
-        void OnCommiting(object sender, CommitEventArgs commitEventArgs)
+        void OnCommiting(CommitEventArgs commitEventArgs)
         {
-            foreach (var entry in commitEventArgs.Entries)
-            {
-                if (entry.UserId == null)
-                    continue;
-            }
-
-            var repo = sender.GetType().GenericTypeArguments.FirstOrDefault();
-
-            _commitManager?.RaiseCommiting(typeof(TContext), repo, commitEventArgs.Entries);
-        }
-
-        bool CommitCore()
-        {
-            if (!_dbContext.ChangeTracker.HasChanges())
-                return false;
-
-            _updateService.Apply(Context);
-            _deleteService.Apply(Context, Context.HasHardDeleteBehavior);
-            _identityService.Apply(Context, EntryMap);
-
-            return true;
+            _commitManager?.RaiseCommiting(typeof(TContext), commitEventArgs.Entries.FirstOrDefault().Entity.GetType(), commitEventArgs.Entries);
         }
     }
 }

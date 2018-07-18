@@ -7,6 +7,7 @@
         {
             switch (state)
             {
+                case EntityState.Detached:
                 case EntityState.Deleted:
                     return EntityStateType.Deleted;
 
