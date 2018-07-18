@@ -16,6 +16,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions.Repositories;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
 
     /// <summary> Represents an unit of work that communicate with a database and manage repository changes to the database. </summary>
     /// <typeparam name="TContext"> The type of the db context. </typeparam>
@@ -43,7 +44,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> The database context. </summary>
         readonly DbContext _dbContext;
 
-        readonly IDictionary<IEntity, object> EntryMap = new ConcurrentDictionary<IEntity, object>();
+        List<Entry> _entries = new List<Entry>();
 
         /// <summary> Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class. </summary>
         /// <param name="context"> The context. </param>
@@ -68,6 +69,21 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
             Context = context;
+
+            _dbContext.ChangeTracker.StateChanged += OnStateChanged;
+        }
+
+        void OnStateChanged(object sender, EntityStateChangedEventArgs entityStateChangedEventArgs)
+        {
+            ResetEntries();
+        }
+
+        void ResetEntries()
+        {
+            _entries = _dbContext.ChangeTracker
+                                 .Entries()
+                                 .Select(a => new Entry(a.Entity as IEntity, a.State.ToEntityStateType(), null))
+                                 .ToList();
         }
 
         /// <inheritdoc />
@@ -77,7 +93,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public virtual IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new()
         {
+            // get repository from factory
             var repo = _repositoryFactory.GetRepository<TEntity>(Context);
+
+            // attach event delegate to new repository
             repo.Commiting += OnCommiting;
 
             return repo;
@@ -93,12 +112,16 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public Task<int> CommitAsync()
+        public async Task<int> CommitAsync()
         {
             if (!CommitCore())
-                return Task.FromResult(0);
+                return 0;
 
-            return _dbContext.SaveChangesAsync();
+            var saveResult = await _dbContext.SaveChangesAsync();
+            
+            _commitManager.RaiseCommited(typeof(TContext), _entries);
+
+            return saveResult;
         }
 
         /// <inheritdoc />
@@ -123,23 +146,21 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             {
                 if (entry.UserId == null)
                     continue;
-
-                EntryMap.Add(entry.Entity, entry.UserId);
             }
 
             var repo = sender.GetType().GenericTypeArguments.FirstOrDefault();
 
-            _commitManager?.RaiseCommit(typeof(TContext), repo, commitEventArgs.Entries);
+            _commitManager?.RaiseCommiting(typeof(TContext), repo, commitEventArgs.Entries);
         }
 
         bool CommitCore()
         {
             if (!_dbContext.ChangeTracker.HasChanges())
                 return false;
+
             _updateService.Apply(Context);
             _deleteService.Apply(Context, Context.HasHardDeleteBehavior);
             _identityService.Apply(Context, EntryMap);
-            EntryMap.Clear();
 
             return true;
         }
