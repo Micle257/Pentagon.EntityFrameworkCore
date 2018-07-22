@@ -125,9 +125,12 @@ namespace Pentagon.Data.EntityFramework.Tests
         }
     }
 
-    public class Entity : TimestampEntity<int>
+    public class Entity : TimestampEntity<int>, IConcurrencyStampSupport
     {
         public string Value { get; set; }
+
+        /// <inheritdoc />
+        public Guid ConcurrencyStamp { get; set; }
     }
 
     public class TimestampIdentity : TimestampIdentityEntity<Guid>
