@@ -13,8 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     {
         /// <summary> Gets or sets the user that created this entity. </summary>
         /// <value> The <see cref="object" />. </value>
-        [Required]
-        TUserId CreatedBy { get; set; }
+        TUserId? CreatedBy { get; set; }
 
         /// <summary> Gets or sets the user that last updated this entity. </summary>
         /// <value> The <see cref="object" />. </value>

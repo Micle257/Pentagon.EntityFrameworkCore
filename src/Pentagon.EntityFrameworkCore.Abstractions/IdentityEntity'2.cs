@@ -18,7 +18,7 @@ namespace Pentagon.EntityFrameworkCore
         public TUserKey? DeletedBy { get; set; }
 
         /// <inheritdoc />
-        public TUserKey CreatedBy { get; set; }
+        public TUserKey? CreatedBy { get; set; }
 
         /// <inheritdoc />
         public TUserKey? UpdatedBy { get; set; }

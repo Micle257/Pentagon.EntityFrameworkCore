@@ -33,7 +33,7 @@ namespace Pentagon.EntityFrameworkCore
 
             return builder;
         }
-
+        
         public static ModelBuilder SetupConcurrencyEntityDefaults<T>(this ModelBuilder builder)
                 where T : class, IConcurrencyStampSupport
         {
