@@ -50,7 +50,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             // tie together remote and local entities
             var concat = localEntities.Zip(remoteEntries, (local, remote) => (Local: local, Database: remote));
 
-            var conflicts = new List<(ConcurrencyConflict Local, ConcurrencyConflict Database)>();
+            var conflicts = new List<ConcurrencyConflictPair>();
 
             foreach (var t in concat)
             {
@@ -59,7 +59,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 {
                     // if the concurrency ids are not equal...
                     if (!lc.ConcurrencyStamp.Equals(rc.ConcurrencyStamp))
-                        conflicts.Add((new ConcurrencyConflict { Entity = t.Local },new ConcurrencyConflict { Entity = t.Database }));
+                        conflicts.Add(new ConcurrencyConflictPair
+                                      {
+                                              Posted = new ConcurrencyConflictEntity { Entity = t.Local },
+                                              FromDatabase = new ConcurrencyConflictEntity { Entity = t.Database }
+                                      });
                 }
             }
 

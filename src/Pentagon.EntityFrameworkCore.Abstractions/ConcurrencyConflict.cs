@@ -8,7 +8,7 @@ namespace Pentagon.EntityFrameworkCore
 {
     using Abstractions.Entities;
 
-    public class ConcurrencyConflict
+    public class ConcurrencyConflictEntity
     {
         public IUpdatedTimeStampSupport EntityUpdated => Entity as IUpdatedTimeStampSupport;
 
