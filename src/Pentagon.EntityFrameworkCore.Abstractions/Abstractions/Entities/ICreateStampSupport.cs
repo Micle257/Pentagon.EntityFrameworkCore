@@ -14,7 +14,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     {
         /// <summary> Gets or sets the unique identifier of the row. </summary>
         /// <value> The <see cref="Guid" />. </value>
-        [Required]
         Guid CreateGuid { get; set; }
     }
 }
