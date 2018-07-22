@@ -29,8 +29,7 @@ namespace Pentagon.EntityFrameworkCore
                 where T : class, IUpdatedTimeStampSupport
         {
             builder.Property(p => p.LastUpdatedAt)
-                   .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
-                   .IsRequired();
+                   .IsRequired(false);
 
             return builder;
         }
@@ -53,8 +52,7 @@ namespace Pentagon.EntityFrameworkCore
                 throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(IUpdatedTimeStampSupport)}");
             
             builder.Property(nameof(IUpdatedTimeStampSupport.LastUpdatedAt))
-                   .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
-                   .IsRequired();
+                   .IsRequired(false);
 
             return builder;
         }

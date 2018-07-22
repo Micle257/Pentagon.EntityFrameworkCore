@@ -36,8 +36,10 @@ namespace Pentagon.EntityFrameworkCore
                     switch (entry.State)
                     {
                         case EntityState.Added:
-                        case EntityState.Modified:
                             entity.CreatedBy = userId;
+                            break;
+
+                        case EntityState.Modified:
                             entity.UpdatedBy = userId;
                             break;
                     }
