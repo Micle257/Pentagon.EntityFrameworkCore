@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     public class RepositoryActionService : IRepositoryActionService
     {
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInOneWayMode<TEntity>(EntityPair<TEntity> pair)
-                where TEntity : class, IEntity, ITimeStampSupport, ICreateStampSupport
+                where TEntity : class, IEntity, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, ICreateStampSupport
         {
             if (pair.Type == EntityPairType.Both && pair.Remote.CreateGuid != pair.Local.CreateGuid)
                 throw new ArgumentException(message: "The given entities are not created from the same source.");
@@ -40,14 +40,14 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         }
 
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInOneWayMode<TEntity>(TEntity remoteEntity, TEntity localEntity)
-                where TEntity : class, IEntity, ITimeStampSupport, ICreateStampSupport => GetRepositoryActionsInOneWayMode(new EntityPair<TEntity>(localEntity, remoteEntity));
+                where TEntity : class, IEntity, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, ICreateStampSupport => GetRepositoryActionsInOneWayMode(new EntityPair<TEntity>(localEntity, remoteEntity));
 
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInTwoWayMode<TEntity>(TEntity remoteEntity, TEntity localEntity)
-                where TEntity : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport =>
+                where TEntity : class, IEntity, ICreateStampSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport =>
                 GetRepositoryActionsInTwoWayMode(new EntityPair<TEntity>(localEntity, remoteEntity));
 
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInTwoWayMode<TEntity>(EntityPair<TEntity> pair)
-                where TEntity : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport
+                where TEntity : class, IEntity, ICreateStampSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport
         {
             if (pair.Type == EntityPairType.Both && pair.Remote.CreateGuid != pair.Local.CreateGuid)
                 throw new ArgumentException(message: "The given entities are not created from the same source.");

@@ -26,7 +26,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         /// <param name="selector"> The selector. </param>
         /// <returns> <c> true </c> if synchronization succeed; otherwise <c> false </c>. </returns>
         public async Task<bool> SynchronizeAsync<T>(Expression<Func<T, bool>> selector = null)
-                where T : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
+                where T : class, IEntity, ICreateStampSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
         {
             if (selector == null)
                 selector = a => true;

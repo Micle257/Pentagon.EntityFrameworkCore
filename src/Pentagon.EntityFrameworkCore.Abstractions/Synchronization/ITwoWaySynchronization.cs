@@ -12,7 +12,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using Abstractions.Entities;
 
     public interface ITwoWaySynchronization<T>
-            where T : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport
+            where T : class, IEntity, ICreateStampSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport
     {
         /// <summary> Synchronizes the remote/local replicas. </summary>
         /// <param name="selector"> The selector for getting the data from db. </param>

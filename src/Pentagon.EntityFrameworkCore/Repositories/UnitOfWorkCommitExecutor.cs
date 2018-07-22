@@ -56,12 +56,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 if (!_dbContext.ChangeTracker.HasChanges())
                     return false;
 
-                var conflictResult = await _conflictResolver.ResolveAsync(unitOfWork.Context);
+                var conflictResult = await _conflictResolver.ResolveAsync(unitOfWork.Context).ConfigureAwait(false);
 
                 if (conflictResult.HasConflicts)
                 {
-                    // TODO resolve
-                    // collect them and send somehow to client to handle them
+
+                    conflictResult.
+
                     return false;
                 }
 

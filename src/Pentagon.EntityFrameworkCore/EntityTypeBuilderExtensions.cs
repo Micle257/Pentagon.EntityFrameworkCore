@@ -15,13 +15,19 @@ namespace Pentagon.EntityFrameworkCore
 
     public static class EntityTypeBuilderExtensions
     {
-        public static EntityTypeBuilder<T> SetupTimeSpanEntityDefaults<T>(this EntityTypeBuilder<T> builder)
-                where T : class, ITimeStampSupport
+        public static EntityTypeBuilder<T> SetupCreatedTimeSpanEntityDefaults<T>(this EntityTypeBuilder<T> builder)
+                where T : class, ICreatedTimeStampSupport
         {
             builder.Property(p => p.CreatedAt)
                    .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
                    .IsRequired();
+            
+            return builder;
+        }
 
+        public static EntityTypeBuilder<T> SetupUpdatedTimeSpanEntityDefaults<T>(this EntityTypeBuilder<T> builder)
+                where T : class, IUpdatedTimeStampSupport
+        {
             builder.Property(p => p.LastUpdatedAt)
                    .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
                    .IsRequired();
@@ -29,16 +35,24 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
 
-        public static EntityTypeBuilder SetupTimeSpanEntityDefaults(this EntityTypeBuilder builder, Type type)
+        public static EntityTypeBuilder SetupCreatedTimeSpanEntityDefaults(this EntityTypeBuilder builder, Type type)
         {
-            if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ITimeStampSupport)))
-                throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(ITimeStampSupport)}");
+            if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreatedTimeStampSupport)))
+                throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(ICreatedTimeStampSupport)}");
 
-            builder.Property(nameof(ITimeStampSupport.CreatedAt))
+            builder.Property(nameof(ICreatedTimeStampSupport.CreatedAt))
                    .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
                    .IsRequired();
 
-            builder.Property(nameof(ITimeStampSupport.LastUpdatedAt))
+            return builder;
+        }
+
+        public static EntityTypeBuilder SetupUpdatedTimeSpanEntityDefaults(this EntityTypeBuilder builder, Type type)
+        {
+            if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdatedTimeStampSupport)))
+                throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(IUpdatedTimeStampSupport)}");
+            
+            builder.Property(nameof(IUpdatedTimeStampSupport.LastUpdatedAt))
                    .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
                    .IsRequired();
 

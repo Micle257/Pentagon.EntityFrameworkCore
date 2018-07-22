@@ -24,8 +24,11 @@ namespace Pentagon.EntityFrameworkCore
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IConcurrencyStampSupport)))
                     builder.SetupConcurrencyEntityDefaults(type.ClrType);
 
-                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ITimeStampSupport)))
-                    builder.SetupTimeSpanEntityDefaults(type.ClrType);
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreatedTimeStampSupport)))
+                    builder.SetupCreatedTimeSpanEntityDefaults(type.ClrType);
+
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdatedTimeStampSupport)))
+                    builder.SetupUpdatedTimeSpanEntityDefaults(type.ClrType);
             }
 
             return builder;
@@ -50,18 +53,32 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
 
-        public static ModelBuilder SetupTimeSpanEntityDefaults<T>(this ModelBuilder builder)
-                where T : class, ITimeStampSupport
+        public static ModelBuilder SetupCreatedTimeSpanEntityDefaults<T>(this ModelBuilder builder)
+                where T : class, ICreatedTimeStampSupport
         {
-            builder.Entity<T>().SetupTimeSpanEntityDefaults();
+            builder.Entity<T>().SetupCreatedTimeSpanEntityDefaults();
 
             return builder;
         }
 
-        public static ModelBuilder SetupTimeSpanEntityDefaults(this ModelBuilder builder, Type type)
+        public static ModelBuilder SetupUpdatedTimeSpanEntityDefaults<T>(this ModelBuilder builder)
+                where T : class, IUpdatedTimeStampSupport
         {
-            builder.Entity(type).SetupTimeSpanEntityDefaults(type);
+            builder.Entity<T>().SetupUpdatedTimeSpanEntityDefaults();
 
+            return builder;
+        }
+
+        public static ModelBuilder SetupCreatedTimeSpanEntityDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type).SetupCreatedTimeSpanEntityDefaults(type);
+
+            return builder;
+        }
+
+        public static ModelBuilder SetupUpdatedTimeSpanEntityDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type).SetupUpdatedTimeSpanEntityDefaults(type);
             return builder;
         }
 

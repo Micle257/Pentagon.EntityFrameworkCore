@@ -32,7 +32,7 @@ namespace Pentagon.EntityFrameworkCore
             {
                 if (entry.State == EntityState.Added)
                 {
-                    if (entry.Entity is ITimeStampSupport entityTimed)
+                    if (entry.Entity is ICreatedTimeStampSupport entityTimed)
                         entityTimed.CreatedAt = DateTimeOffset.Now;
 
                     if (entry.Entity is ICreateStampSupport createStamp)
@@ -40,7 +40,7 @@ namespace Pentagon.EntityFrameworkCore
                 }
 
                 // set last updated at when the entity has modified
-                if (entry.State == EntityState.Modified && entry.Entity is ITimeStampSupport entityTimed2)
+                if (entry.State == EntityState.Modified && entry.Entity is IUpdatedTimeStampSupport entityTimed2)
                     entityTimed2.LastUpdatedAt = DateTimeOffset.Now;
 
                 // generate new concurrency id both for add and update

@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions;
     using Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
-
+    
     public class ConcurrencyConflictResolver<TContext> : IConcurrencyConflictResolver<TContext>
             where TContext : IApplicationContext
     {
@@ -30,8 +30,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             if (!(appContext is DbContext dbContext))
                 throw new ArgumentNullException(nameof(dbContext));
 
+            // get all entries tracked by EF
             var localEntities = dbContext.ChangeTracker?.Entries()
-                                         .Where(e => e.Entity is IEntity && e.State == EntityState.Modified)
+                                         // Filter only valid IEntity objects that implement concurrency support and are modified
+                                         .Where(e => e.Entity is IEntity && e.Entity is IConcurrencyStampSupport && e.State == EntityState.Modified)
                                          .Select(a => a.Entity as IEntity)
                                          .ToList();
 
@@ -39,6 +41,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             foreach (var entity in localEntities)
             {
+                // for ensured data that are not in local EF cache, we create new UoW and get the entity version in database
                 var e = await (_unitOfWorkFactory.Create().Context as DbContext).FindAsync(entity.GetType(), entity.Id) as IEntity;
 
                 remoteEntries.Add(e);
