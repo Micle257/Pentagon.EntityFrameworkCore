@@ -125,7 +125,7 @@ namespace Pentagon.Data.EntityFramework.Tests
         }
     }
 
-    public class Entity : SyncEntity<int>
+    public class Entity : TimestampEntity<int>
     {
         public string Value { get; set; }
     }

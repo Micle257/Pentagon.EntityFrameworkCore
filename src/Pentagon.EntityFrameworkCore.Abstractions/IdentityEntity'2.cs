@@ -11,7 +11,7 @@ namespace Pentagon.EntityFrameworkCore
     /// <summary> Represents an identity type entity, with synchronization support. </summary>
     /// <typeparam name="TKey"> The type of the key. </typeparam>
     /// <typeparam name="TUserKey"> The type of the user key. </typeparam>
-    public abstract class TimestampIdentityEntity<TKey, TUserKey> : SyncEntity<TKey>, ITimeStampIdentitySupport<TUserKey>, IDeleteTimeStampIdentitySupport<TUserKey>
+    public abstract class TimestampIdentityEntity<TKey, TUserKey> : TimestampEntity<TKey>, ITimeStampIdentitySupport<TUserKey>, IDeleteTimeStampIdentitySupport<TUserKey>
             where TUserKey : struct
     {
         /// <inheritdoc />
