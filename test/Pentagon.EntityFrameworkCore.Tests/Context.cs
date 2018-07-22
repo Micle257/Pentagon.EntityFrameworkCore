@@ -11,6 +11,20 @@ namespace Pentagon.Data.EntityFramework.Tests
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
 
+    public class EntityHelperTests
+    {
+        [Fact]
+        public void GetPureProperties_ForGivenEntity_ReturnCorrectProperties()
+        {
+            var en = new Entity();
+
+            var props = EntityHelper.GetPureProperties(en)
+                                    .Select(a => a.Name);
+
+            Assert.Equal(new [] { "Value"}, props);
+        }
+    }
+
     public class UnitOfWorkTests
     {
         [Fact]
@@ -65,7 +79,7 @@ namespace Pentagon.Data.EntityFramework.Tests
             }
             catch (UnitOfWorkConcurrencyConflictException e)
             {
-                
+
             }
 
             using (sc)
