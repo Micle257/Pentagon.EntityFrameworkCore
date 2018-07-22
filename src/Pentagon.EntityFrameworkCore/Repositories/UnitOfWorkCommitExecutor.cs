@@ -91,6 +91,53 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             }
         }
 
+        /// <inheritdoc />
+        public bool ExecuteCommit(IUnitOfWork<TContext> unitOfWork)
+        {
+            var _dbContext = unitOfWork.Context as DbContext;
+
+            try
+            {
+                _dbContext.ChangeTracker.DetectChanges();
+
+                if (!_dbContext.ChangeTracker.HasChanges())
+                    return false;
+
+                var conflictResult = _conflictResolver.ResolveAsync(unitOfWork.Context).Result;
+
+                if (conflictResult.HasConflicts)
+                {
+                    throw new UnitOfWorkConcurrencyConflictException
+                          {
+                                  Conflicts = conflictResult.ConflictedEntities
+                          };
+                }
+
+                _updateService.Apply(unitOfWork.Context);
+                _deleteService.Apply(unitOfWork.Context, unitOfWork.Context.HasHardDeleteBehavior);
+                _identityService.Apply(unitOfWork.Context, unitOfWork.UserId);
+
+                // save the database without appling changes
+                _dbContext.SaveChanges(false);
+
+                // raise all changes
+                _commitManager.RaiseCommited(typeof(TContext), GetEntries(_dbContext));
+
+                // accept changes
+                _dbContext.ChangeTracker.AcceptAllChanges();
+
+                return true;
+            }
+            catch (UnitOfWorkConcurrencyConflictException e)
+            {
+                throw e;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         IEnumerable<Entry> GetEntries(DbContext _dbContext)
         {
             foreach (var entry in _dbContext.ChangeTracker.Entries())

@@ -12,5 +12,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
             where TContext : IApplicationContext
     {
         Task<bool> ExecuteCommitAsync(IUnitOfWork<TContext> unitOfWork);
+
+        bool ExecuteCommit(IUnitOfWork<TContext> unitOfWork);
     }
 }
