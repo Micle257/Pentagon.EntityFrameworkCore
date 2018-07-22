@@ -7,6 +7,7 @@
 namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
+    using System.Linq;
     using Abstractions;
     using JetBrains.Annotations;
 
@@ -48,9 +49,15 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             // if the scope is open
             if (_scopedUnitOfWork != null)
             {
-                _commitExecutor.ExecuteCommitAsync(_scopedUnitOfWork).Wait(); // TODO handle error
-                _scopedUnitOfWork?.Dispose();
-                _scopedUnitOfWork = null;
+                try
+                {
+                    _commitExecutor.ExecuteCommit(_scopedUnitOfWork);
+                }
+                finally
+                {
+                    _scopedUnitOfWork?.Dispose();
+                    _scopedUnitOfWork = null;
+                }
             }
         }
     }

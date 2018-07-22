@@ -14,7 +14,7 @@ namespace Pentagon.Data.EntityFramework.Tests
     public class UnitOfWorkTests
     {
         [Fact]
-        public void Test()
+        public void ConcurrencyTest()
         {
             var services = new ServiceCollection()
                     .AddLogging();
@@ -38,26 +38,34 @@ namespace Pentagon.Data.EntityFramework.Tests
                                 new Entity { Value = "last" });
             }
 
-            using (sc)
+            try
             {
-                var db = sc.Get();
-                var repo = db.GetRepository<Entity>();
-
-                var data = repo.GetAllAsync().Result.ToList();
-
-                data[0].Value = "new first";
-                repo.Update(data[0]);
-
-                using (sc2)
+                using (sc)
                 {
-                    var db2 = sc2.Get();
-                    var repo2 = db2.GetRepository<Entity>();
+                    var db = sc.Get();
+                    var repo = db.GetRepository<Entity>();
 
-                    var data2 = repo2.GetAllAsync().Result.ToList();
+                    var data = repo.GetAllAsync().Result.ToList();
 
-                    data2[0].Value = "new new first";
-                    repo2.Update(data2[0]);
+                    data[0].Value = "new first";
+                    repo.Update(data[0]);
+
+                    using (sc2)
+                    {
+                        var db2 = sc2.Get();
+                        var repo2 = db2.GetRepository<Entity>();
+
+                        var data2 = repo2.GetAllAsync().Result.ToList();
+
+                        data2[0].Value = "new new first";
+                        repo2.Update(data2[0]);
+                    }
+
                 }
+            }
+            catch (UnitOfWorkConcurrencyConflictException e)
+            {
+                
             }
 
             using (sc)

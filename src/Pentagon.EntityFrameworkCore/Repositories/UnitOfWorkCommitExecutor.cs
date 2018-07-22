@@ -60,10 +60,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 if (conflictResult.HasConflicts)
                 {
-
-                    conflictResult.
-
-                    return false;
+                    throw new UnitOfWorkConcurrencyConflictException
+                          {
+                                  Conflicts = conflictResult.ConflictedEntities
+                          };
                 }
 
                 _updateService.Apply(unitOfWork.Context);
@@ -80,6 +80,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 _dbContext.ChangeTracker.AcceptAllChanges();
 
                 return true;
+            }
+            catch (UnitOfWorkConcurrencyConflictException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {

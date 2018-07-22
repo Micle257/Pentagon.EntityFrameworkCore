@@ -12,6 +12,6 @@ namespace Pentagon.EntityFrameworkCore
     {
         public bool HasConflicts => ConflictedEntities?.Count != 0;
 
-        public List<(ConcurrencyConflict Local, ConcurrencyConflict Database)> ConflictedEntities { get; set; }
+        public List<ConcurrencyConflictPair> ConflictedEntities { get; set; }
     }
 }
