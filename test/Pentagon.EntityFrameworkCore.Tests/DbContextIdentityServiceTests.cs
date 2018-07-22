@@ -3,12 +3,13 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
-namespace Pentagon.Data.EntityFramework.Tests
+namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System;
     using System.Collections.Generic;
+    using Abstractions.Entities;
     using EntityFrameworkCore;
-    using EntityFrameworkCore.Abstractions.Entities;
+    using Mocks;
     using Xunit;
 
     public class DbContextIdentityServiceTests

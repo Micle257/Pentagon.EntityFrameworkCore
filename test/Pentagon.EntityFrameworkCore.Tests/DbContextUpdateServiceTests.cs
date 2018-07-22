@@ -3,11 +3,13 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
-namespace Pentagon.Data.EntityFramework.Tests
+namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System;
     using EntityFrameworkCore;
+    using Mocks;
     using Xunit;
+    using Entity = Mocks.Entity;
 
     public class DbContextUpdateServiceTests
     {

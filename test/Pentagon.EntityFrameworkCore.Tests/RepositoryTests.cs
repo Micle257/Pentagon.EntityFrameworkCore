@@ -3,13 +3,14 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
-namespace Pentagon.Data.EntityFramework.Tests
+namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System.Linq;
     using EntityFrameworkCore;
-    using EntityFrameworkCore.Repositories;
-    using EntityFrameworkCore.Specifications;
     using Microsoft.Extensions.Logging.Abstractions;
+    using Mocks;
+    using Repositories;
+    using Specifications;
     using Xunit;
 
     public class RepositoryTests
