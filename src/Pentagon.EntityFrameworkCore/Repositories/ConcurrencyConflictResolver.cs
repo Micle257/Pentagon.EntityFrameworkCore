@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions;
     using Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
-    
+
     public class ConcurrencyConflictResolver<TContext> : IConcurrencyConflictResolver<TContext>
             where TContext : IApplicationContext
     {
@@ -50,7 +50,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             // tie together remote and local entities
             var concat = localEntities.Zip(remoteEntries, (local, remote) => (Local: local, Database: remote));
 
-            var conflicts = new List<(IEntity Local, IEntity Database)>();
+            var conflicts = new List<(ConcurrencyConflict Local, ConcurrencyConflict Database)>();
 
             foreach (var t in concat)
             {
@@ -59,7 +59,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 {
                     // if the concurrency ids are not equal...
                     if (!lc.ConcurrencyStamp.Equals(rc.ConcurrencyStamp))
-                        conflicts.Add((t.Local, t.Database));
+                        conflicts.Add((new ConcurrencyConflict { Entity = t.Local },new ConcurrencyConflict { Entity = t.Database }));
                 }
             }
 
