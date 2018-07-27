@@ -16,18 +16,18 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
     /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for paged operations. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
-    public class GetPageSpecification<TEntity> : IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>, IPaginationSpecification<TEntity>
+    public class GetPageSpecification<TEntity> : IOrderSpecification<TEntity>, IFilterSpecification<TEntity>, IPaginationSpecification<TEntity>
             where TEntity : IEntity
     {
         /// <summary> Initializes a new instance of the <see cref="GetPageSpecification{TEntity}" /> class. </summary>
-        /// <param name="criteria"> The criteria. </param>
+        /// <param name="filter"> The filter. </param>
         /// <param name="order"> The order. </param>
         /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
         /// <param name="pageSize"> Size of the page. </param>
         /// <param name="pageNumber"> Index of the page. </param>
-        public GetPageSpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageNumber)
+        public GetPageSpecification([NotNull] Expression<Func<TEntity, bool>> filter, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageNumber)
         {
-            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
+            Filter = filter ?? throw new ArgumentNullException(nameof(filter));
             Order = order ?? throw new ArgumentNullException(nameof(order));
             IsDescending = isDescending;
             PageSize = pageSize;
@@ -38,7 +38,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         public int PageSize { get; set; }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Criteria { get; }
+        public Expression<Func<TEntity, bool>> Filter { get; }
 
         /// <inheritdoc />
         public bool IsDescending { get; }
@@ -55,8 +55,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
         {
-            if (Criteria != null)
-                query = query.Where(Criteria);
+            if (Filter != null)
+                query = query.Where(Filter);
 
             if (Order != null)
             {

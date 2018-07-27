@@ -16,22 +16,22 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
     /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for get many operations. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
-    public class GetManySpecification<TEntity> : IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>
+    public class GetManySpecification<TEntity> : IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
             where TEntity : IEntity
     {
         /// <summary> Initializes a new instance of the <see cref="GetManySpecification{TEntity}" /> class. </summary>
-        /// <param name="criteria"> The criteria. </param>
+        /// <param name="filter"> The filter. </param>
         /// <param name="order"> The order. </param>
         /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
-        public GetManySpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending)
+        public GetManySpecification([NotNull] Expression<Func<TEntity, bool>> filter, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending)
         {
-            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
+            Filter = filter ?? throw new ArgumentNullException(nameof(filter));
             Order = order ?? throw new ArgumentNullException(nameof(order));
             IsDescending = isDescending;
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Criteria { get; }
+        public Expression<Func<TEntity, bool>> Filter { get; }
 
         /// <inheritdoc />
         public bool IsDescending { get; }
@@ -45,8 +45,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
         {
-            if (Criteria != null)
-                query = query.Where(Criteria);
+            if (Filter != null)
+                query = query.Where(Filter);
 
             if (Order != null)
             {

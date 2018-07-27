@@ -24,10 +24,10 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> orderExpression, bool isDescendingOrder, int pageSize);
 
         Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync<TSpecification>(TSpecification specification)
-                where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
+                where TSpecification : IAllPaginationSpecification<TEntity>, IFilterSpecification<TEntity>, IOrderSpecification<TEntity>;
 
         Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification)
-                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>;
+                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>;
 
         Task<PagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex);
     }

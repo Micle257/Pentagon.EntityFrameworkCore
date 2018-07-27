@@ -31,7 +31,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector);
 
         Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification)
-                where TSpecification : ICriteriaSpecification<TEntity>;
+                where TSpecification : IFilterSpecification<TEntity>;
 
         /// <summary> Gets the entity by id. </summary>
         /// <param name="id"> The identifier. </param>
@@ -51,7 +51,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector);
 
         Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification)
-                where TSpecification : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
+                where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>;
 
         /// <summary> Gets a property, for navigational property. </summary>
         /// <param name="foreignKey"> The foreign key to the navigational property. </param>
@@ -69,7 +69,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate);
 
         Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification)
-                where TSpecification : ICriteriaSpecification<TEntity>;
+                where TSpecification : IFilterSpecification<TEntity>;
 
         Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector);
 
@@ -79,7 +79,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entitiesSelector);
 
         Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
-                where TSpecification : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
+                where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>;
 
         Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                     Expression<Func<TEntity, bool>> criteria,
@@ -88,7 +88,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
                                                                                     int pageSize);
 
         Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
-                where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>;
+                where TSpecification : IAllPaginationSpecification<TEntity>, IFilterSpecification<TEntity>, IOrderSpecification<TEntity>;
 
         Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                    Expression<Func<TEntity, bool>> criteria,
@@ -98,6 +98,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
                                                                    int pageIndex);
 
         Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
-                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>;
+                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>;
     }
 }

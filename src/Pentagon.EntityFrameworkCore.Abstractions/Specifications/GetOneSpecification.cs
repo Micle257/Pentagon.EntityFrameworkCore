@@ -16,18 +16,18 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
     /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for get one operations. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
-    public class GetOneSpecification<TEntity> : ICriteriaSpecification<TEntity>
+    public class GetOneSpecification<TEntity> : IFilterSpecification<TEntity>
             where TEntity : IEntity
     {
         /// <summary> Initializes a new instance of the <see cref="GetOneSpecification{TEntity}" /> class. </summary>
-        /// <param name="criteria"> The criteria. </param>
-        public GetOneSpecification([NotNull] Expression<Func<TEntity, bool>> criteria)
+        /// <param name="filter"> The filter. </param>
+        public GetOneSpecification([NotNull] Expression<Func<TEntity, bool>> filter)
         {
-            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
+            Filter = filter ?? throw new ArgumentNullException(nameof(filter));
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Criteria { get; }
+        public Expression<Func<TEntity, bool>> Filter { get; }
 
         /// <inheritdoc />
         public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
@@ -35,8 +35,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
         {
-            if (Criteria != null)
-                query = query.Where(Criteria);
+            if (Filter != null)
+                query = query.Where(Filter);
 
             return query;
         }

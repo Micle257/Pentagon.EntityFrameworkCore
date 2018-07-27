@@ -16,16 +16,16 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
     /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for get all pages operations. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
-    public class GetAllPagesSpecification<TEntity> : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>, IAllPaginationSpecification<TEntity>
+    public class GetAllPagesSpecification<TEntity> : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>, IAllPaginationSpecification<TEntity>
             where TEntity : IEntity
     {
         /// <summary> Initializes a new instance of the <see cref="GetAllPagesSpecification{TEntity}" /> class. </summary>
         /// <param name="order"> The order. </param>
         /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
         /// <param name="pageSize"> Size of the page. </param>
-        public GetAllPagesSpecification([NotNull] Expression<Func<TEntity, bool>> criteria, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize)
+        public GetAllPagesSpecification([NotNull] Expression<Func<TEntity, bool>> filter, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize)
         {
-            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
+            Filter = filter ?? throw new ArgumentNullException(nameof(filter));
             Order = order ?? throw new ArgumentNullException(nameof(order));
             IsDescending = isDescending;
             PageSize = pageSize;
@@ -35,7 +35,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         public int PageSize { get; }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Criteria { get; }
+        public Expression<Func<TEntity, bool>> Filter { get; }
 
         /// <inheritdoc />
         public bool IsDescending { get; }
@@ -49,8 +49,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
         {
-            if (Criteria != null)
-                query = query.Where(Criteria);
+            if (Filter != null)
+                query = query.Where(Filter);
 
             if (Order != null)
             {

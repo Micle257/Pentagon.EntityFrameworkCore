@@ -150,13 +150,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         /// <inheritdoc />
         public Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification)
-                where TSpecification : ICriteriaSpecification<TEntity>
+                where TSpecification : IFilterSpecification<TEntity>
         {
             return GetOneAsync(e => e, specification);
         }
 
         public Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification)
-                where TSpecification : ICriteriaSpecification<TEntity>
+                where TSpecification : IFilterSpecification<TEntity>
         {
             var set = _query;
 
@@ -223,14 +223,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification)
-                where TSpecification : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>
+                where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             return GetManyAsync(e => e, specification);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
-                where TSpecification : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>
+                where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             var set = _query;
 
@@ -263,14 +263,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         public Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync<TSpecification>(TSpecification specification)
-                where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>
+                where TSpecification : IAllPaginationSpecification<TEntity>, IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             return GetAllPagesAsync(e => e, specification);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
-                where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>
+                where TSpecification : IAllPaginationSpecification<TEntity>, IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             var set = _query;
             var index = 1;
@@ -280,7 +280,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             while (true)
             {
-                var spec = new GetPageSpecification<TEntity>(specification.Criteria, specification.Order, specification.IsDescending, specification.PageSize, index);
+                var spec = new GetPageSpecification<TEntity>(specification.Filter, specification.Order, specification.IsDescending, specification.PageSize, index);
                 var list = await _paginationService.CreateAsync(selector, set, spec).ConfigureAwait(false);
                 result.Add(list);
                 if (!list.HasNextPage)
@@ -313,14 +313,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         public Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification)
-                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>
+                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
             return GetPageAsync(e => e, specification);
         }
 
         /// <inheritdoc />
         public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
-                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>
+                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
             var set = _query;
             set = specification.Apply(set);
