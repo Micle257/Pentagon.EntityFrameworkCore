@@ -19,6 +19,9 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     public class GetPageSpecification<TEntity> : IOrderSpecification<TEntity>, IFilterSpecification<TEntity>, IPaginationSpecification<TEntity>
             where TEntity : IEntity
     {
+        [NotNull]
+        readonly List<SpecificationOrder<TEntity>> _orders = new List<SpecificationOrder<TEntity>>();
+
         /// <summary> Initializes a new instance of the <see cref="GetPageSpecification{TEntity}" /> class. </summary>
         /// <param name="filter"> The filter. </param>
         /// <param name="order"> The order. </param>
@@ -28,8 +31,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         public GetPageSpecification([NotNull] Expression<Func<TEntity, bool>> filter, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageNumber)
         {
             Filters.Add(filter ?? throw new ArgumentNullException(nameof(filter)));
-            Order = order ?? throw new ArgumentNullException(nameof(order));
-            IsDescending = isDescending;
+            AddOrder(order ?? throw new ArgumentNullException(nameof(order)), isDescending);
             PageSize = pageSize;
             PageNumber = pageNumber;
         }
@@ -43,8 +45,18 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <param name="pageNumber"> Index of the page. </param>
         public GetPageSpecification([NotNull] Expression<Func<TEntity, object>> order, bool isDescending, int pageSize, int pageNumber)
         {
-            Order = order ?? throw new ArgumentNullException(nameof(order));
-            IsDescending = isDescending;
+            AddOrder(order ?? throw new ArgumentNullException(nameof(order)), isDescending);
+            PageSize = pageSize;
+            PageNumber = pageNumber;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetPageSpecification{TEntity}"/> class.
+        /// </summary>
+        /// <param name="pageSize">Size of the page.</param>
+        /// <param name="pageNumber"> Index of the page. </param>
+        public GetPageSpecification(int pageSize, int pageNumber)
+        {
             PageSize = pageSize;
             PageNumber = pageNumber;
         }
@@ -55,13 +67,10 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         [NotNull]
         public ICollection<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
-
-        /// <inheritdoc />
-        public bool IsDescending { get; }
-
+        
         /// <inheritdoc />
         [NotNull]
-        public Expression<Func<TEntity, object>> Order { get; }
+        public IReadOnlyList<SpecificationOrder<TEntity>> Orders => _orders;
 
         /// <inheritdoc />
         public int PageNumber { get; set; }
@@ -69,6 +78,16 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         [NotNull]
         public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
+
+        /// <inheritdoc />
+        public void AddOrder(Expression<Func<TEntity, object>> order, bool isDescending)
+        {
+            _orders.Add(new SpecificationOrder<TEntity>
+                        {
+                                Order = order,
+                                IsDescending = isDescending
+                        });
+        }
 
         /// <inheritdoc />
         public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
@@ -87,7 +106,24 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                 }
             }
 
-            query = IsDescending ? query.OrderByDescending(Order) : query.OrderBy(Order);
+            if (Orders.Count != 0)
+            {
+                var orderQuery = default(IOrderedQueryable<TEntity>);
+
+                for (var i = 0; i < Orders.Count; i++)
+                {
+                    var order = Orders[i];
+
+                    if (i == 0)
+                        orderQuery = order.IsDescending ? query.OrderByDescending(order.Order) : query.OrderBy(order.Order);
+                    else
+                    {
+                        orderQuery = order.IsDescending ? orderQuery.ThenByDescending(order.Order) : orderQuery.ThenBy(order.Order);
+                    }
+                }
+
+                query = orderQuery;
+            }
 
             return query;
         }
