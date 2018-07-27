@@ -58,8 +58,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
 
         /// <inheritdoc />
-        public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
+        public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
         {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
             // if we have filters
             if (Filters.Count != 0)
             {
