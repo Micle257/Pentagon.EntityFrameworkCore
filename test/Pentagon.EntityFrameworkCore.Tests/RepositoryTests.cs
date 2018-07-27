@@ -40,8 +40,6 @@ namespace Pentagon.EntityFrameworkCore.Tests
             }
             c.SaveChanges();
 
-            var list = re.GetAllPagesAsync(new GetAllPagesSpecification<Simple>(a => true, s => s.Data, false, 3)).Result.ToList();
-
         }
     }
 }
