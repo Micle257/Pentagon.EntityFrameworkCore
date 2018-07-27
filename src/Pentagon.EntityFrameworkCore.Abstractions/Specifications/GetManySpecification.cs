@@ -25,36 +25,53 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
         public GetManySpecification([NotNull] Expression<Func<TEntity, bool>> filter, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending)
         {
-            Filter = filter ?? throw new ArgumentNullException(nameof(filter));
+            Filters.Add(filter ?? throw new ArgumentNullException(nameof(filter)));
+
+            Order = order ?? throw new ArgumentNullException(nameof(order));
+            IsDescending = isDescending;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetManySpecification{TEntity}"/> class.
+        /// </summary>
+        /// <param name="order">The order.</param>
+        /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
+        public GetManySpecification([NotNull] Expression<Func<TEntity, object>> order, bool isDescending)
+        {
             Order = order ?? throw new ArgumentNullException(nameof(order));
             IsDescending = isDescending;
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Filter { get; }
+        [NotNull]
+        public ICollection<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
 
         /// <inheritdoc />
         public bool IsDescending { get; }
 
         /// <inheritdoc />
+        [NotNull]
         public Expression<Func<TEntity, object>> Order { get; }
 
         /// <inheritdoc />
+        [NotNull]
         public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
 
         /// <inheritdoc />
         public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
         {
-            if (Filter != null)
-                query = query.Where(Filter);
-
-            if (Order != null)
+            // if we have filters
+            if (Filters.Count != 0)
             {
-                if (IsDescending)
-                    query = query.OrderByDescending(Order);
-                else
-                    query = query.OrderBy(Order);
+                // for each of filter
+                foreach (var filter in Filters)
+                {
+                    // apply condition to query
+                    query = query.Where(filter);
+                }
             }
+
+            query = IsDescending ? query.OrderByDescending(Order) : query.OrderBy(Order);
 
             return query;
         }
