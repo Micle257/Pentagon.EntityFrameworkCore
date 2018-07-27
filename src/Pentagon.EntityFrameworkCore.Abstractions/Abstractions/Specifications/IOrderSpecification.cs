@@ -6,7 +6,9 @@
 
 namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
     using Entities;
 
     /// <summary> Represents a entity specification for query pipeline, that is capable of specifing the order of entities. </summary>
@@ -16,6 +18,11 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     {
         /// <summary> Gets the list of order specifications. </summary>
         /// <value> The list of orders. </value>
-        IList<SpecificationOrder<TEntity>> Orders { get; }
+        IReadOnlyList<SpecificationOrder<TEntity>> Orders { get; }
+
+        /// <summary> Adds the order specification. </summary>
+        /// <param name="order"> The order. </param>
+        /// <param name="isDescending"> if set to <c> true </c> is descending. </param>
+        void AddOrder(Expression<Func<TEntity, object>> order, bool isDescending);
     }
 }

@@ -17,10 +17,10 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     {
         /// <summary> Gets a value indicating whether the order is descending. </summary>
         /// <value> <c> true </c> if the order is descending; <c> false </c> if the order is ascending. </value>
-        bool IsDescending { get; }
+       public bool IsDescending { get; internal set;  }
 
         /// <summary> Gets the order function for specification. </summary>
         /// <value> The expression tree of the criteria. </value>
-        Expression<Func<TEntity, object>> Order { get; }
+        public  Expression<Func<TEntity, object>> Order { get; internal set; }
     }
 }
