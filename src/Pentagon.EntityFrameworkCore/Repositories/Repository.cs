@@ -243,56 +243,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         #endregion
-
-        #region GetAllPages
-
-        public Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> orderExpression, bool isDescendingOrder, int pageSize)
-        {
-            return GetAllPagesAsync(e => e, criteria, orderExpression, isDescendingOrder, pageSize);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
-                                                                                           Expression<Func<TEntity, bool>> criteria,
-                                                                                           Expression<Func<TEntity, object>> orderExpression,
-                                                                                           bool isDescendingOrder,
-                                                                                           int pageSize)
-        {
-            var specification = new GetAllPagesSpecification<TEntity>(criteria, orderExpression, isDescendingOrder, pageSize);
-            return GetAllPagesAsync(selector, specification);
-        }
-
-        public Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync<TSpecification>(TSpecification specification)
-                where TSpecification : IAllPaginationSpecification<TEntity>, IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
-        {
-            return GetAllPagesAsync(e => e, specification);
-        }
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
-                where TSpecification : IAllPaginationSpecification<TEntity>, IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
-        {
-            var set = _query;
-            var index = 1;
-            var result = new List<PagedList<TSelectEntity>>();
-
-            set = specification.Apply(set);
-
-            while (true)
-            {
-                var spec = new GetPageSpecification<TEntity>(specification.Filter, specification.Order, specification.IsDescending, specification.PageSize, index);
-                var list = await _paginationService.CreateAsync(selector, set, spec).ConfigureAwait(false);
-                result.Add(list);
-                if (!list.HasNextPage)
-                    break;
-                index++;
-            }
-
-            return result;
-        }
-
-        #endregion
-
+        
         #region GetPage
 
         public Task<PagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex)

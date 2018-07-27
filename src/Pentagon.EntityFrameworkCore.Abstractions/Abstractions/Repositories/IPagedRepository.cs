@@ -17,15 +17,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
     public interface IPagedRepository<TEntity>
             where TEntity : IEntity
     {
-        /// <summary> Get all entities in pages. </summary>
-        /// <param name="pageSize"> Size of a page. </param>
-        /// <param name="orderExpression"> The order expression. </param>
-        /// <returns> A <see cref="Task" /> that represents the asynchronous operation. The result of the operation is an iteration of the entities paged list. </returns>
-        Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> orderExpression, bool isDescendingOrder, int pageSize);
-
-        Task<IEnumerable<PagedList<TEntity>>> GetAllPagesAsync<TSpecification>(TSpecification specification)
-                where TSpecification : IAllPaginationSpecification<TEntity>, IFilterSpecification<TEntity>, IOrderSpecification<TEntity>;
-
         Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>;
 

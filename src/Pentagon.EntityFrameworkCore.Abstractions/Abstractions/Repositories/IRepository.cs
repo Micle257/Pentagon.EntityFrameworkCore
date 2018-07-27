@@ -80,16 +80,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
 
         Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>;
-
-        Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
-                                                                                    Expression<Func<TEntity, bool>> criteria,
-                                                                                    Expression<Func<TEntity, object>> orderExpression,
-                                                                                    bool isDescendingOrder,
-                                                                                    int pageSize);
-
-        Task<IEnumerable<PagedList<TSelectEntity>>> GetAllPagesAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
-                where TSpecification : IAllPaginationSpecification<TEntity>, IFilterSpecification<TEntity>, IOrderSpecification<TEntity>;
-
+        
         Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                    Expression<Func<TEntity, bool>> criteria,
                                                                    Expression<Func<TEntity, object>> order,

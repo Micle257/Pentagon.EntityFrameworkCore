@@ -11,9 +11,13 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
 
     /// <summary> Represents an entity specification for query pipeline, that is capable of pagination. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
-    public interface IPaginationSpecification<TEntity> : IAllPaginationSpecification<TEntity>
+    public interface IPaginationSpecification<TEntity>
             where TEntity : IEntity
     {
+        /// <summary> Gets or sets the size of the page. </summary>
+        /// <value> The <see cref="int" />. </value>
+        int PageSize { get; set; }
+
         /// <summary> Gets the index of the page. </summary>
         /// <value> The <see cref="int" />. </value>
         int PageNumber { get; set; }
