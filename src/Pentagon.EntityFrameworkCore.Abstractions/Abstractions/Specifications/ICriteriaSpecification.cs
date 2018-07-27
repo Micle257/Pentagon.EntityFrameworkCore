@@ -7,6 +7,7 @@
 namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq.Expressions;
     using Entities;
 
@@ -15,8 +16,8 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     public interface IFilterSpecification<TEntity> : ISpecification<TEntity>
             where TEntity : IEntity
     {
-        /// <summary> Gets the criteria function for specification. </summary>
-        /// <value> The expression tree of the criteria. </value>
-        Expression<Func<TEntity, bool>> Filter { get; }
+        /// <summary> Gets the filter function collection. </summary>
+        /// <value> The list of filters. </value>
+        IReadOnlyCollection<Expression<Func<TEntity, bool>>> Filters { get; }
     }
 }
