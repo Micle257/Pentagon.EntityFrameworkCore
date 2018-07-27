@@ -21,22 +21,33 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     {
         /// <summary> Initializes a new instance of the <see cref="GetOneSpecification{TEntity}" /> class. </summary>
         /// <param name="filter"> The filter. </param>
-        public GetOneSpecification([NotNull] Expression<Func<TEntity, bool>> filter)
+        public GetOneSpecification(Expression<Func<TEntity, bool>> filter = null)
         {
-            Filter = filter ?? throw new ArgumentNullException(nameof(filter));
+            if (filter != null)
+                Filters.Add(filter);
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Filter { get; }
+        [NotNull]
+        public ICollection<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
 
         /// <inheritdoc />
+        [NotNull]
         public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
 
         /// <inheritdoc />
-        public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
+        public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
         {
-            if (Filter != null)
-                query = query.Where(Filter);
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            if (Filters.Count == 0)
+                return query;
+
+            foreach (var filter in Filters)
+            {
+                query = query.Where(filter);
+            }
 
             return query;
         }
