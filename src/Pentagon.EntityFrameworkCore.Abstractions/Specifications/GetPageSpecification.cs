@@ -80,13 +80,15 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
 
         /// <inheritdoc />
-        public void AddOrder(Expression<Func<TEntity, object>> order, bool isDescending)
+        public IOrderSpecification<TEntity> AddOrder(Expression<Func<TEntity, object>> order, bool isDescending)
         {
             _orders.Add(new SpecificationOrder<TEntity>
                         {
                                 Order = order,
                                 IsDescending = isDescending
                         });
+
+            return this;
         }
 
         /// <inheritdoc />

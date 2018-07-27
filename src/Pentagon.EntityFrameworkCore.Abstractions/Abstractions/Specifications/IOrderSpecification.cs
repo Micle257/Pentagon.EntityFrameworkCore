@@ -23,6 +23,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
         /// <summary> Adds the order specification. </summary>
         /// <param name="order"> The order. </param>
         /// <param name="isDescending"> if set to <c> true </c> is descending. </param>
-        void AddOrder(Expression<Func<TEntity, object>> order, bool isDescending);
+        /// <returns> Calling object (this) for fluent API. </returns>
+        IOrderSpecification<TEntity> AddOrder(Expression<Func<TEntity, object>> order, bool isDescending);
     }
 }
