@@ -13,4 +13,11 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
             set { Id = (int)value; }
         }
     }
+
+    public class Person : EntityFrameworkCore.Entity
+    {
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+    }
 }

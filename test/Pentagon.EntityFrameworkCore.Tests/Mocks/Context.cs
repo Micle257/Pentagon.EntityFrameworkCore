@@ -32,6 +32,8 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
         public DbSet<Entity> Entities { get; set; }
 
+        public DbSet<Person> Persons { get; set; }
+
         public DbSet<TimestampIdentity> Identities { get; set; }
 
         public bool HasHardDeleteBehavior { get; }

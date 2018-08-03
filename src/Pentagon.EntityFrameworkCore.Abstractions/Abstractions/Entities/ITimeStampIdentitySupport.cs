@@ -9,6 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     using System.ComponentModel.DataAnnotations;
 
     public interface ITimeStampIdentitySupport<TUserId> : ITimeStampIdentitySupport
+            where TUserId : struct
     {
         /// <summary> Gets or sets the user that created this entity. </summary>
         /// <value> The <see cref="object" />. </value>
