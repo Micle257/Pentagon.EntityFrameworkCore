@@ -33,19 +33,19 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
         IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, decimal>> propertySelector, NumberFilter filter, decimal value);
 
         IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, decimal>> propertySelector,
-                                                            TextFilter firstFilter,
-                                                            string firstValue,
+                                                            NumberFilter firstFilter,
+                                                            decimal firstValue,
                                                             FilterLogicOperation operation,
-                                                            TextFilter secondFilter,
+                                                            NumberFilter secondFilter,
                                                             decimal secondValue);
 
         IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value);
 
         IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, int>> propertySelector,
-                                                            TextFilter firstFilter,
-                                                            string firstValue,
+                                                            NumberFilter firstFilter,
+                                                            int firstValue,
                                                             FilterLogicOperation operation,
-                                                            TextFilter secondFilter,
+                                                            NumberFilter secondFilter,
                                                             int secondValue);
     }
 }
