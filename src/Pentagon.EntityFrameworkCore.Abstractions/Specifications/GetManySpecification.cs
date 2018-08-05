@@ -14,7 +14,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using Abstractions.Specifications;
     using JetBrains.Annotations;
 
-    /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for get many operations. </summary>
+    /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for get many/all operations. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
     public class GetManySpecification<TEntity> : IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
             where TEntity : IEntity
@@ -115,7 +115,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         public IFilterSpecification<TEntity> AddTextFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
         {
-            var expression = GetTextFilter(propertySelector, filter, value);
+            var expression = FilterExpressionHelper.GetTextFilter(propertySelector, filter, value);
 
             Filters.Add(expression);
 
@@ -124,34 +124,10 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         public IFilterSpecification<TEntity> AddTextDoubleFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter firstFilter, string firstValue, FilterLogicOperation operation, TextFilter secondFilter, string secondValue)
         {
-            var leftExpression = GetTextFilter(propertySelector, firstFilter, firstValue).Body;
-            
-            var rightExpression = GetTextFilter(propertySelector, secondFilter, secondValue).Body;
+            var expression = FilterExpressionHelper.GetTextDoubleFilter(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
 
-            ExpressionType expressionType;
+            Filters.Add(expression);
 
-            switch (operation)
-            {
-                case FilterLogicOperation.Or:
-                    expressionType = ExpressionType.OrElse;
-                    break;
-                case FilterLogicOperation.And:
-                    expressionType = ExpressionType.AndAlso;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(operation), operation, null);
-            }
-
-            Expression expression = Expression.MakeBinary(expressionType, leftExpression, rightExpression);
-
-            var parameter = Expression.Parameter(typeof(TEntity), "e");
-
-            expression = new ParameterReplacer(parameter).Visit(expression);
-
-            var lambda = (Expression<Func<TEntity, bool>>)Expression.Lambda(typeof(Func<TEntity, bool>), expression, parameter);
-
-            Filters.Add(lambda);
-            
             return this;
         }
 
@@ -165,58 +141,6 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         public object AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value)
         {
             throw new NotImplementedException();
-        }
-
-        Expression<Func<TEntity, bool>> GetTextFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
-        {
-            var ex = GetTextFilterCallback(propertySelector.Body, filter, value);
-
-            var parameter = Expression.Parameter(typeof(TEntity), "e");
-
-            ex = new ParameterReplacer(parameter).Visit(ex);
-
-            return (Expression<Func<TEntity, bool>>)Expression.Lambda(typeof(Func<TEntity, bool>), ex, parameter);
-        }
-        
-        Expression GetTextFilterCallback(Expression callBody,TextFilter textFilter, string value)
-        {
-            switch (textFilter)
-            {
-                case TextFilter.Equal:
-                    return GetNotInvertedBody(callBody,v => v.Equals(value));
-                case TextFilter.NotEqual:
-                    return GetInvertedBody(callBody,v => !v.Equals(value));
-                case TextFilter.StartWith:
-                    return GetNotInvertedBody(callBody,v => v.StartsWith(value));
-                case TextFilter.EndWith:
-                    return GetNotInvertedBody(callBody,v => v.EndsWith(value));
-                case TextFilter.Contain:
-                    return GetNotInvertedBody( callBody,v => v.Contains(value));
-                case TextFilter.NotContain:
-                    return GetInvertedBody( callBody,v => !v.Contains(value));
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
-            }
-        }
-
-        Expression GetNotInvertedBody(Expression callBody,Expression<Func<string, bool>> callback)
-        {
-            var body = ((MethodCallExpression)callback.Body);
-            var containsMethodInfo = body.Method;
-            var containsArgument = body.Arguments[0];
-            var concatExpressionBody = Expression.Call(callBody, containsMethodInfo, containsArgument);
-
-            return concatExpressionBody;
-        }
-
-        Expression GetInvertedBody(Expression callBody, Expression<Func<string, bool>> callback)
-        {
-            var body = (MethodCallExpression)((UnaryExpression)callback.Body).Operand;
-            var containsMethodInfo = body.Method;
-            var containsArgument = body.Arguments[0];
-            var concatExpressionBody = Expression.Not(Expression.Call(callBody, containsMethodInfo, containsArgument));
-
-            return concatExpressionBody;
         }
     }
 }
