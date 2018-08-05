@@ -9,11 +9,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using System;
     using System.Linq.Expressions;
 
-    public static class FilterExpressionHelper
+    public static class TextFilterExpressionHelper
     {
-        public static Expression<Func<TEntity, bool>> GetTextFilter<TEntity>(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
+        public static Expression<Func<TEntity, bool>> GetFilter<TEntity>(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
         {
-            var ex = GetTextFilterCallback(propertySelector.Body, filter, value);
+            var ex = GetFilterCallback(propertySelector.Body, filter, value);
 
             var parameter = Expression.Parameter(typeof(TEntity), name: "e");
 
@@ -22,16 +22,16 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             return (Expression<Func<TEntity, bool>>) Expression.Lambda(typeof(Func<TEntity, bool>), ex, parameter);
         }
         
-        public static Expression<Func<TEntity, bool>> GetTextDoubleFilter<TEntity>(Expression<Func<TEntity, string>> propertySelector,
+        public static Expression<Func<TEntity, bool>> GetDoubleFilter<TEntity>(Expression<Func<TEntity, string>> propertySelector,
                                                                                    TextFilter firstFilter,
                                                                                    string firstValue,
                                                                                    FilterLogicOperation operation,
                                                                                    TextFilter secondFilter,
                                                                                    string secondValue)
         {
-            var leftExpression = GetTextFilter(propertySelector, firstFilter, firstValue).Body;
+            var leftExpression = GetFilter(propertySelector, firstFilter, firstValue).Body;
 
-            var rightExpression = GetTextFilter(propertySelector, secondFilter, secondValue).Body;
+            var rightExpression = GetFilter(propertySelector, secondFilter, secondValue).Body;
 
             ExpressionType expressionType;
 
@@ -56,7 +56,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             return (Expression<Func<TEntity, bool>>) Expression.Lambda(typeof(Func<TEntity, bool>), expression, parameter);
         }
 
-        static Expression GetTextFilterCallback(Expression callBody, TextFilter textFilter, string value)
+        static Expression GetFilterCallback(Expression callBody, TextFilter textFilter, string value)
         {
             switch (textFilter)
             {

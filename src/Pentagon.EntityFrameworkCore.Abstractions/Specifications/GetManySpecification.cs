@@ -104,7 +104,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         public IFilterSpecification<TEntity> AddTextFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
         {
-            var expression = FilterExpressionHelper.GetTextFilter(propertySelector, filter, value);
+            var expression = TextFilterExpressionHelper.GetFilter(propertySelector, filter, value);
 
             Filters.Add(expression);
 
@@ -118,7 +118,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                                                                  TextFilter secondFilter,
                                                                  string secondValue)
         {
-            var expression = FilterExpressionHelper.GetTextDoubleFilter(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
+            var expression = TextFilterExpressionHelper.GetDoubleFilter(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
 
             Filters.Add(expression);
 
@@ -128,7 +128,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         public IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, decimal>> propertySelector, NumberFilter filter, decimal value)
         {
-            var expression = FilterExpressionHelper.GetNumberFilter<decimal>(propertySelector, filter, value);
+            var expression = TextFilterExpressionHelper.GetNumberFilter<decimal>(propertySelector, filter, value);
 
             Filters.Add(expression);
 
@@ -143,7 +143,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                                                                    TextFilter secondFilter,
                                                                    decimal secondValue)
         {
-            var expression = FilterExpressionHelper.GetNumberNumberFilter<decimal>(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
+            var expression = TextFilterExpressionHelper.GetNumberNumberFilter<decimal>(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
 
             Filters.Add(expression);
 
@@ -153,7 +153,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         public IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value) 
         {
-            var expression = FilterExpressionHelper.GetNumberFilter<decimal>(propertySelector, filter, value);
+            var expression = TextFilterExpressionHelper.GetNumberFilter<decimal>(propertySelector, filter, value);
 
             Filters.Add(expression);
 
@@ -168,7 +168,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                                                                    TextFilter secondFilter,
                                                                    int secondValue)
         {
-            var expression = FilterExpressionHelper.GetNumberNumberFilter<decimal>(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
+            var expression = TextFilterExpressionHelper.GetNumberNumberFilter<decimal>(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
 
             Filters.Add(expression);
 
