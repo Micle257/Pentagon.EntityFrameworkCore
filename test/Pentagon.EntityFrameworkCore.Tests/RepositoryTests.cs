@@ -62,6 +62,11 @@ namespace Pentagon.EntityFrameworkCore.Tests
             Assert.Equal(46, ma[1].Age);
             Assert.Equal(12, ma[2].Age);
             Assert.Equal("Zeta", ma[3].Name);
+
+            var filterSpecification = new GetManySpecification<Person>();
+
+            filterSpecification.AddTextFilter(p => p.Name, TextFilter.Contain, "et");
+            filterSpecification.AddTextDoubleFilter(p => p.Name, TextFilter.Contain, "et", FilterLogicOperation.Or, TextFilter.StartWith, "A");
         }
     }
 }
