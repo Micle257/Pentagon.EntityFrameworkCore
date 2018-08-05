@@ -7,7 +7,7 @@
     <Description>Provides extented API for Entity Framework Core library, such as synchronization and unit of work pattern.</Description>
     <Copyright>Copyright (c) Michal Pokorný. All Rights Reserved.</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.7.1</Version>
+    <Version>1.8.0</Version>
     <LangVersion>7.2</LangVersion>
     <PackageProjectUrl>https://github.com/Micle257/Pentagon.EntityFrameworkCore</PackageProjectUrl>
   </PropertyGroup>
