@@ -24,12 +24,8 @@ namespace Pentagon.EntityFrameworkCore.Tests
                 var service = new DbContextIdentityService();
 
                 var user = Guid.NewGuid();
-                var dict = new Dictionary<IEntity, object>
-                           {
-                             {entity, user }
-                           };
 
-                service.Apply(db, dict);
+                service.Apply(db, user);
 
                 Assert.Equal(user, entity.CreatedBy);
                 Assert.Null(entity.UpdatedBy);
@@ -49,13 +45,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
                 db.Update(entity);
                 var service = new DbContextIdentityService();
 
-                var user = Guid.NewGuid();
-                var dict = new Dictionary<IEntity, object>
-                           {
-                               {entity, user }
-                           };
-
-                service.Apply(db, dict);
+                var user = Guid.NewGuid(); 
+                
+                service.Apply(db, user);
 
                 Assert.NotEqual(user, entity.CreatedBy);
                 Assert.Equal(user, entity.UpdatedBy);
@@ -73,12 +65,8 @@ namespace Pentagon.EntityFrameworkCore.Tests
                 var service = new DbContextIdentityService();
 
                 var user = Guid.NewGuid();
-                var dict = new Dictionary<IEntity, object>
-                           {
-                               {entity, user }
-                           };
 
-                service.Apply(db, dict);
+                service.Apply(db, user);
 
                 Assert.NotEqual(user, entity.CreatedBy);
                 Assert.Null(entity.UpdatedBy);
