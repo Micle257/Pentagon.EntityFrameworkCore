@@ -21,7 +21,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             return (Expression<Func<TEntity, bool>>) Expression.Lambda(typeof(Func<TEntity, bool>), ex, parameter);
         }
-
+        
         public static Expression<Func<TEntity, bool>> GetTextDoubleFilter<TEntity>(Expression<Func<TEntity, string>> propertySelector,
                                                                                    TextFilter firstFilter,
                                                                                    string firstValue,
