@@ -20,32 +20,5 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
         /// <summary> Gets the filter function collection. </summary>
         /// <value> The list of filters. </value>
         ICollection<Expression<Func<TEntity, bool>>> Filters { get; }
-
-        IFilterSpecification<TEntity> AddTextFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value);
-
-        IFilterSpecification<TEntity> AddTextDoubleFilter(Expression<Func<TEntity, string>> propertySelector,
-                                                          TextFilter firstFilter,
-                                                          string firstValue,
-                                                          FilterLogicOperation operation,
-                                                          TextFilter secondFilter,
-                                                          string secondValue);
-
-        IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, decimal>> propertySelector, NumberFilter filter, decimal value);
-
-        IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, decimal>> propertySelector,
-                                                            NumberFilter firstFilter,
-                                                            decimal firstValue,
-                                                            FilterLogicOperation operation,
-                                                            NumberFilter secondFilter,
-                                                            decimal secondValue);
-
-        IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value);
-
-        IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, int>> propertySelector,
-                                                            NumberFilter firstFilter,
-                                                            int firstValue,
-                                                            FilterLogicOperation operation,
-                                                            NumberFilter secondFilter,
-                                                            int secondValue);
     }
 }
