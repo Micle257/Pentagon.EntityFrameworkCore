@@ -126,7 +126,14 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         }
 
         /// <inheritdoc />
-        public IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, decimal>> propertySelector, NumberFilter filter, decimal value) => throw new NotImplementedException();
+        public IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, decimal>> propertySelector, NumberFilter filter, decimal value)
+        {
+            var expression = FilterExpressionHelper.GetNumberFilter<decimal>(propertySelector, filter, value);
+
+            Filters.Add(expression);
+
+            return this;
+        }
 
         /// <inheritdoc />
         public IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, decimal>> propertySelector,
@@ -134,10 +141,24 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                                                                    string firstValue,
                                                                    FilterLogicOperation operation,
                                                                    TextFilter secondFilter,
-                                                                   decimal secondValue) => throw new NotImplementedException();
+                                                                   decimal secondValue)
+        {
+            var expression = FilterExpressionHelper.GetNumberNumberFilter<decimal>(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
+
+            Filters.Add(expression);
+
+            return this;
+        }
 
         /// <inheritdoc />
-        public IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value) => throw new NotImplementedException();
+        public IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value) 
+        {
+            var expression = FilterExpressionHelper.GetNumberFilter<decimal>(propertySelector, filter, value);
+
+            Filters.Add(expression);
+
+            return this;
+        }
 
         /// <inheritdoc />
         public IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, int>> propertySelector,
@@ -145,6 +166,13 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                                                                    string firstValue,
                                                                    FilterLogicOperation operation,
                                                                    TextFilter secondFilter,
-                                                                   int secondValue) => throw new NotImplementedException();
+                                                                   int secondValue)
+        {
+            var expression = FilterExpressionHelper.GetNumberNumberFilter<decimal>(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
+
+            Filters.Add(expression);
+
+            return this;
+        }
     }
 }
