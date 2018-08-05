@@ -21,10 +21,31 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
         /// <value> The list of filters. </value>
         ICollection<Expression<Func<TEntity, bool>>> Filters { get; }
 
-        object AddTextFilter(Func<TEntity, string> propertySelector, TextFilter filter, string value);
+        IFilterSpecification<TEntity> AddTextFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value);
 
-        object AddNumberFilter(Func<TEntity, decimal> propertySelector, NumberFilter filter, decimal value);
+        IFilterSpecification<TEntity> AddTextDoubleFilter(Expression<Func<TEntity, string>> propertySelector,
+                                                          TextFilter firstFilter,
+                                                          string firstValue,
+                                                          FilterLogicOperation operation,
+                                                          TextFilter secondFilter,
+                                                          string secondValue);
 
-        object AddNumberFilter(Func<TEntity, int> propertySelector, NumberFilter filter, int value);
+        IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, decimal>> propertySelector, NumberFilter filter, decimal value);
+
+        IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, decimal>> propertySelector,
+                                                            TextFilter firstFilter,
+                                                            string firstValue,
+                                                            FilterLogicOperation operation,
+                                                            TextFilter secondFilter,
+                                                            decimal secondValue);
+
+        IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value);
+
+        IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, int>> propertySelector,
+                                                            TextFilter firstFilter,
+                                                            string firstValue,
+                                                            FilterLogicOperation operation,
+                                                            TextFilter secondFilter,
+                                                            int secondValue);
     }
 }

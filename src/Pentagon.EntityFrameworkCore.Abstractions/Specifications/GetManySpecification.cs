@@ -32,23 +32,16 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             AddOrder(order ?? throw new ArgumentNullException(nameof(order)), isDescending);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GetManySpecification{TEntity}"/> class.
-        /// </summary>
-        /// <param name="order">The order.</param>
+        /// <summary> Initializes a new instance of the <see cref="GetManySpecification{TEntity}" /> class. </summary>
+        /// <param name="order"> The order. </param>
         /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
         public GetManySpecification([NotNull] Expression<Func<TEntity, object>> order, bool isDescending)
         {
             AddOrder(order ?? throw new ArgumentNullException(nameof(order)), isDescending);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GetManySpecification{TEntity}"/> class.
-        /// </summary>
-        public GetManySpecification()
-        {
-
-        }
+        /// <summary> Initializes a new instance of the <see cref="GetManySpecification{TEntity}" /> class. </summary>
+        public GetManySpecification() { }
 
         /// <inheritdoc />
         [NotNull]
@@ -59,20 +52,20 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         public IReadOnlyList<SpecificationOrder<TEntity>> Orders => _orders;
 
         /// <inheritdoc />
+        [NotNull]
+        public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
+
+        /// <inheritdoc />
         public IOrderSpecification<TEntity> AddOrder(Expression<Func<TEntity, object>> order, bool isDescending)
         {
             _orders.Add(new SpecificationOrder<TEntity>
-            {
-                Order = order,
-                IsDescending = isDescending
-            });
+                        {
+                                Order = order,
+                                IsDescending = isDescending
+                        });
 
             return this;
         }
-
-        /// <inheritdoc />
-        [NotNull]
-        public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
 
         /// <inheritdoc />
         public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
@@ -85,10 +78,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             {
                 // for each of filter
                 foreach (var filter in Filters)
-                {
-                    // apply condition to query
+                        // apply condition to query
                     query = query.Where(filter);
-                }
             }
 
             if (Orders.Count != 0)
@@ -102,9 +93,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                     if (i == 0)
                         orderQuery = order.IsDescending ? query.OrderByDescending(order.Order) : query.OrderBy(order.Order);
                     else
-                    {
                         orderQuery = order.IsDescending ? orderQuery.ThenByDescending(order.Order) : orderQuery.ThenBy(order.Order);
-                    }
                 }
 
                 query = orderQuery;
@@ -122,7 +111,12 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             return this;
         }
 
-        public IFilterSpecification<TEntity> AddTextDoubleFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter firstFilter, string firstValue, FilterLogicOperation operation, TextFilter secondFilter, string secondValue)
+        public IFilterSpecification<TEntity> AddTextDoubleFilter(Expression<Func<TEntity, string>> propertySelector,
+                                                                 TextFilter firstFilter,
+                                                                 string firstValue,
+                                                                 FilterLogicOperation operation,
+                                                                 TextFilter secondFilter,
+                                                                 string secondValue)
         {
             var expression = FilterExpressionHelper.GetTextDoubleFilter(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
 
@@ -132,15 +126,25 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         }
 
         /// <inheritdoc />
-        public object AddNumberFilter(Expression<Func<TEntity, decimal>> propertySelector, NumberFilter filter, decimal value)
-        {
-            throw new NotImplementedException();
-        }
+        public IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, decimal>> propertySelector, NumberFilter filter, decimal value) => throw new NotImplementedException();
 
         /// <inheritdoc />
-        public object AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value)
-        {
-            throw new NotImplementedException();
-        }
+        public IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, decimal>> propertySelector,
+                                                                   TextFilter firstFilter,
+                                                                   string firstValue,
+                                                                   FilterLogicOperation operation,
+                                                                   TextFilter secondFilter,
+                                                                   decimal secondValue) => throw new NotImplementedException();
+
+        /// <inheritdoc />
+        public IFilterSpecification<TEntity> AddNumberFilter(Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value) => throw new NotImplementedException();
+
+        /// <inheritdoc />
+        public IFilterSpecification<TEntity> AddNumberDoubleFilter(Expression<Func<TEntity, int>> propertySelector,
+                                                                   TextFilter firstFilter,
+                                                                   string firstValue,
+                                                                   FilterLogicOperation operation,
+                                                                   TextFilter secondFilter,
+                                                                   int secondValue) => throw new NotImplementedException();
     }
 }
