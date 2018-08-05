@@ -39,7 +39,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         [NotNull]
         readonly IQueryable<TEntity> _query;
-
+        
         /// <summary> Initializes a new instance of the <see cref="Repository{TEntity}" /> class. </summary>
         /// <param name="logger"> The logger. </param>
         /// <param name="context"> The database context. </param>
@@ -79,7 +79,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TProperty : class => DataContext.Set<TProperty>().FindAsync(foreignKey);
 
         /// <inheritdoc />
-        public Task<int> CountAsync() => _query.CountAsync();
+        public Task<int> CountAsync() => _set.CountAsync();
 
         /// <inheritdoc />
         public virtual void Insert(TEntity entity)
@@ -181,8 +181,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector)
         {
-            var set = _query.Select(selector);
-
+            var set = _set.Select(selector);
+            
             return await set.ToListAsync().ConfigureAwait(false);
         }
 
@@ -239,7 +239,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             set = specification.Apply(set);
 
-            return await set.Select(selector).ToListAsync().ConfigureAwait(false);
+            var query = set.Select(selector);
+
+            return await query.ToListAsync().ConfigureAwait(false);
         }
 
         #endregion
