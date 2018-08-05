@@ -1,6 +1,9 @@
-namespace Pentagon.EntityFrameworkCore.Tests {
+namespace Pentagon.EntityFrameworkCore.Tests
+{
     using System.Linq;
+    using Abstractions;
     using EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
     using Xunit;
     using Entity = Mocks.Entity;
 
@@ -14,7 +17,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var props = EntityHelper.GetPureProperties(en)
                                     .Select(a => a.Name);
 
-            Assert.Equal(new [] { "Value"}, props);
+            Assert.Equal(new[] { "Value" }, props);
         }
     }
 }
