@@ -66,13 +66,13 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                 case NumberFilter.NotEqual:
                     return GetInvertedBody(callBody, v => !v.Equals(value));
                 case NumberFilter.GreatenThan:
-                    return GetBinaryBody(callBody, v => v.CompareTo(value) < 0);
-                case NumberFilter.GreatenThenOrEqualTo:
-                    return GetDoubleBinaryBody(callBody, v => v.CompareTo(value) < 0 || v.Equals(value));
-                case NumberFilter.LessThen:
                     return GetBinaryBody(callBody, v => v.CompareTo(value) > 0);
-                case NumberFilter.LessThenOrEqualTo:
+                case NumberFilter.GreatenThenOrEqualTo:
                     return GetDoubleBinaryBody(callBody, v => v.CompareTo(value) > 0 || v.Equals(value));
+                case NumberFilter.LessThen:
+                    return GetBinaryBody(callBody, v => v.CompareTo(value) < 0);
+                case NumberFilter.LessThenOrEqualTo:
+                    return GetDoubleBinaryBody(callBody, v => v.CompareTo(value) < 0 || v.Equals(value));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
             }
@@ -80,9 +80,9 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         static Expression GetDoubleBinaryBody(Expression callBody, Expression<Func<T, bool>> callback)
         {
-            var leftExpression = GetBinaryBody(callBody, Expression.Lambda<Func<T, bool>>(((BinaryExpression) callback.Body).Left));
+            var leftExpression = GetBinaryBody(callBody, Expression.Lambda<Func<T, bool>>(((BinaryExpression) callback.Body).Left, Expression.Parameter(typeof(T))));
 
-            var rightExpression = GetNotInvertedBody(callBody, Expression.Lambda<Func<T, bool>>(((BinaryExpression) callback.Body).Right));
+            var rightExpression = GetNotInvertedBody(callBody, Expression.Lambda<Func<T, bool>>(((BinaryExpression) callback.Body).Right, Expression.Parameter(typeof(T))));
 
             return Expression.MakeBinary(ExpressionType.OrElse, leftExpression, rightExpression);
         }
