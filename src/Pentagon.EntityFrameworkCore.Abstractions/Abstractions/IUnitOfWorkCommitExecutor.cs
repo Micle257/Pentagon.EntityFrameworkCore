@@ -11,8 +11,8 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     public interface IUnitOfWorkCommitExecutor<in TContext>
             where TContext : IApplicationContext
     {
-        Task<bool> ExecuteCommitAsync(IUnitOfWork<TContext> unitOfWork);
+        Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork<TContext> unitOfWork);
 
-        bool ExecuteCommit(IUnitOfWork<TContext> unitOfWork);
+        UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork<TContext> unitOfWork);
     }
 }

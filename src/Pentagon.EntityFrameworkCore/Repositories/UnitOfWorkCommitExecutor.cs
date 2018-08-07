@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions.Entities;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-
+    
     public class UnitOfWorkCommitExecutor<TContext> : IUnitOfWorkCommitExecutor<TContext>
             where TContext : IApplicationContext
     {
@@ -45,7 +45,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
         }
 
-        public async Task<bool> ExecuteCommitAsync(IUnitOfWork<TContext> unitOfWork)
+        public async Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork<TContext> unitOfWork)
         {
             var _dbContext = unitOfWork.Context as DbContext;
 
@@ -54,16 +54,20 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 _dbContext.ChangeTracker.DetectChanges();
 
                 if (!_dbContext.ChangeTracker.HasChanges())
-                    return false;
+                    return new UnitOfWorkCommitResult();
 
                 var conflictResult = await _conflictResolver.ResolveAsync(unitOfWork.Context).ConfigureAwait(false);
 
                 if (conflictResult.HasConflicts)
                 {
-                    throw new UnitOfWorkConcurrencyConflictException
-                          {
-                                  Conflicts = conflictResult.ConflictedEntities
-                          };
+                    return new UnitOfWorkCommitResult
+                           {
+                                   Conflicts = conflictResult.ConflictedEntities,
+                                   Exception = new UnitOfWorkConcurrencyConflictException
+                                               {
+                                                       Conflicts = conflictResult.ConflictedEntities
+                                               }
+                           };
                 }
 
                 _updateService.Apply(unitOfWork.Context);
@@ -79,20 +83,16 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 // accept changes
                 _dbContext.ChangeTracker.AcceptAllChanges();
 
-                return true;
-            }
-            catch (UnitOfWorkConcurrencyConflictException e)
-            {
-                throw e;
+                return new UnitOfWorkCommitResult();
             }
             catch (Exception e)
             {
-                return false;
+                return new UnitOfWorkCommitResult { Exception =  e};
             }
         }
 
         /// <inheritdoc />
-        public bool ExecuteCommit(IUnitOfWork<TContext> unitOfWork)
+        public UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork<TContext> unitOfWork)
         {
             var _dbContext = unitOfWork.Context as DbContext;
 
@@ -101,16 +101,20 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 _dbContext.ChangeTracker.DetectChanges();
 
                 if (!_dbContext.ChangeTracker.HasChanges())
-                    return false;
+                    return new UnitOfWorkCommitResult();
 
                 var conflictResult = _conflictResolver.ResolveAsync(unitOfWork.Context).Result;
 
                 if (conflictResult.HasConflicts)
                 {
-                    throw new UnitOfWorkConcurrencyConflictException
-                          {
-                                  Conflicts = conflictResult.ConflictedEntities
-                          };
+                    return new UnitOfWorkCommitResult
+                           {
+                                   Conflicts = conflictResult.ConflictedEntities,
+                                   Exception = new UnitOfWorkConcurrencyConflictException
+                                               {
+                                                       Conflicts = conflictResult.ConflictedEntities
+                                               }
+                           };
                 }
 
                 _updateService.Apply(unitOfWork.Context);
@@ -126,15 +130,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 // accept changes
                 _dbContext.ChangeTracker.AcceptAllChanges();
 
-                return true;
-            }
-            catch (UnitOfWorkConcurrencyConflictException e)
-            {
-                throw e;
+                return new UnitOfWorkCommitResult();
             }
             catch (Exception e)
             {
-                return false;
+                return new UnitOfWorkCommitResult { Exception =  e};
             }
         }
 
