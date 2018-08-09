@@ -49,7 +49,7 @@ namespace Pentagon.EntityFrameworkCore
                 if (entry.State == EntityState.Modified)
                 {
                     if (entry.Entity is IUpdatedTimeStampSupport entityTimed2)
-                        entityTimed2.LastUpdatedAt = changedAt;
+                        entityTimed2.UpdatedAt = changedAt;
 
                     if (entry.Entity is ITimeStampIdentitySupport identity)
                         identity.UpdatedBy = unitOfWork.UserId;

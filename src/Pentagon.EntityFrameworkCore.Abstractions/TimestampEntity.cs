@@ -26,6 +26,6 @@ namespace Pentagon.EntityFrameworkCore
         public DateTimeOffset CreatedAt { get; set; }
 
         /// <inheritdoc />
-        public DateTimeOffset? LastUpdatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
     }
 }

@@ -31,7 +31,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
                     break;
 
                 case EntityPairType.Both:
-                    if (pair.Remote.LastUpdatedAt > pair.Local.LastUpdatedAt)
+                    if (pair.Remote.UpdatedAt > pair.Local.UpdatedAt)
                         comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Remote, TableActionType.Update));
                     break;
             }
@@ -67,14 +67,14 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
                         comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Remote, TableActionType.Insert));
                     break;
                 case EntityPairType.Both:
-                    if (pair.Remote.LastUpdatedAt > pair.Local.LastUpdatedAt)
+                    if (pair.Remote.UpdatedAt > pair.Local.UpdatedAt)
                     {
                         if (pair.Remote.IsDeletedFlag)
                             comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Local, TableActionType.Delete));
                         else
                             comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Remote, TableActionType.Update));
                     }
-                    else if (pair.Remote.LastUpdatedAt < pair.Local.LastUpdatedAt)
+                    else if (pair.Remote.UpdatedAt < pair.Local.UpdatedAt)
                     {
                         if (pair.Remote.IsDeletedFlag)
                         {

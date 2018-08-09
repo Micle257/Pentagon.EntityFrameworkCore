@@ -15,6 +15,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
         /// <summary> Gets or sets the last updated time. </summary>
         /// <value> The <see cref="DateTimeOffset" />. </value>
         [Column(Order = 104)]
-        DateTimeOffset? LastUpdatedAt { get; set; }
+        DateTimeOffset? UpdatedAt { get; set; }
     }
 }
