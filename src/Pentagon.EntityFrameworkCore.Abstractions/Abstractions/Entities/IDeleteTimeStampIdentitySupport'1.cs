@@ -6,10 +6,13 @@
 
 namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
 {
-    public interface IDeleteTimeStampIdentitySupport
+    using System.ComponentModel.DataAnnotations.Schema;
+
+    public interface IDeleteTimeStampIdentitySupport<TUserId> : IDeleteTimeStampIdentitySupport
     {
         /// <summary> Gets or sets the user that deleted this entity. </summary>
         /// <value> The nullable <see cref="TUserId" />. </value>
-        object DeletedBy { get; set; }
+        [Column(Order = 107)]
+        new TUserId DeletedBy { get; set; }
     }
 }

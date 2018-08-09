@@ -17,11 +17,4 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
         [Column(Order = 106)]
         DateTimeOffset? DeletedAt { get; set; }
     }
-
-    public interface IDeleteTimeStampIdentitySupport
-    {
-        /// <summary> Gets or sets the user that deleted this entity. </summary>
-        /// <value> The nullable <see cref="TUserId" />. </value>
-        object DeletedBy { get; set; }
-    }
 }
