@@ -6,6 +6,8 @@
 
 namespace Pentagon.EntityFrameworkCore.Abstractions
 {
+    using System;
+
     /// <summary> Represents a service for delete behavior of database context. </summary>
     public interface IDbContextIdentityService
     {

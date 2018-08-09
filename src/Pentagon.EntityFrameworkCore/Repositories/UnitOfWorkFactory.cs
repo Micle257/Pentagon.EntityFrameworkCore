@@ -42,6 +42,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public IUnitOfWork<TContext> Create() => new UnitOfWork<TContext>(_contextFactory.CreateContext(),
                                                                           _repositoryFactory,
-                                                                          _commitManager);
+                                                                          _commitManager,
+                                                                          new TimeStampSource());
     }
 }

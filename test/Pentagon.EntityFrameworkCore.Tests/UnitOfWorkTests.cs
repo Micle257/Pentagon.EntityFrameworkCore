@@ -1,4 +1,5 @@
 namespace Pentagon.EntityFrameworkCore.Tests {
+    using System;
     using System.Linq;
     using Abstractions;
     using EntityFrameworkCore;
@@ -39,6 +40,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
                 using (sc)
                 {
                     var db = sc.Get();
+                    
                     var repo = db.GetRepository<Entity>();
 
                     var data = repo.GetAllAsync().Result.ToList();

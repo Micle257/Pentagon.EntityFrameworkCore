@@ -6,11 +6,16 @@
 
 namespace Pentagon.EntityFrameworkCore.Abstractions
 {
+    using System;
+
     /// <summary> Represents a service for update and insert behavior of database context. </summary>
     public interface IDbContextUpdateService
     {
-        /// <summary> Applies the on-save update and insert logic. </summary>
-        /// <param name="appContext"> The application context. </param>
-        void Apply(IApplicationContext appContext);
+        /// <summary>
+        /// Applies the on-save update and insert logic.
+        /// </summary>
+        /// <param name="appContext">The application context.</param>
+        /// <param name="changedAt">The changed at.</param>
+        void Apply(IApplicationContext appContext, DateTimeOffset changedAt);
     }
 }

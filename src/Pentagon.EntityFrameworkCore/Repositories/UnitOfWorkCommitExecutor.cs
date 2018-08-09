@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions.Entities;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-    
+
     public class UnitOfWorkCommitExecutor<TContext> : IUnitOfWorkCommitExecutor<TContext>
             where TContext : IApplicationContext
     {
@@ -70,8 +70,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                            };
                 }
 
-                _updateService.Apply(unitOfWork.Context);
-                _deleteService.Apply(unitOfWork.Context, unitOfWork.Context.HasHardDeleteBehavior);
+                var changedAt = unitOfWork.TimeStampSource.GetAndReset();
+
+                _updateService.Apply(unitOfWork.Context, changedAt);
+                _deleteService.Apply(unitOfWork.Context, changedAt, unitOfWork.Context.HasHardDeleteBehavior);
                 _identityService.Apply(unitOfWork.Context, unitOfWork.UserId);
 
                 // save the database without appling changes
@@ -117,8 +119,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                            };
                 }
 
-                _updateService.Apply(unitOfWork.Context);
-                _deleteService.Apply(unitOfWork.Context, unitOfWork.Context.HasHardDeleteBehavior);
+                var changedAt = unitOfWork.TimeStampSource.GetAndReset();
+
+                _updateService.Apply(unitOfWork.Context, changedAt);
+                _deleteService.Apply(unitOfWork.Context, changedAt, unitOfWork.Context.HasHardDeleteBehavior);
                 _identityService.Apply(unitOfWork.Context, unitOfWork.UserId);
 
                 // save the database without appling changes

@@ -24,7 +24,7 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         /// <inheritdoc />
-        public void Apply(IApplicationContext appContext, bool? isHardDelete = null)
+        public void Apply(IApplicationContext appContext, DateTimeOffset changedAt, bool? isHardDelete = null)
         {
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (!(appContext is DbContext dbContext))
@@ -51,7 +51,7 @@ namespace Pentagon.EntityFrameworkCore
                     }
 
                     if (entry.Entity is IDeleteTimeStampSupport entityTimed)
-                        entityTimed.DeletedAt = DateTimeOffset.Now;
+                        entityTimed.DeletedAt = changedAt;
 
                     entry.State = EntityState.Unchanged;
                 }

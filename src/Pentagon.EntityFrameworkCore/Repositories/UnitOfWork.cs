@@ -27,6 +27,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         [NotNull]
         readonly IDatabaseCommitManager _commitManager;
 
+        [NotNull]
+        public ITimeStampSource TimeStampSource { get; }
+
         /// <summary> The database context. </summary>
         readonly DbContext _dbContext;
 
@@ -36,7 +39,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <param name="commitManager"> The commit manager. </param>
         public UnitOfWork([NotNull] TContext context,
                           [NotNull] IRepositoryFactory repositoryFactory,
-                          [NotNull] IDatabaseCommitManager commitManager)
+                          [NotNull] IDatabaseCommitManager commitManager,
+                          [NotNull] ITimeStampSource timeStampSource)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -45,6 +49,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
+            TimeStampSource = timeStampSource ?? throw new ArgumentNullException(nameof(timeStampSource));
 
             Context = context;
 

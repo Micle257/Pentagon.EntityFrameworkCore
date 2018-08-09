@@ -21,7 +21,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
                 var entity = new Entity {Value = "ss"};
                 db.Add(entity);
                 var service = new DbContextUpdateService();
-                service.Apply(db);
+                service.Apply(db, DateTimeOffset.Now);
 
                 Assert.Null(entity.LastUpdatedAt);
                 Assert.Null(entity.DeletedAt);
@@ -40,7 +40,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
                 var entity = new Simple { Data = "Hi" };
                 db.Add(entity);
                 var service = new DbContextUpdateService();
-                service.Apply(db);
+                service.Apply(db, DateTimeOffset.Now);
             }
         }
     }

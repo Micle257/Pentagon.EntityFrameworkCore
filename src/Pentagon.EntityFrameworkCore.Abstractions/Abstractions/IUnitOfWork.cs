@@ -19,5 +19,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
         /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
         IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new();
+
+        ITimeStampSource TimeStampSource { get; }
     }
 }
