@@ -11,6 +11,6 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     public interface ISynchronizationFactory
     {
         ITwoWaySynchronization<T> CreateTwoWay<T>()
-                where T : class, IEntity, ICreateStampSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new();
+                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new();
     }
 }

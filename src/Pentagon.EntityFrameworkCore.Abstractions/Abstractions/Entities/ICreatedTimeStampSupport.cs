@@ -10,7 +10,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary> Represents an entity, that supports create time stamps. </summary>
-    public interface ICreatedTimeStampSupport
+    public interface ICreateTimeStampSupport
     {
         /// <summary> Gets or sets the creation time. </summary>
         /// <value> The <see cref="DateTimeOffset" />. </value>

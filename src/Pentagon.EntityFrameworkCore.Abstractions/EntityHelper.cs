@@ -20,7 +20,7 @@ namespace Pentagon.EntityFrameworkCore
             var typesToCheck = new[]
                                {
                                        typeof(IConcurrencyStampSupport),
-                                       typeof(ICreatedTimeStampSupport),
+                                       typeof(ICreateTimeStampSupport),
                                        typeof(ICreateStampSupport),
                                        typeof(IDeletedFlagSupport),
                                        typeof(IDeleteTimeStampIdentitySupport),

@@ -35,7 +35,7 @@ namespace Pentagon.EntityFrameworkCore
             {
                 if (entry.State == EntityState.Added)
                 {
-                    if (entry.Entity is ICreatedTimeStampSupport entityTimed)
+                    if (entry.Entity is ICreateTimeStampSupport entityTimed)
                         entityTimed.CreatedAt = changedAt;
 
                     if (entry.Entity is ICreateStampSupport createStamp)

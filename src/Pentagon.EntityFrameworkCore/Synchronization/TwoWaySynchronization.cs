@@ -19,7 +19,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     /// <summary> Represents a synchronization session. </summary>
     /// <typeparam name="T"> The type of the entity. </typeparam>
     public class TwoWaySynchronization<T> : ITwoWaySynchronization<T>
-            where T : class, IEntity, ICreateStampSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
+            where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
     {
         readonly IRepositoryActionService _actionService;
 

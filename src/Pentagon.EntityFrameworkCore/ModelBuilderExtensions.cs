@@ -24,7 +24,7 @@ namespace Pentagon.EntityFrameworkCore
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IConcurrencyStampSupport)))
                     builder.SetupConcurrencyEntityDefaults(type.ClrType);
 
-                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreatedTimeStampSupport)))
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreateTimeStampSupport)))
                     builder.SetupCreatedTimeSpanEntityDefaults(type.ClrType);
 
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdatedTimeStampSupport)))
@@ -56,7 +56,7 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         public static ModelBuilder SetupCreatedTimeSpanEntityDefaults<T>(this ModelBuilder builder)
-                where T : class, ICreatedTimeStampSupport
+                where T : class, ICreateTimeStampSupport
         {
             builder.Entity<T>().SetupCreatedTimeSpanEntityDefaults();
 

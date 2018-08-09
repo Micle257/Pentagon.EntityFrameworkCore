@@ -16,7 +16,7 @@ namespace Pentagon.EntityFrameworkCore
     public static class EntityTypeBuilderExtensions
     {
         public static EntityTypeBuilder<T> SetupCreatedTimeSpanEntityDefaults<T>(this EntityTypeBuilder<T> builder)
-                where T : class, ICreatedTimeStampSupport
+                where T : class, ICreateTimeStampSupport
         {
             builder.Property(p => p.CreatedAt)
                    .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
@@ -36,10 +36,10 @@ namespace Pentagon.EntityFrameworkCore
 
         public static EntityTypeBuilder SetupCreatedTimeSpanEntityDefaults(this EntityTypeBuilder builder, Type type)
         {
-            if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreatedTimeStampSupport)))
-                throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(ICreatedTimeStampSupport)}");
+            if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreateTimeStampSupport)))
+                throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(ICreateTimeStampSupport)}");
 
-            builder.Property(nameof(ICreatedTimeStampSupport.CreatedAt))
+            builder.Property(nameof(ICreateTimeStampSupport.CreatedAt))
                    .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
                    .IsRequired();
 

@@ -23,6 +23,6 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         }
 
         public ITwoWaySynchronization<T> CreateTwoWay<T>()
-                where T : class, IEntity, ICreateStampSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new() => new TwoWaySynchronization<T>(_actionService, _remote, _local);
+                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new() => new TwoWaySynchronization<T>(_actionService, _remote, _local);
     }
 }
