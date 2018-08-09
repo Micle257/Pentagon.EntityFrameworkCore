@@ -12,15 +12,15 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     public interface IRepositoryActionService
     {
         IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInOneWayMode<TEntity>(EntityPair<TEntity> pair)
-                where TEntity : class, IEntity, ICreateTimeStampSupport, IUpdatedTimeStampSupport, ICreateStampSupport;
+                where TEntity : class, IEntity, ICreateTimeStampSupport, IUpdateTimeStampSupport, ICreateStampSupport;
 
         IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInOneWayMode<TEntity>(TEntity remoteEntity, TEntity localEntity)
-                where TEntity : class, IEntity, ICreateTimeStampSupport, IUpdatedTimeStampSupport, ICreateStampSupport;
+                where TEntity : class, IEntity, ICreateTimeStampSupport, IUpdateTimeStampSupport, ICreateStampSupport;
 
         IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInTwoWayMode<TEntity>(TEntity remoteEntity, TEntity localEntity)
-                where TEntity : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport;
+                where TEntity : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport;
 
         IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInTwoWayMode<TEntity>(EntityPair<TEntity> pair)
-                where TEntity : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport;
+                where TEntity : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport;
     }
 }

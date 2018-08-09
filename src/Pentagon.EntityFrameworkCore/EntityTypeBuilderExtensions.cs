@@ -26,7 +26,7 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         public static EntityTypeBuilder<T> SetupUpdatedTimeSpanEntityDefaults<T>(this EntityTypeBuilder<T> builder)
-                where T : class, IUpdatedTimeStampSupport
+                where T : class, IUpdateTimeStampSupport
         {
             builder.Property(p => p.UpdatedAt)
                    .IsRequired(false);
@@ -48,10 +48,10 @@ namespace Pentagon.EntityFrameworkCore
 
         public static EntityTypeBuilder SetupUpdatedTimeSpanEntityDefaults(this EntityTypeBuilder builder, Type type)
         {
-            if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdatedTimeStampSupport)))
-                throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(IUpdatedTimeStampSupport)}");
+            if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdateTimeStampSupport)))
+                throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(IUpdateTimeStampSupport)}");
             
-            builder.Property(nameof(IUpdatedTimeStampSupport.UpdatedAt))
+            builder.Property(nameof(IUpdateTimeStampSupport.UpdatedAt))
                    .IsRequired(false);
 
             return builder;

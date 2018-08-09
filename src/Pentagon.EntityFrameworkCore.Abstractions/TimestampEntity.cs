@@ -11,7 +11,7 @@ namespace Pentagon.EntityFrameworkCore
 
     /// <summary> Represents an typed entity, with support for synchronization. </summary>
     /// <typeparam name="TKey"> The type of the key. </typeparam>
-    public abstract class TimestampEntity<TKey> : Entity<TKey>, ICreateStampSupport, IDeletedFlagSupport, ICreateTimeStampSupport, IUpdatedTimeStampSupport, IDeleteTimeStampSupport
+    public abstract class TimestampEntity<TKey> : Entity<TKey>, ICreateStampSupport, IDeletedFlagSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeleteTimeStampSupport
     {
         /// <inheritdoc />
         public Guid Uuid { get; set; }

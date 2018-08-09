@@ -27,7 +27,7 @@ namespace Pentagon.EntityFrameworkCore
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreateTimeStampSupport)))
                     builder.SetupCreatedTimeSpanEntityDefaults(type.ClrType);
 
-                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdatedTimeStampSupport)))
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdateTimeStampSupport)))
                     builder.SetupUpdatedTimeSpanEntityDefaults(type.ClrType);
             }
 
@@ -64,7 +64,7 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         public static ModelBuilder SetupUpdatedTimeSpanEntityDefaults<T>(this ModelBuilder builder)
-                where T : class, IUpdatedTimeStampSupport
+                where T : class, IUpdateTimeStampSupport
         {
             builder.Entity<T>().SetupUpdatedTimeSpanEntityDefaults();
 

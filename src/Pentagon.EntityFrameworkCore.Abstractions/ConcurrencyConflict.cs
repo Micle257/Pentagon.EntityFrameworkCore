@@ -10,7 +10,7 @@ namespace Pentagon.EntityFrameworkCore
 
     public class ConcurrencyConflictEntity
     {
-        public IUpdatedTimeStampSupport EntityUpdated => Entity as IUpdatedTimeStampSupport;
+        public IUpdateTimeStampSupport EntityUpdated => Entity as IUpdateTimeStampSupport;
 
         public IUpdateTimeStampIdentitySupport EntityIdentity => Entity as IUpdateTimeStampIdentitySupport;
 

@@ -10,7 +10,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary> Represents an entity, that supports pdate time stamps. </summary>
-    public interface IUpdatedTimeStampSupport
+    public interface IUpdateTimeStampSupport
     {
         /// <summary> Gets or sets the last updated time. </summary>
         /// <value> The <see cref="DateTimeOffset" />. </value>

@@ -48,7 +48,7 @@ namespace Pentagon.EntityFrameworkCore
                 // set last updated at when the entity has modified
                 if (entry.State == EntityState.Modified)
                 {
-                    if (entry.Entity is IUpdatedTimeStampSupport entityTimed2)
+                    if (entry.Entity is IUpdateTimeStampSupport entityTimed2)
                         entityTimed2.UpdatedAt = changedAt;
 
                     if (entry.Entity is IUpdateTimeStampIdentitySupport identity)
