@@ -12,7 +12,7 @@ namespace Pentagon.EntityFrameworkCore
     {
         public IUpdatedTimeStampSupport EntityUpdated => Entity as IUpdatedTimeStampSupport;
 
-        public ITimeStampIdentitySupport EntityIdentity => Entity as ITimeStampIdentitySupport;
+        public IUpdateTimeStampIdentitySupport EntityIdentity => Entity as IUpdateTimeStampIdentitySupport;
 
         public IEntity Entity { get; set; }
     }

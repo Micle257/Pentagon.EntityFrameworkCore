@@ -24,7 +24,8 @@ namespace Pentagon.EntityFrameworkCore
                                        typeof(ICreateStampSupport),
                                        typeof(IDeletedFlagSupport),
                                        typeof(IDeleteTimeStampIdentitySupport),
-                                       typeof(ITimeStampIdentitySupport),
+                                       typeof(IUpdateTimeStampIdentitySupport),
+                                       typeof(ICreateTimeStampIdentitySupport),
                                        typeof(IEntity),
                                        typeof(IUpdatedTimeStampSupport),
                                        typeof(IDeleteTimeStampSupport)

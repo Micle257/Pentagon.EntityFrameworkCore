@@ -11,7 +11,7 @@ namespace Pentagon.EntityFrameworkCore
     /// <summary> Represents an identity type entity, with synchronization support. </summary>
     /// <typeparam name="TKey"> The type of the key. </typeparam>
     /// <typeparam name="TUserKey"> The type of the user key for identity fields. </typeparam>
-    public abstract class TimestampIdentityEntity<TKey, TUserKey> : TimestampEntity<TKey>, ITimeStampIdentitySupport<TUserKey>, IDeleteTimeStampIdentitySupport<TUserKey>
+    public abstract class TimestampIdentityEntity<TKey, TUserKey> : TimestampEntity<TKey>, ICreateTimeStampIdentitySupport<TUserKey>, IUpdateTimeStampIdentitySupport<TUserKey>, IDeleteTimeStampIdentitySupport<TUserKey>
     {
         /// <inheritdoc />
         public TUserKey DeletedBy { get; set; }
@@ -30,14 +30,14 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         /// <inheritdoc />
-        object ITimeStampIdentitySupport.CreatedBy
+        object ICreateTimeStampIdentitySupport.CreatedBy
         {
             get => CreatedBy;
             set => CreatedBy = (TUserKey) value;
         }
 
         /// <inheritdoc />
-        object ITimeStampIdentitySupport.UpdatedBy
+        object IUpdateTimeStampIdentitySupport.UpdatedBy
         {
             get => UpdatedBy;
             set => UpdatedBy = (TUserKey) value;

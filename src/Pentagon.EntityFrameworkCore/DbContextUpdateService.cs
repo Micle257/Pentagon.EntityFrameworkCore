@@ -41,7 +41,7 @@ namespace Pentagon.EntityFrameworkCore
                     if (entry.Entity is ICreateStampSupport createStamp)
                         createStamp.Uuid = Guid.NewGuid();
 
-                    if (entry.Entity is ITimeStampIdentitySupport identity)
+                    if (entry.Entity is ICreateTimeStampIdentitySupport identity)
                         identity.CreatedBy = unitOfWork.UserId;
                 }
 
@@ -51,7 +51,7 @@ namespace Pentagon.EntityFrameworkCore
                     if (entry.Entity is IUpdatedTimeStampSupport entityTimed2)
                         entityTimed2.UpdatedAt = changedAt;
 
-                    if (entry.Entity is ITimeStampIdentitySupport identity)
+                    if (entry.Entity is IUpdateTimeStampIdentitySupport identity)
                         identity.UpdatedBy = unitOfWork.UserId;
                 }
 
