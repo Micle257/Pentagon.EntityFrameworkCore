@@ -14,7 +14,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     {
         /// <summary> Gets or sets the concurrency stamp used as row version. </summary>
         /// <value> The <see cref="Guid" />. </value>
-        [Required]
         Guid ConcurrencyStamp { get; set; }
     }
 }

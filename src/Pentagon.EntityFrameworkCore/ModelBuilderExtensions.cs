@@ -39,7 +39,8 @@ namespace Pentagon.EntityFrameworkCore
         {
             builder.Entity<T>()
                    .Property(p => p.ConcurrencyStamp)
-                   .HasDefaultValueSql(sql: "NEWID()");
+                   .HasDefaultValueSql(sql: "NEWID()")
+                   .IsRequired();
 
             return builder;
         }
@@ -48,7 +49,8 @@ namespace Pentagon.EntityFrameworkCore
         {
             builder.Entity(type)
                    .Property(nameof(IConcurrencyStampSupport.ConcurrencyStamp))
-                   .HasDefaultValueSql(sql: "NEWID()");
+                   .HasDefaultValueSql(sql: "NEWID()")
+                   .IsRequired();
 
             return builder;
         }
