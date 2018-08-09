@@ -1,20 +1,13 @@
 // -----------------------------------------------------------------------
-//  <copyright file="ITimeStampSupport.cs">
+//  <copyright file="IUpdateTimeStampIdentitySupport.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
 namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
 {
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    
-    public interface ITimeStampIdentitySupport
+    public interface IUpdateTimeStampIdentitySupport
     {
-        /// <summary> Gets or sets the user that created this entity. </summary>
-        /// <value> The <see cref="object" />. </value>
-        object CreatedBy { get; set; }
-
         /// <summary> Gets or sets the user that last updated this entity. </summary>
         /// <value> The <see cref="object" />. </value>
         object UpdatedBy { get; set; }
