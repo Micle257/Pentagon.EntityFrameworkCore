@@ -15,7 +15,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInOneWayMode<TEntity>(EntityPair<TEntity> pair)
                 where TEntity : class, IEntity, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, ICreateStampSupport
         {
-            if (pair.Type == EntityPairType.Both && pair.Remote.CreateGuid != pair.Local.CreateGuid)
+            if (pair.Type == EntityPairType.Both && pair.Remote.Uuid != pair.Local.Uuid)
                 throw new ArgumentException(message: "The given entities are not created from the same source.");
 
             var comms = new List<RepositoryAction<TEntity>>();
@@ -49,7 +49,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         public IEnumerable<RepositoryAction<TEntity>> GetRepositoryActionsInTwoWayMode<TEntity>(EntityPair<TEntity> pair)
                 where TEntity : class, IEntity, ICreateStampSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport
         {
-            if (pair.Type == EntityPairType.Both && pair.Remote.CreateGuid != pair.Local.CreateGuid)
+            if (pair.Type == EntityPairType.Both && pair.Remote.Uuid != pair.Local.Uuid)
                 throw new ArgumentException(message: "The given entities are not created from the same source.");
 
             var comms = new List<RepositoryAction<TEntity>>();

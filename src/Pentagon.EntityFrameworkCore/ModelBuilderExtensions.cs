@@ -88,7 +88,7 @@ namespace Pentagon.EntityFrameworkCore
                 where T : class, ICreateStampSupport
         {
             builder.Entity<T>()
-                   .Property(p => p.CreateGuid)
+                   .Property(p => p.Uuid)
                    .HasDefaultValueSql(sql: "NEWID()");
 
             return builder;
@@ -97,7 +97,7 @@ namespace Pentagon.EntityFrameworkCore
         public static ModelBuilder SetupCreateStampEntityDefaults(this ModelBuilder builder, Type type)
         {
             builder.Entity(type)
-                   .Property(nameof(ICreateStampSupport.CreateGuid))
+                   .Property(nameof(ICreateStampSupport.Uuid))
                    .HasDefaultValueSql(sql: "NEWID()");
 
             return builder;

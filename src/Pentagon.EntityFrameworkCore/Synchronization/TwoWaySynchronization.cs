@@ -90,18 +90,18 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
             var remoteData = (await remoteRepository.GetManyAsync(specification).ConfigureAwait(false)).ToList();
             var localData = (await localRepository.GetManyAsync(specification).ConfigureAwait(false)).ToList();
 
-            var intersect = remoteData.Select(v => v.CreateGuid).Intersect(localData.Select(v => v.CreateGuid)).ToList();
+            var intersect = remoteData.Select(v => v.Uuid).Intersect(localData.Select(v => v.Uuid)).ToList();
 
-            var diffRemote = remoteData.Select(v => v.CreateGuid).Except(intersect);
-            var diffLocal = localData.Select(v => v.CreateGuid).Except(intersect);
+            var diffRemote = remoteData.Select(v => v.Uuid).Except(intersect);
+            var diffLocal = localData.Select(v => v.Uuid).Except(intersect);
 
-            result.AddRange(intersect.Select(time => (remoteData.FirstOrDefault(v => v.CreateGuid == time), localData.FirstOrDefault(v => v.CreateGuid == time)))
+            result.AddRange(intersect.Select(time => (remoteData.FirstOrDefault(v => v.Uuid == time), localData.FirstOrDefault(v => v.Uuid == time)))
                                      .Select(tuple => new EntityPair<T>(tuple.Item1, tuple.Item2)));
 
-            result.AddRange(diffRemote.Select(time => remoteData.FirstOrDefault(v => v.CreateGuid == time))
+            result.AddRange(diffRemote.Select(time => remoteData.FirstOrDefault(v => v.Uuid == time))
                                       .Select(remote => new EntityPair<T>(remote, null)));
 
-            result.AddRange(diffLocal.Select(time => localData.FirstOrDefault(v => v.CreateGuid == time))
+            result.AddRange(diffLocal.Select(time => localData.FirstOrDefault(v => v.Uuid == time))
                                      .Select(local => new EntityPair<T>(null, local)));
 
             return result;

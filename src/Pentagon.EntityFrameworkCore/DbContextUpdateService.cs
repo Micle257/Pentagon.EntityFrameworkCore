@@ -39,7 +39,7 @@ namespace Pentagon.EntityFrameworkCore
                         entityTimed.CreatedAt = changedAt;
 
                     if (entry.Entity is ICreateStampSupport createStamp)
-                        createStamp.CreateGuid = Guid.NewGuid();
+                        createStamp.Uuid = Guid.NewGuid();
 
                     if (entry.Entity is ITimeStampIdentitySupport identity)
                         identity.CreatedBy = unitOfWork.UserId;

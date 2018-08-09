@@ -14,7 +14,7 @@ namespace Pentagon.EntityFrameworkCore
     public abstract class TimestampEntity<TKey> : Entity<TKey>, ICreateStampSupport, IDeletedFlagSupport, ICreatedTimeStampSupport, IUpdatedTimeStampSupport, IDeleteTimeStampSupport
     {
         /// <inheritdoc />
-        public Guid CreateGuid { get; set; }
+        public Guid Uuid { get; set; }
 
         /// <inheritdoc />
         public bool IsDeletedFlag { get; set; }

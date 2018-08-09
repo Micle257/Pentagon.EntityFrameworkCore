@@ -16,6 +16,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
         /// <summary> Gets or sets the unique identifier of the row. </summary>
         /// <value> The <see cref="Guid" />. </value>
         [Column(Order = 100)]
-        Guid CreateGuid { get; set; }
+        Guid Uuid { get; set; }
     }
 }

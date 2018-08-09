@@ -52,7 +52,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
             Assert.NotNull(entity.CreatedBy);
             Assert.NotEqual(default(DateTimeOffset), entity.CreatedAt);
             Assert.NotEqual(default(Guid), entity.ConcurrencyStamp);
-            Assert.NotEqual(default(Guid), entity.CreateGuid);
+            Assert.NotEqual(default(Guid), entity.Uuid);
         }
 
         [Fact]
