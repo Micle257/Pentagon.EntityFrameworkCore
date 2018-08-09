@@ -6,42 +6,84 @@
 namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System;
+    using Abstractions;
     using EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
     using Mocks;
     using Xunit;
     using Entity = Mocks.Entity;
 
     public class DbContextUpdateServiceTests
     {
+        public DbContextUpdateServiceTests()
+        {
+            var services = new ServiceCollection()
+                    .AddLogging();
+
+            services.AddUnitOfWork<Context, IApplicationContext, ContextFactory>();
+
+            DI = services.BuildServiceProvider();
+        }
+
+        IServiceProvider DI;
+
         [Fact]
         public void ShouldApplyWhenEntityIsAdded()
         {
-            using (var db = new Context())
-            {
-                var entity = new Entity {Value = "ss"};
-                db.Add(entity);
-                var service = new DbContextUpdateService();
-                service.Apply(db, DateTimeOffset.Now);
+            var unit = DI.GetService<IUnitOfWork<IApplicationContext>>();
+            var service = DI.GetService<IDbContextUpdateService>();
 
-                Assert.Null(entity.LastUpdatedAt);
-                Assert.Null(entity.DeletedAt);
-                Assert.False(entity.IsDeletedFlag);
-                Assert.NotEqual(default(DateTimeOffset),entity.CreatedAt);
-                Assert.NotEqual(default(Guid), entity.ConcurrencyStamp);
-                Assert.NotEqual(default(Guid), entity.CreateGuid);
-            }
+            unit.UserId = 2;
+
+            var db = unit.GetRepository<Entity>();
+
+            var entity = new Entity { Value = "ss" };
+
+            db.Insert(entity);
+            
+            service.Apply(unit, DateTimeOffset.Now);
+
+            Assert.Null(entity.LastUpdatedAt);
+            Assert.Null(entity.DeletedAt);
+            Assert.Null(entity.UpdatedBy);
+            Assert.Null(entity.DeletedBy);
+            Assert.False(entity.IsDeletedFlag);
+            
+            Assert.NotNull(entity.CreatedBy);
+            Assert.NotEqual(default(DateTimeOffset), entity.CreatedAt);
+            Assert.NotEqual(default(Guid), entity.ConcurrencyStamp);
+            Assert.NotEqual(default(Guid), entity.CreateGuid);
         }
 
         [Fact]
-        public void ShouldNotApplyWhenEntityIsNotBaseEntity()
+        public void ShouldApplyWhenEntityIsModified()
         {
-            using (var db = new Context())
-            {
-                var entity = new Simple { Data = "Hi" };
-                db.Add(entity);
-                var service = new DbContextUpdateService();
-                service.Apply(db, DateTimeOffset.Now);
-            }
+            var ex = DI.GetService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
+            var unit = DI.GetService<IUnitOfWork<IApplicationContext>>();
+            var service = DI.GetService<IDbContextUpdateService>();
+
+            unit.UserId = 2;
+
+            var db = unit.GetRepository<Entity>();
+
+            var entity = new Entity { Value = "ss" };
+
+            db.Insert(entity);
+
+            ex.ExecuteCommit(unit);
+
+            var e = db.GetOneAsync(a => true).Result;
+            e.Value = "qwe";
+
+            db.Update(e);
+            
+            service.Apply(unit, DateTimeOffset.Now);
+
+            Assert.NotNull(entity.LastUpdatedAt);
+            Assert.Null(entity.DeletedAt);
+            Assert.NotNull(entity.UpdatedBy);
+            Assert.Null(entity.DeletedBy);
+            Assert.False(entity.IsDeletedFlag);
         }
     }
 }

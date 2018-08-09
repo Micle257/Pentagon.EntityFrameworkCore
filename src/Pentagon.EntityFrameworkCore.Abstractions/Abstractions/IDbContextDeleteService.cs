@@ -15,6 +15,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
         /// <param name="appContext"> The application context. </param>
         /// <param name="changedAt">The changed at.</param>
         /// <param name="isHardDelete"> If set to <c> true </c> the deletion is hard (permanently deleted from database); otherwise the deletion is marked by IsDeleted property. </param>
-        void Apply(IApplicationContext appContext, DateTimeOffset changedAt, bool? isHardDelete = null);
+        void Apply<TContext>(IUnitOfWork<TContext> appContext, DateTimeOffset changedAt)
+                where TContext : IApplicationContext;
     }
 }

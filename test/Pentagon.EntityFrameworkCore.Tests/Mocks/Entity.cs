@@ -3,7 +3,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
     using Abstractions.Entities;
     using EntityFrameworkCore;
 
-    public class Entity : TimestampEntity<int>, IConcurrencyStampSupport
+    public class Entity : TimestampIdentityEntity<int?>, IConcurrencyStampSupport
     {
         public string Value { get; set; }
 

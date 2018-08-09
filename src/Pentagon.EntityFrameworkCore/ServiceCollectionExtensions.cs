@@ -93,7 +93,6 @@ namespace Pentagon.EntityFrameworkCore
         internal static IServiceCollection AddDbContextServices(this IServiceCollection builder)
         {
             builder.AddTransient<IDbContextDeleteService, DbContextDeleteService>();
-            builder.AddTransient<IDbContextIdentityService, DbContextIdentityService>();
             builder.AddTransient<IDbContextUpdateService, DbContextUpdateService>();
 
             return builder;

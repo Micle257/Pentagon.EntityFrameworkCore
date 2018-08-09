@@ -16,8 +16,11 @@ namespace Pentagon.EntityFrameworkCore
     public class DbContextUpdateService : IDbContextUpdateService
     {
         /// <inheritdoc />
-        public void Apply(IApplicationContext appContext, DateTimeOffset changedAt)
+        public void Apply<TContext>(IUnitOfWork<TContext> unitOfWork, DateTimeOffset changedAt)
+                where TContext : IApplicationContext
         {
+            var appContext = unitOfWork.Context;
+
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (!(appContext is DbContext dbContext))
                 throw new ArgumentNullException(nameof(dbContext));
@@ -37,11 +40,20 @@ namespace Pentagon.EntityFrameworkCore
 
                     if (entry.Entity is ICreateStampSupport createStamp)
                         createStamp.CreateGuid = Guid.NewGuid();
+
+                    if (entry.Entity is ITimeStampIdentitySupport identity)
+                        identity.CreatedBy = unitOfWork.UserId;
                 }
 
                 // set last updated at when the entity has modified
-                if (entry.State == EntityState.Modified && entry.Entity is IUpdatedTimeStampSupport entityTimed2)
-                    entityTimed2.LastUpdatedAt = changedAt;
+                if (entry.State == EntityState.Modified)
+                {
+                    if (entry.Entity is IUpdatedTimeStampSupport entityTimed2)
+                        entityTimed2.LastUpdatedAt = changedAt;
+
+                    if (entry.Entity is ITimeStampIdentitySupport identity)
+                        identity.UpdatedBy = unitOfWork.UserId;
+                }
 
                 // generate new concurrency id both for add and update
                 if (entry.Entity is IConcurrencyStampSupport concurrency)

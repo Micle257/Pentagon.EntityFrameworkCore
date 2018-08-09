@@ -25,23 +25,18 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         [NotNull]
         readonly IDbContextDeleteService _deleteService;
-
-        [NotNull]
-        readonly IDbContextIdentityService _identityService;
-
+        
         [NotNull]
         readonly IDatabaseCommitManager _commitManager;
 
         public UnitOfWorkCommitExecutor([NotNull] IConcurrencyConflictResolver<TContext> conflictResolver,
                                         [NotNull] IDbContextUpdateService updateService,
                                         [NotNull] IDbContextDeleteService deleteService,
-                                        [NotNull] IDbContextIdentityService identityService,
                                         [NotNull] IDatabaseCommitManager commitManager)
         {
             _conflictResolver = conflictResolver ?? throw new ArgumentNullException(nameof(conflictResolver));
             _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
             _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
-            _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
         }
 
@@ -72,9 +67,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 var changedAt = unitOfWork.TimeStampSource.GetAndReset();
 
-                _updateService.Apply(unitOfWork.Context, changedAt);
-                _deleteService.Apply(unitOfWork.Context, changedAt, unitOfWork.Context.HasHardDeleteBehavior);
-                _identityService.Apply(unitOfWork.Context, unitOfWork.UserId);
+                _updateService.Apply(unitOfWork, changedAt);
+                _deleteService.Apply(unitOfWork, changedAt);
 
                 // save the database without appling changes
                 await _dbContext.SaveChangesAsync(false).ConfigureAwait(false);
@@ -121,9 +115,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 var changedAt = unitOfWork.TimeStampSource.GetAndReset();
 
-                _updateService.Apply(unitOfWork.Context, changedAt);
-                _deleteService.Apply(unitOfWork.Context, changedAt, unitOfWork.Context.HasHardDeleteBehavior);
-                _identityService.Apply(unitOfWork.Context, unitOfWork.UserId);
+                _updateService.Apply(unitOfWork, changedAt);
+                _deleteService.Apply(unitOfWork, changedAt);
 
                 // save the database without appling changes
                 _dbContext.SaveChanges(false);

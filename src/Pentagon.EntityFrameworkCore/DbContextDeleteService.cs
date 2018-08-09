@@ -24,8 +24,11 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         /// <inheritdoc />
-        public void Apply(IApplicationContext appContext, DateTimeOffset changedAt, bool? isHardDelete = null)
+        public void Apply<TContext>(IUnitOfWork<TContext> unitOfWork, DateTimeOffset changedAt)
+                where TContext : IApplicationContext
         {
+            var appContext = unitOfWork.Context;
+
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (!(appContext is DbContext dbContext))
                 throw new ArgumentNullException(nameof(dbContext));
@@ -34,13 +37,26 @@ namespace Pentagon.EntityFrameworkCore
                 return;
 
             var entries = dbContext.ChangeTracker?.Entries()
-                                   .Where(e => e.Entity is IEntity && e.State == EntityState.Deleted);
+                                   .Where(e => e.Entity is IEntity && (e.State == EntityState.Deleted || e.State == EntityState.Modified));
 
-            var hardDelete = isHardDelete.HasValue ? isHardDelete.Value : appContext.HasHardDeleteBehavior;
+            var hardDelete = appContext.HasHardDeleteBehavior;
 
             foreach (var entry in entries)
             {
-                if (!hardDelete)
+                if (entry.State == EntityState.Modified)
+                {
+                    if (entry.Entity is IDeletedFlagSupport entity && entity.IsDeletedFlag)
+                    {
+                        if (entry.Entity is IDeleteTimeStampSupport entityTimed)
+                            entityTimed.DeletedAt = changedAt;
+
+                        if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
+                        {
+                            deleteEntity.DeletedBy = unitOfWork.UserId;
+                        }
+                    }
+                }
+                else if (!hardDelete)
                 {
                     if (entry.Entity is IDeletedFlagSupport entity)
                         entity.IsDeletedFlag = true;
@@ -50,10 +66,15 @@ namespace Pentagon.EntityFrameworkCore
                         continue;
                     }
 
+                    entry.State = EntityState.Modified;
+
                     if (entry.Entity is IDeleteTimeStampSupport entityTimed)
                         entityTimed.DeletedAt = changedAt;
 
-                    entry.State = EntityState.Unchanged;
+                    if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
+                    {
+                        deleteEntity.DeletedBy = unitOfWork.UserId;
+                    }
                 }
             }
         }
