@@ -40,13 +40,13 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         }
 
         /// <inheritdoc />
-        public static IFilterSpecification<TEntity> AddNumberFilter<TEntity>(this IFilterSpecification<TEntity> specification,
-                                                                             Expression<Func<TEntity, decimal>> propertySelector,
+        public static IFilterSpecification<TEntity> AddNumberFilter<TEntity, TValue>(this IFilterSpecification<TEntity> specification,
+                                                                             Expression<Func<TEntity, TValue>> propertySelector,
                                                                              NumberFilter filter,
-                                                                             decimal value)
+                                                                                     TValue value)
                 where TEntity : IEntity
         {
-            var expression = NumberFilterExpressionHelper<decimal>.GetFilter(propertySelector, filter, value);
+            var expression = NumberFilterExpressionHelper<TValue>.GetFilter(propertySelector, filter, value);
 
             specification.Filters.Add(expression);
 
@@ -54,44 +54,16 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         }
 
         /// <inheritdoc />
-        public static IFilterSpecification<TEntity> AddNumberDoubleFilter<TEntity>(this IFilterSpecification<TEntity> specification,
-                                                                                   Expression<Func<TEntity, decimal>> propertySelector,
+        public static IFilterSpecification<TEntity> AddNumberDoubleFilter<TEntity, TValue>(this IFilterSpecification<TEntity> specification,
+                                                                                   Expression<Func<TEntity, TValue>> propertySelector,
                                                                                    NumberFilter firstFilter,
-                                                                                   decimal firstValue,
+                                                                                           TValue firstValue,
                                                                                    FilterLogicOperation operation,
                                                                                    NumberFilter secondFilter,
-                                                                                   decimal secondValue)
+                                                                                           TValue secondValue)
                 where TEntity : IEntity
         {
-            var expression = NumberFilterExpressionHelper<decimal>.GetDoubleFilter(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
-
-            specification.Filters.Add(expression);
-
-            return specification;
-        }
-
-        /// <inheritdoc />
-        public static IFilterSpecification<TEntity> AddNumberFilter<TEntity>(this IFilterSpecification<TEntity> specification, Expression<Func<TEntity, int>> propertySelector, NumberFilter filter, int value)
-                where TEntity : IEntity
-        {
-            var expression = NumberFilterExpressionHelper<int>.GetFilter(propertySelector, filter, value);
-
-            specification.Filters.Add(expression);
-
-            return specification;
-        }
-
-        /// <inheritdoc />
-        public static IFilterSpecification<TEntity> AddNumberDoubleFilter<TEntity>(this IFilterSpecification<TEntity> specification,
-                                                                                   Expression<Func<TEntity, int>> propertySelector,
-                                                                                   NumberFilter firstFilter,
-                                                                                   int firstValue,
-                                                                                   FilterLogicOperation operation,
-                                                                                   NumberFilter secondFilter,
-                                                                                   int secondValue)
-                where TEntity : IEntity
-        {
-            var expression = NumberFilterExpressionHelper<int>.GetDoubleFilter(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
+            var expression = NumberFilterExpressionHelper<TValue>.GetDoubleFilter(propertySelector, firstFilter, firstValue, operation, secondFilter, secondValue);
 
             specification.Filters.Add(expression);
 

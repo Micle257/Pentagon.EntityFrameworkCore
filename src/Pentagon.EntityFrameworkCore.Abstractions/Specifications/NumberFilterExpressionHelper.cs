@@ -7,10 +7,10 @@
 namespace Pentagon.EntityFrameworkCore.Specifications
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq.Expressions;
 
     public static class NumberFilterExpressionHelper<T>
-            where T : IComparable
     {
         public static Expression<Func<TEntity, bool>> GetFilter<TEntity>(Expression<Func<TEntity, T>> propertySelector, NumberFilter filter, T value)
         {
@@ -18,7 +18,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             var parameter = Expression.Parameter(typeof(TEntity), name: "e");
 
-            ex = new ParameterReplacer(parameter).Visit(ex);
+            ex = ParameterReplacer.Replace(ex, parameter);
 
             return (Expression<Func<TEntity, bool>>) Expression.Lambda(typeof(Func<TEntity, bool>), ex, parameter);
         }
@@ -52,7 +52,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             var parameter = Expression.Parameter(typeof(TEntity), name: "e");
 
-            expression = new ParameterReplacer(parameter).Visit(expression);
+            expression = ParameterReplacer.Replace(expression, parameter);
 
             return (Expression<Func<TEntity, bool>>) Expression.Lambda(typeof(Func<TEntity, bool>), expression, parameter);
         }
@@ -62,63 +62,85 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             switch (textFilter)
             {
                 case NumberFilter.Equal:
-                    return GetNotInvertedBody(callBody, v => v.Equals(value));
+                    return GetBody(callBody, v => v.Equals(value));
                 case NumberFilter.NotEqual:
-                    return GetInvertedBody(callBody, v => !v.Equals(value));
+                    return GetBody(callBody, v => !v.Equals(value));
+                case NumberFilter.NotEmpty:
+                case NumberFilter.Empty:
+                   break;
                 case NumberFilter.GreatenThan:
-                    return GetBinaryBody(callBody, v => v.CompareTo(value) > 0);
+                    return GetBody(callBody, v => Comparer<T>.Default.Compare(v, value) > 0);
                 case NumberFilter.GreatenThenOrEqualTo:
-                    return GetDoubleBinaryBody(callBody, v => v.CompareTo(value) > 0 || v.Equals(value));
+                    return GetBody(callBody, v => Comparer<T>.Default.Compare(v, value) > 0 || v.Equals(value));
                 case NumberFilter.LessThen:
-                    return GetBinaryBody(callBody, v => v.CompareTo(value) < 0);
+                    return GetBody(callBody, v => Comparer<T>.Default.Compare(v, value) < 0);
                 case NumberFilter.LessThenOrEqualTo:
-                    return GetDoubleBinaryBody(callBody, v => v.CompareTo(value) < 0 || v.Equals(value));
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
+                    return GetBody(callBody, v => Comparer<T>.Default.Compare(v, value) < 0 || v.Equals(value));
             }
+
+            if (Nullable.GetUnderlyingType(typeof(T)) != null)
+            {
+                switch (textFilter)
+                {
+                    case NumberFilter.Empty:
+                        return GetBody(callBody, v => Equals(v, null));
+                    case NumberFilter.NotEmpty:
+                        return GetBody(callBody, v => !Equals(v, null));
+                }
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
         }
 
-        static Expression GetDoubleBinaryBody(Expression callBody, Expression<Func<T, bool>> callback)
+        static Expression GetBody(Expression callBody, Expression<Func<T, bool>> callback)
         {
-            var leftExpression = GetBinaryBody(callBody, Expression.Lambda<Func<T, bool>>(((BinaryExpression) callback.Body).Left, Expression.Parameter(typeof(T))));
+            var parameter = callback.Parameters[0];
+            var body = callback.Body;
 
-            var rightExpression = GetNotInvertedBody(callBody, Expression.Lambda<Func<T, bool>>(((BinaryExpression) callback.Body).Right, Expression.Parameter(typeof(T))));
-
-            return Expression.MakeBinary(ExpressionType.OrElse, leftExpression, rightExpression);
+            return  ParameterReplacer.Replace(body, parameter, callBody);
         }
 
-        static Expression GetBinaryBody(Expression callBody, Expression<Func<T, bool>> callback)
-        {
-            var binaryBody = (BinaryExpression) callback.Body;
+        //static Expression GetDoubleBinaryBody(Expression callBody, Expression<Func<T, bool>> callback)
+        //{
+        //    var leftExpression = GetBinaryBody(callBody, Expression.Lambda<Func<T, bool>>(((BinaryExpression) callback.Body).Left, Expression.Parameter(typeof(T))));
 
-            var body = (MethodCallExpression) binaryBody.Left;
-            var containsMethodInfo = body.Method;
-            var containsArgument = body.Arguments[0];
-            Expression concatExpressionBody = Expression.Call(callBody, containsMethodInfo, containsArgument);
+        //    var rightExpression = GetNotInvertedBody(callBody, Expression.Lambda<Func<T, bool>>(((BinaryExpression) callback.Body).Right, Expression.Parameter(typeof(T))));
 
-            concatExpressionBody = Expression.MakeBinary(binaryBody.NodeType, concatExpressionBody, binaryBody.Right);
+        //    return Expression.MakeBinary(ExpressionType.OrElse, leftExpression, rightExpression);
+        //}
 
-            return concatExpressionBody;
-        }
+        //static Expression GetBinaryBody(Expression callBody, Expression<Func<T, bool>> callback)
+        //{
+        //    var binaryBody = (BinaryExpression) callback.Body;
 
-        static Expression GetNotInvertedBody(Expression callBody, Expression<Func<T, bool>> callback)
-        {
-            var body = (MethodCallExpression) callback.Body;
-            var containsMethodInfo = body.Method;
-            var containsArgument = body.Arguments[0];
-            var concatExpressionBody = Expression.Call(callBody, containsMethodInfo, containsArgument);
+        //    var body = (MethodCallExpression) binaryBody.Left;
+        //    var containsMethodInfo = body.Method;
+        //    var containsArgument = body.Arguments[0];
+        //    Expression concatExpressionBody = Expression.Call(callBody, containsMethodInfo, containsArgument);
 
-            return concatExpressionBody;
-        }
+        //    concatExpressionBody = Expression.MakeBinary(binaryBody.NodeType, concatExpressionBody, binaryBody.Right);
 
-        static Expression GetInvertedBody(Expression callBody, Expression<Func<T, bool>> callback)
-        {
-            var body = (MethodCallExpression) ((UnaryExpression) callback.Body).Operand;
-            var containsMethodInfo = body.Method;
-            var containsArgument = body.Arguments[0];
-            var concatExpressionBody = Expression.Not(Expression.Call(callBody, containsMethodInfo, containsArgument));
+        //    return concatExpressionBody;
+        //}
 
-            return concatExpressionBody;
-        }
+        //static Expression GetNotInvertedBody(Expression callBody, Expression<Func<T, bool>> callback)
+        //{
+        //    var body = (MethodCallExpression) callback.Body;
+        //    var containsMethodInfo = body.Method;
+        //    var containsArgument = body.Arguments[0];
+        //    var concatExpressionBody = Expression.Call(callBody, containsMethodInfo, containsArgument);
+
+        //    return concatExpressionBody;
+        //}
+
+        //static Expression GetInvertedBody(Expression callBody, Expression<Func<T, bool>> callback)
+        //{
+        //    var body = (MethodCallExpression) ((UnaryExpression) callback.Body).Operand;
+        //    var containsMethodInfo = body.Method;
+        //    var containsArgument = body.Arguments[0];
+        //    var concatExpressionBody = Expression.Not(Expression.Call(callBody, containsMethodInfo, containsArgument));
+
+        //    return concatExpressionBody;
+        //}
     }
 }

@@ -17,7 +17,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             var parameter = Expression.Parameter(typeof(TEntity), name: "e");
 
-            ex = new ParameterReplacer(parameter).Visit(ex);
+            ex = ParameterReplacer.Replace(ex, parameter);
 
             return (Expression<Func<TEntity, bool>>) Expression.Lambda(typeof(Func<TEntity, bool>), ex, parameter);
         }
@@ -51,7 +51,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             var parameter = Expression.Parameter(typeof(TEntity), name: "e");
 
-            expression = new ParameterReplacer(parameter).Visit(expression);
+            expression = ParameterReplacer.Replace(expression, parameter);
 
             return (Expression<Func<TEntity, bool>>) Expression.Lambda(typeof(Func<TEntity, bool>), expression, parameter);
         }
@@ -61,40 +61,32 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             switch (textFilter)
             {
                 case TextFilter.Equal:
-                    return GetNotInvertedBody(callBody, v => v.Equals(value));
+                    return GetBody(callBody, v => v.Equals(value));
                 case TextFilter.NotEqual:
-                    return GetInvertedBody(callBody, v => !v.Equals(value));
+                    return GetBody(callBody, v => !v.Equals(value));
+                case TextFilter.Empty:
+                    return GetBody(callBody, v => string.IsNullOrWhiteSpace(v));
+                case TextFilter.NotEmpty:
+                    return GetBody(callBody, v => !string.IsNullOrWhiteSpace(v));
                 case TextFilter.StartWith:
-                    return GetNotInvertedBody(callBody, v => v.StartsWith(value));
+                    return GetBody(callBody, v => v.StartsWith(value));
                 case TextFilter.EndWith:
-                    return GetNotInvertedBody(callBody, v => v.EndsWith(value));
+                    return GetBody(callBody, v => v.EndsWith(value));
                 case TextFilter.Contain:
-                    return GetNotInvertedBody(callBody, v => v.Contains(value));
+                    return GetBody(callBody, v => v.Contains(value));
                 case TextFilter.NotContain:
-                    return GetInvertedBody(callBody, v => !v.Contains(value));
+                    return GetBody(callBody, v => !v.Contains(value));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
             }
         }
 
-        static Expression GetNotInvertedBody(Expression callBody, Expression<Func<string, bool>> callback)
+        static Expression GetBody(Expression callBody, Expression<Func<string, bool>> callback)
         {
-            var body = (MethodCallExpression) callback.Body;
-            var containsMethodInfo = body.Method;
-            var containsArgument = body.Arguments[0];
-            var concatExpressionBody = Expression.Call(callBody, containsMethodInfo, containsArgument);
+            var parameter = callback.Parameters[0];
+            var body = callback.Body;
 
-            return concatExpressionBody;
-        }
-
-        static Expression GetInvertedBody(Expression callBody, Expression<Func<string, bool>> callback)
-        {
-            var body = (MethodCallExpression) ((UnaryExpression) callback.Body).Operand;
-            var containsMethodInfo = body.Method;
-            var containsArgument = body.Arguments[0];
-            var concatExpressionBody = Expression.Not(Expression.Call(callBody, containsMethodInfo, containsArgument));
-
-            return concatExpressionBody;
+          return  ParameterReplacer.Replace(body, parameter, callBody);
         }
     }
 }
