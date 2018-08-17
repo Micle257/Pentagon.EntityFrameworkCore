@@ -8,15 +8,39 @@ namespace Pentagon.EntityFrameworkCore
 {
     using System.Linq.Expressions;
 
-    public class ParameterReplacer : ExpressionVisitor
+    public static class ParameterReplacer
     {
-        readonly ParameterExpression _parameter;
+        public static Expression Replace(Expression expression,
+                                         ParameterExpression source,
+                                         Expression target) => new ParameterReplacerVisitor(source, target).Visit(expression);
 
-        public ParameterReplacer(ParameterExpression parameter)
+        public static Expression Replace(Expression expression,
+                                         ParameterExpression source) => new SimpleParameterReplacerVisitor(source).Visit(expression);
+
+        class ParameterReplacerVisitor : ExpressionVisitor
         {
-            _parameter = parameter;
+            readonly ParameterExpression _source;
+            readonly Expression _target;
+
+            public ParameterReplacerVisitor(ParameterExpression source, Expression target)
+            {
+                _source = source;
+                _target = target;
+            }
+
+            protected override Expression VisitParameter(ParameterExpression node) => node == _source ? _target : base.VisitParameter(node);
         }
 
-        protected override Expression VisitParameter(ParameterExpression node) => base.VisitParameter(_parameter);
+        class SimpleParameterReplacerVisitor : ExpressionVisitor
+        {
+            readonly ParameterExpression _source;
+
+            public SimpleParameterReplacerVisitor(ParameterExpression source)
+            {
+                _source = source;
+            }
+
+            protected override Expression VisitParameter(ParameterExpression node) => base.VisitParameter(_source);
+        }
     }
 }

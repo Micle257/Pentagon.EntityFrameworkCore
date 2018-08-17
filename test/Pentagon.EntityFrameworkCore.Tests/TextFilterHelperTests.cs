@@ -20,6 +20,15 @@ namespace Pentagon.EntityFrameworkCore.Tests {
         [InlineData(TextFilter.StartWith, "wBas", "Bas", false)]
         [InlineData(TextFilter.EndWith, "Basse", "sse", true)]
         [InlineData(TextFilter.EndWith, "wBas", "wBa", false)]
+        [InlineData(TextFilter.EndWith, "wBas", "wBa", false)]
+        [InlineData(TextFilter.Empty, "", null, true)]
+        [InlineData(TextFilter.Empty, "   ", null, true)]
+        [InlineData(TextFilter.Empty, null, null, true)]
+        [InlineData(TextFilter.Empty, "lol", null, false)]
+        [InlineData(TextFilter.NotEmpty, "", null, false)]
+        [InlineData(TextFilter.NotEmpty, "   ", null, false)]
+        [InlineData(TextFilter.NotEmpty, null, null, false)]
+        [InlineData(TextFilter.NotEmpty, "lol", null, true)]
         public void GetFilter_ReturnsCorrectExpression(TextFilter filterType,string value, string filterValue, bool result)
         {
             var person = new Person { Name = value};
@@ -29,6 +38,10 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var callback = filter.Compile();
             
             Assert.Equal(result,callback(person));
+
+            var spec = new GetManySpecification<Person>();
+
+            spec.AddNumberFilter(p => (decimal?)null, NumberFilter.Equal, 3);
         }
     }
 }
