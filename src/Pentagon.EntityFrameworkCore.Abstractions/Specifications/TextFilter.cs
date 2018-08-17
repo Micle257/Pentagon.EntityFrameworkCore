@@ -11,6 +11,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         Unspecified,
         Equal,
         NotEqual,
+        Empty,
+        NotEmpty,
         StartWith,
         EndWith,
         Contain,

@@ -10,7 +10,9 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     {
         Unspecified,
         Equal,
-        NotEqual,
+        NotEqual, 
+        Empty,
+        NotEmpty,
         GreatenThan,
         GreatenThenOrEqualTo,
         LessThen,
