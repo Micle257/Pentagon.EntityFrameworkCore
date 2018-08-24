@@ -8,11 +8,15 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System.Threading.Tasks;
 
-    public interface IUnitOfWorkCommitExecutor<in TContext>
+    public interface IUnitOfWorkCommitExecutor<in TContext> : IUnitOfWorkCommitExecutor
             where TContext : IApplicationContext
     {
-        Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork<TContext> unitOfWork);
+    }
 
-        UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork<TContext> unitOfWork);
+    public interface IUnitOfWorkCommitExecutor
+    {
+        Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork unitOfWork);
+
+        UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork unitOfWork);
     }
 }

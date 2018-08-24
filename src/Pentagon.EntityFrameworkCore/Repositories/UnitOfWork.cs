@@ -14,9 +14,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
-
+    
     /// <summary> Represents an unit of work that communicate with a database and manage repository changes to the database. </summary>
-    /// <typeparam name="TContext"> The type of the db context. </typeparam>
+    /// /// <typeparam name="TContext"> The type of the db context. </typeparam>
     public class UnitOfWork<TContext> : IUnitOfWork<TContext>
             where TContext : class, IApplicationContext
     {
@@ -30,8 +30,16 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         [NotNull]
         public ITimeStampSource TimeStampSource { get; }
 
+        /// <inheritdoc />
+        public TContext Context { get; }
+
+        /// <inheritdoc />
+        IApplicationContext IUnitOfWork.Context => Context;
+
         /// <summary> The database context. </summary>
         readonly DbContext _dbContext;
+
+        TContext _context;
 
         /// <summary> Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class. </summary>
         /// <param name="context"> The context. </param>
@@ -56,10 +64,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _dbContext.ChangeTracker.StateChanged += OnStateChanged;
             _dbContext.ChangeTracker.Tracked += OnTracked;
         }
-
-        /// <inheritdoc />
-        public TContext Context { get; }
-
+        
         /// <inheritdoc />
         public bool IsUserAttached => UserId != null;
 
@@ -120,7 +125,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         void OnCommiting(CommitEventArgs commitEventArgs)
         {
-            _commitManager?.RaiseCommiting(typeof(TContext), commitEventArgs.Entries.FirstOrDefault().Entity.GetType(), commitEventArgs.Entries);
+            _commitManager?.RaiseCommiting(Context.GetType(), commitEventArgs.Entries.FirstOrDefault().Entity.GetType(), commitEventArgs.Entries);
         }
     }
 }

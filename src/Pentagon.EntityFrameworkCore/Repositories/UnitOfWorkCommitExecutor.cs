@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions.Entities;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-
+    
     public class UnitOfWorkCommitExecutor<TContext> : IUnitOfWorkCommitExecutor<TContext>
             where TContext : IApplicationContext
     {
@@ -40,7 +40,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
         }
 
-        public async Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork<TContext> unitOfWork)
+        public async Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork unitOfWork)
         {
             var _dbContext = unitOfWork.Context as DbContext;
 
@@ -88,7 +88,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork<TContext> unitOfWork)
+        public UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork unitOfWork)
         {
             var _dbContext = unitOfWork.Context as DbContext;
 

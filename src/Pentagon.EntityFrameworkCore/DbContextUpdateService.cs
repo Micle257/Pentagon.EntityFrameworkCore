@@ -16,8 +16,7 @@ namespace Pentagon.EntityFrameworkCore
     public class DbContextUpdateService : IDbContextUpdateService
     {
         /// <inheritdoc />
-        public void Apply<TContext>(IUnitOfWork<TContext> unitOfWork, DateTimeOffset changedAt)
-                where TContext : IApplicationContext
+        public void Apply(IUnitOfWork unitOfWork, DateTimeOffset changedAt)
         {
             var appContext = unitOfWork.Context;
 

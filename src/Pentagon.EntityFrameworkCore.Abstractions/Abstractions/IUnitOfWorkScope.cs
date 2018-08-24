@@ -8,10 +8,16 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System;
 
-    public interface IUnitOfWorkScope<out TContext> : IDisposable
+    public interface IUnitOfWorkScope<out TContext> : IUnitOfWorkScope
             where TContext : IApplicationContext
     {
-        object UserId { get; set; }
         IUnitOfWork<TContext> Get();
+    }
+
+    public interface IUnitOfWorkScope : IDisposable
+    {
+        object UserId { get; set; }
+
+        IUnitOfWork Get();
     }
 }

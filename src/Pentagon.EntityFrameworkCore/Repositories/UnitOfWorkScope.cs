@@ -32,6 +32,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public object UserId { get; set; }
 
         /// <inheritdoc />
+        IUnitOfWork IUnitOfWorkScope.Get() => Get();
+
+        /// <inheritdoc />
         public IUnitOfWork<TContext> Get()
         {
             if (_scopedUnitOfWork != null)

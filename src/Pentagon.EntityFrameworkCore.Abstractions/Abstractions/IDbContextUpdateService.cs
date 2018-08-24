@@ -16,7 +16,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
         /// </summary>
         /// <param name="appContext">The application context.</param>
         /// <param name="changedAt">The changed at.</param>
-        void Apply<TContext>(IUnitOfWork<TContext> unitOfWork, DateTimeOffset changedAt)
-                where TContext : IApplicationContext;
+        void Apply(IUnitOfWork unitOfWork, DateTimeOffset changedAt);
     }
 }
