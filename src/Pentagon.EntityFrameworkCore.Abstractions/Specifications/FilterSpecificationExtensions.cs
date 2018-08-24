@@ -13,6 +13,16 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
     public static class FilterSpecificationExtensions
     {
+        public static IFilterSpecification<TEntity> AddValueFilter<TEntity, TProperty>(this IFilterSpecification<TEntity> specification, Expression<Func<TEntity, TProperty>> propertySelector, params TProperty[] values)
+                where TEntity : IEntity
+        {
+            var expression = ValueFilterExpressionHelper.GetFilter(propertySelector, values);
+
+            specification.Filters.Add(expression);
+
+            return specification;
+        }
+
         public static IFilterSpecification<TEntity> AddTextFilter<TEntity>(this IFilterSpecification<TEntity> specification, Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
                 where TEntity : IEntity
         {

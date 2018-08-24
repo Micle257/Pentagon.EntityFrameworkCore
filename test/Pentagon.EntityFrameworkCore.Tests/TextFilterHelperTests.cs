@@ -38,10 +38,6 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var callback = filter.Compile();
             
             Assert.Equal(result,callback(person));
-
-            var spec = new GetManySpecification<Person>();
-
-            spec.AddNumberFilter(p => (decimal?)null, NumberFilter.Equal, 3);
         }
     }
 }
