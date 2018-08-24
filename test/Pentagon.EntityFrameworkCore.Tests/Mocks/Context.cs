@@ -4,7 +4,31 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
     using EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
-    public class Context : DbContext, IApplicationContext
+    public interface INewContext : IApplicationContext
+    {
+
+    }
+
+    public interface IContext : IApplicationContext
+    {
+
+    }
+
+    public class NewContext : DbContext, INewContext
+    {
+        public DbSet<Simple> Simples { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseInMemoryDatabase("DB2");
+            base.OnConfiguring(optionsBuilder);
+        }
+
+        /// <inheritdoc />
+        public bool HasHardDeleteBehavior { get; }
+    }
+
+    public class Context : DbContext, IContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

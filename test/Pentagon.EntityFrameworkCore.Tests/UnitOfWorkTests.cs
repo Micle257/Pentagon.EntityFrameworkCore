@@ -13,6 +13,31 @@ namespace Pentagon.EntityFrameworkCore.Tests {
     public class UnitOfWorkTests
     {
         [Fact]
+        public void Test()
+        {
+            var services = new ServiceCollection()
+                    .AddLogging();
+
+            services.AddUnitOfWork<NewContext, INewContext>()
+                    .AddUnitOfWork<Context, IContext, ContextFactory>()
+                    .AddDefaultAppContext<INewContext>();
+            
+            var di = services.BuildServiceProvider();
+
+           var unit = di.GetService<IUnitOfWork>();
+
+            var unit2 = di.GetService<IUnitOfWork<INewContext>>();
+
+            var unit3 = di.GetService<IUnitOfWork<IApplicationContext>>();
+
+            var unit5= di.GetService<IUnitOfWork<IContext>>();
+
+            var ct = di.GetService<IApplicationContext>();
+            var ct2 = di.GetService<Context>();
+            var ct3 = di.GetService<NewContext>();
+        }
+
+        [Fact]
         public void FactMethodName()
         {
             var services = new ServiceCollection()
