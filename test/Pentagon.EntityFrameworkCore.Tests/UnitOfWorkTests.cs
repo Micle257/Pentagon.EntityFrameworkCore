@@ -1,15 +1,60 @@
 namespace Pentagon.EntityFrameworkCore.Tests {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using Abstractions;
     using EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Mocks;
+    using Synchronization;
     using Xunit;
     using Entity = Mocks.Entity;
 
     public class UnitOfWorkTests
     {
+        [Fact]
+        public void FactMethodName()
+        {
+            var services = new ServiceCollection()
+                    .AddLogging();
+
+            services.AddUnitOfWork<Context, IApplicationContext, ContextFactory>();
+
+            var di = services.BuildServiceProvider();
+
+            var unitFactory = di.GetRequiredService<IUnitOfWorkFactory<IApplicationContext>>();
+            var com = di.GetRequiredService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
+            var change = new DatabaseChangeManager<IApplicationContext>(unitFactory);
+
+            var unit = unitFactory.Create();
+
+            var rep = unit.GetRepository<Entity>();
+
+            rep.Insert(new Entity{Value = "1"});
+            rep.Insert(new Entity{Value = "2"});
+
+            com.ExecuteCommit(unit);
+            Task.Delay(1000);
+            var time = DateTimeOffset.Now;
+
+            rep.Insert(new Entity{Value = "3"});
+            rep.Insert(new Entity{Value = "4"});
+            var two = rep.GetOneAsync(a => a.Value == "2").Result;
+            two.Value = "2new";
+            rep.Update(two);
+
+            com.ExecuteCommit(unit);
+            Task.Delay(1000);
+
+           var one = rep.GetOneAsync(a => a.Value == "1").Result;
+            rep.Delete(one);
+
+            com.ExecuteCommit(unit);
+            Task.Delay(1000);
+
+            var c= change.GetChange<Entity>(time).Result;
+        }
+
         [Fact]
         public void ConcurrencyTest()
         {
