@@ -15,10 +15,12 @@ namespace Pentagon.EntityFrameworkCore
 
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDatabaseSynchronization(this IServiceCollection builder)
+        public static IServiceCollection AddDatabaseSynchronization<TRemoteContext, TLocalContext>(this IServiceCollection builder)
+                where TRemoteContext : IApplicationContext
+                where TLocalContext : IApplicationContext
         {
             builder.AddTransient<IDbContextSynchronizator, DbContextSynchronizator>();
-            builder.AddTransient<ISynchronizationFactory, SynchronizationFactory>();
+            builder.AddTransient<ISynchronizationFactory, SynchronizationFactory<TRemoteContext, TLocalContext>>();
             builder.AddTransient<IRepositoryActionService, RepositoryActionService>();
 
             return builder;

@@ -98,13 +98,13 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     {
         readonly IRepositoryActionService _actionService;
 
-        readonly IUnitOfWorkScope<IRemoteContext> _remoteFactory;
+        readonly IUnitOfWorkScope _remoteFactory;
 
-        readonly IUnitOfWorkScope<ILocalContext> _localFactory;
+        readonly IUnitOfWorkScope _localFactory;
 
         public TwoWaySynchronization(IRepositoryActionService actionService,
-                                     IUnitOfWorkScope<IRemoteContext> remoteFactory,
-                                     IUnitOfWorkScope<ILocalContext> localFactory)
+                                     IUnitOfWorkScope remoteFactory,
+                                     IUnitOfWorkScope localFactory)
         {
             _actionService = actionService;
             _remoteFactory = remoteFactory;

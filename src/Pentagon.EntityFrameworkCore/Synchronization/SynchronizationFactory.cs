@@ -9,13 +9,15 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using Abstractions;
     using Abstractions.Entities;
 
-    public class SynchronizationFactory : ISynchronizationFactory
+    public class SynchronizationFactory<TRemoteContext,TLocalContext> : ISynchronizationFactory
+            where TRemoteContext : IApplicationContext
+            where TLocalContext : IApplicationContext
     {
         readonly IRepositoryActionService _actionService;
-        readonly IUnitOfWorkScope<IRemoteContext> _remote;
-        readonly IUnitOfWorkScope<ILocalContext> _local;
+        readonly IUnitOfWorkScope<TRemoteContext> _remote;
+        readonly IUnitOfWorkScope<TLocalContext> _local;
 
-        public SynchronizationFactory(IRepositoryActionService actionService, IUnitOfWorkScope<IRemoteContext> remote, IUnitOfWorkScope<ILocalContext> local)
+        public SynchronizationFactory(IRepositoryActionService actionService, IUnitOfWorkScope<TRemoteContext> remote, IUnitOfWorkScope<TLocalContext> local)
         {
             _actionService = actionService;
             _remote = remote;
@@ -23,6 +25,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         }
 
         public ITwoWaySynchronization<T> CreateTwoWay<T>()
-                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new() => new TwoWaySynchronization<T>(_actionService, _remote, _local);
+                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new() 
+            => new TwoWaySynchronization<T>(_actionService, _remote, _local);
     }
 }
