@@ -29,6 +29,9 @@ namespace Pentagon.EntityFrameworkCore
 
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdateTimeStampSupport)))
                     builder.SetupUpdatedTimeSpanEntityDefaults(type.ClrType);
+
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedFlagSupport)))
+                    builder.SetupDeleteFlagEntityDefaults(type.ClrType);
             }
 
             return builder;
@@ -99,6 +102,18 @@ namespace Pentagon.EntityFrameworkCore
             builder.Entity(type)
                    .Property(nameof(ICreateStampSupport.Uuid))
                    .HasDefaultValueSql(sql: "NEWID()");
+
+            return builder;
+        }
+
+        public static ModelBuilder SetupDeleteFlagEntityDefaults<T>(this ModelBuilder builder)
+                where T : class, ICreateStampSupport => builder.SetupDeleteFlagEntityDefaults(typeof(T));
+
+        public static ModelBuilder SetupDeleteFlagEntityDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type)
+                   .Property(nameof(IDeletedFlagSupport.IsDeletedFlag))
+                   .HasDefaultValue(0);
 
             return builder;
         }
