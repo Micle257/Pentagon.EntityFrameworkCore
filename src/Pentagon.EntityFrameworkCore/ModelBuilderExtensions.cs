@@ -27,6 +27,9 @@ namespace Pentagon.EntityFrameworkCore
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreateTimeStampSupport)))
                     builder.SetupCreatedTimeSpanEntityDefaults(type.ClrType);
 
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreatedUserEntitySupport)))
+                    builder.SetupCreatedUserEntitySupportDefaults(type.ClrType);
+
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdateTimeStampSupport)))
                     builder.SetupUpdatedTimeSpanEntityDefaults(type.ClrType);
 
@@ -81,6 +84,15 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
 
+        public static ModelBuilder SetupCreatedUserEntitySupportDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type).Property(nameof(ICreatedUserEntitySupport.CreatedUser))
+                   .HasDefaultValue("dbo")
+                   .IsRequired();
+
+            return builder;
+        }
+
         public static ModelBuilder SetupUpdatedTimeSpanEntityDefaults(this ModelBuilder builder, Type type)
         {
             builder.Entity(type).SetupUpdatedTimeSpanEntityDefaults(type);
@@ -112,7 +124,7 @@ namespace Pentagon.EntityFrameworkCore
         public static ModelBuilder SetupDeleteFlagEntityDefaults(this ModelBuilder builder, Type type)
         {
             builder.Entity(type)
-                   .Property(nameof(IDeletedFlagSupport.IsDeletedFlag))
+                   .Property(nameof(IDeletedFlagSupport.DeletedFlag))
                    .HasDefaultValue(0);
 
             return builder;
