@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Abstractions.Entities;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-    
+
     public class UnitOfWorkCommitExecutor<TContext> : IUnitOfWorkCommitExecutor<TContext>
             where TContext : IApplicationContext
     {
@@ -25,7 +25,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         [NotNull]
         readonly IDbContextDeleteService _deleteService;
-        
+
         [NotNull]
         readonly IDatabaseCommitManager _commitManager;
 
@@ -40,7 +40,23 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
         }
 
-        public async Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork unitOfWork)
+        public Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork unitOfWork)
+        {
+            return ExecuteCommitCoreAsync(unitOfWork, async db => await db.SaveChangesAsync(false).ConfigureAwait(false));
+        }
+
+        /// <inheritdoc />
+        public UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork unitOfWork)
+        {
+            return ExecuteCommitCoreAsync(unitOfWork,
+                                          db =>
+                                          {
+                                              db.SaveChanges(false);
+                                              return Task.CompletedTask;
+                                          }).Result;
+        }
+
+        async Task<UnitOfWorkCommitResult> ExecuteCommitCoreAsync(IUnitOfWork unitOfWork, Func<DbContext, Task> callback)
         {
             var _dbContext = unitOfWork.Context as DbContext;
 
@@ -65,13 +81,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                            };
                 }
 
-                var changedAt = unitOfWork.TimeStampSource.GetAndReset();
+                var changedAt = unitOfWork.UseTimeSourceFromEntities;
 
                 _updateService.Apply(unitOfWork, changedAt);
                 _deleteService.Apply(unitOfWork, changedAt);
 
                 // save the database without appling changes
-                await _dbContext.SaveChangesAsync(false).ConfigureAwait(false);
+                await callback(_dbContext);
 
                 // raise all changes
                 _commitManager.RaiseCommited(typeof(TContext), GetEntries(_dbContext));
@@ -83,55 +99,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             }
             catch (Exception e)
             {
-                return new UnitOfWorkCommitResult { Exception =  e};
-            }
-        }
-
-        /// <inheritdoc />
-        public UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork unitOfWork)
-        {
-            var _dbContext = unitOfWork.Context as DbContext;
-
-            try
-            {
-                _dbContext.ChangeTracker.DetectChanges();
-
-                if (!_dbContext.ChangeTracker.HasChanges())
-                    return new UnitOfWorkCommitResult();
-
-                var conflictResult = _conflictResolver.ResolveAsync(unitOfWork.Context).Result;
-
-                if (conflictResult.HasConflicts)
-                {
-                    return new UnitOfWorkCommitResult
-                           {
-                                   Conflicts = conflictResult.ConflictedEntities,
-                                   Exception = new UnitOfWorkConcurrencyConflictException
-                                               {
-                                                       Conflicts = conflictResult.ConflictedEntities
-                                               }
-                           };
-                }
-
-                var changedAt = unitOfWork.TimeStampSource.GetAndReset();
-
-                _updateService.Apply(unitOfWork, changedAt);
-                _deleteService.Apply(unitOfWork, changedAt);
-
-                // save the database without appling changes
-                _dbContext.SaveChanges(false);
-
-                // raise all changes
-                _commitManager.RaiseCommited(typeof(TContext), GetEntries(_dbContext));
-
-                // accept changes
-                _dbContext.ChangeTracker.AcceptAllChanges();
-
-                return new UnitOfWorkCommitResult();
-            }
-            catch (Exception e)
-            {
-                return new UnitOfWorkCommitResult { Exception =  e};
+                return new UnitOfWorkCommitResult {Exception = e};
             }
         }
 
