@@ -26,10 +26,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         [NotNull]
         readonly IDatabaseCommitManager _commitManager;
-
-        [NotNull]
-        public ITimeStampSource TimeStampSource { get; }
-
+        
         /// <inheritdoc />
         public TContext Context { get; }
 
@@ -47,8 +44,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <param name="commitManager"> The commit manager. </param>
         public UnitOfWork([NotNull] TContext context,
                           [NotNull] IRepositoryFactory repositoryFactory,
-                          [NotNull] IDatabaseCommitManager commitManager,
-                          [NotNull] ITimeStampSource timeStampSource)
+                          [NotNull] IDatabaseCommitManager commitManager)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -57,7 +53,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
-            TimeStampSource = timeStampSource ?? throw new ArgumentNullException(nameof(timeStampSource));
 
             Context = context;
 
@@ -65,12 +60,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _dbContext.ChangeTracker.Tracked += OnTracked;
         }
         
-        /// <inheritdoc />
-        public bool IsUserAttached => UserId != null;
-
-        /// <inheritdoc />
-        public object UserId { get; set; }
-
         /// <inheritdoc />
         public virtual IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new()

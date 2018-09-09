@@ -197,10 +197,9 @@ namespace Pentagon.EntityFrameworkCore
             builder.AddDbContextServices()
                    .AddRepositoryFactory()
                    .AddPagination()
-                   .AddCommitManager(lifetime)
-                   .AddTransient<ITimeStampSource, TimeStampSource>();
+                   .AddCommitManager(lifetime);
 
-            builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider)));
+            builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider), lifetime));
 
             builder.AddTransient<IUnitOfWorkFactory<TContext>, UnitOfWorkFactory<TContext>>();
             builder.AddTransient<IConcurrencyConflictResolver<TContext>, ConcurrencyConflictResolver<TContext>>();
