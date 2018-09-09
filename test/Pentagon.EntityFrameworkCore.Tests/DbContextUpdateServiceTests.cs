@@ -32,8 +32,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
         {
             var unit = DI.GetService<IUnitOfWork<IApplicationContext>>();
             var service = DI.GetService<IDbContextUpdateService>();
+            var user = DI.GetService<IDataUserProvider>();
 
-            unit.UserId = 2;
+            user.UserId = 2;
 
             var db = unit.GetRepository<Entity>();
 
@@ -61,8 +62,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
             var ex = DI.GetService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
             var unit = DI.GetService<IUnitOfWork<IApplicationContext>>();
             var service = DI.GetService<IDbContextUpdateService>();
+            var user = DI.GetService<IDataUserProvider>();
 
-            unit.UserId = 2;
+            user.UserId = 2;
 
             var db = unit.GetRepository<Entity>();
 

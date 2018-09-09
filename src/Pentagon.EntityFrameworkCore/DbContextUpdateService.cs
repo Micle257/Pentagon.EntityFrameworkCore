@@ -15,6 +15,13 @@ namespace Pentagon.EntityFrameworkCore
     /// <summary> Represents an implementation of <see cref="IDbContextUpdateService" /> for entity framework core. </summary>
     public class DbContextUpdateService : IDbContextUpdateService
     {
+        readonly IDataUserProvider _userProvider;
+
+        public DbContextUpdateService(IDataUserProvider userProvider)
+        {
+            _userProvider = userProvider;
+        }
+        
         /// <inheritdoc />
         public void Apply(IUnitOfWork unitOfWork, DateTimeOffset changedAt)
         {
@@ -41,7 +48,7 @@ namespace Pentagon.EntityFrameworkCore
                         createStamp.Uuid = Guid.NewGuid();
 
                     if (entry.Entity is ICreateTimeStampIdentitySupport identity)
-                        identity.CreatedBy = unitOfWork.UserId;
+                        identity.CreatedBy = _userProvider.UserId;
                 }
 
                 // set last updated at when the entity has modified
@@ -51,7 +58,7 @@ namespace Pentagon.EntityFrameworkCore
                         entityTimed2.UpdatedAt = changedAt;
 
                     if (entry.Entity is IUpdateTimeStampIdentitySupport identity)
-                        identity.UpdatedBy = unitOfWork.UserId;
+                        identity.UpdatedBy = _userProvider.UserId;
                 }
 
                 // generate new concurrency id both for add and update

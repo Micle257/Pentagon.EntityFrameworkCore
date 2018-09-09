@@ -6,10 +6,8 @@
 
 namespace Pentagon.EntityFrameworkCore.Abstractions
 {
-    public interface IUserAttach
+    public interface IDataUserProvider
     {
-        bool IsUserAttached { get; }
-
         object UserId { get; set; }
     }
 }

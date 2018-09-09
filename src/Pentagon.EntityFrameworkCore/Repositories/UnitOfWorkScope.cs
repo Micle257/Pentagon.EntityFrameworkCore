@@ -15,18 +15,25 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             where TContext : IApplicationContext
     {
         /// <summary> The unit of work factory. </summary>
+        [NotNull]
         readonly IUnitOfWorkFactory<TContext> _unitOfWorkFactory;
 
+        [NotNull]
         readonly IUnitOfWorkCommitExecutor<TContext> _commitExecutor;
+
+        [NotNull]
+        readonly IDataUserProvider _userProvider;
 
         /// <summary> The scoped unit of work. </summary>
         IUnitOfWork<TContext> _scopedUnitOfWork;
 
         public UnitOfWorkScope([NotNull] IUnitOfWorkFactory<TContext> unitOfWorkFactory,
-                               [NotNull] IUnitOfWorkCommitExecutor<TContext> commitExecutor)
+                               [NotNull] IUnitOfWorkCommitExecutor<TContext> commitExecutor,
+                               [NotNull] IDataUserProvider userProvider)
         {
             _unitOfWorkFactory = unitOfWorkFactory ?? throw new ArgumentNullException(nameof(unitOfWorkFactory));
             _commitExecutor = commitExecutor ?? throw new ArgumentNullException(nameof(commitExecutor));
+            _userProvider = userProvider ?? throw new ArgumentNullException(nameof(userProvider));
         }
 
         public object UserId { get; set; }
@@ -41,7 +48,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 throw new InvalidOperationException(message: "The unit of work is created for scope, disposed it first.");
 
             _scopedUnitOfWork = _unitOfWorkFactory.Create();
-            _scopedUnitOfWork.UserId = UserId;
+            _userProvider.UserId = UserId;
 
             return _scopedUnitOfWork;
         }

@@ -12,6 +12,7 @@ namespace Pentagon.EntityFrameworkCore
     using Abstractions.Repositories;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Repositories;
     using Synchronization;
 
@@ -198,6 +199,8 @@ namespace Pentagon.EntityFrameworkCore
                    .AddPagination()
                    .AddCommitManager(lifetime)
                    .AddTransient<ITimeStampSource, TimeStampSource>();
+
+            builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider)));
 
             builder.AddTransient<IUnitOfWorkFactory<TContext>, UnitOfWorkFactory<TContext>>();
             builder.AddTransient<IConcurrencyConflictResolver<TContext>, ConcurrencyConflictResolver<TContext>>();

@@ -17,10 +17,12 @@ namespace Pentagon.EntityFrameworkCore
     public class DbContextDeleteService : IDbContextDeleteService
     {
         readonly ILogger<DbContextDeleteService> _logger;
+        readonly IDataUserProvider _userProvider;
 
-        public DbContextDeleteService(ILogger<DbContextDeleteService> logger)
+        public DbContextDeleteService(ILogger<DbContextDeleteService> logger, IDataUserProvider userProvider)
         {
             _logger = logger;
+            _userProvider = userProvider;
         }
 
         /// <inheritdoc />
@@ -51,7 +53,7 @@ namespace Pentagon.EntityFrameworkCore
 
                         if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
                         {
-                            deleteEntity.DeletedBy = unitOfWork.UserId;
+                            deleteEntity.DeletedBy = _userProvider.UserId;
                         }
                     }
                 }
@@ -72,7 +74,7 @@ namespace Pentagon.EntityFrameworkCore
 
                     if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
                     {
-                        deleteEntity.DeletedBy = unitOfWork.UserId;
+                        deleteEntity.DeletedBy = _userProvider.UserId;
                     }
                 }
             }
