@@ -14,33 +14,33 @@ namespace Pentagon.EntityFrameworkCore
     public abstract class TimestampIdentityEntity<TKey, TUserKey> : TimestampEntity<TKey>, ICreateTimeStampIdentitySupport<TUserKey>, IUpdateTimeStampIdentitySupport<TUserKey>, IDeleteTimeStampIdentitySupport<TUserKey>
     {
         /// <inheritdoc />
-        public TUserKey DeletedBy { get; set; }
+        public TUserKey DeletedUserId { get; set; }
 
         /// <inheritdoc />
-        public TUserKey CreatedBy { get; set; }
+        public TUserKey CreatedUserId { get; set; }
 
         /// <inheritdoc />
-        public TUserKey UpdatedBy { get; set; }
+        public TUserKey UpdatedUserId { get; set; }
 
         /// <inheritdoc />
-        object IDeleteTimeStampIdentitySupport.DeletedBy
+        object IDeleteTimeStampIdentitySupport.DeletedUserId
         {
-            get => DeletedBy;
-            set => DeletedBy = (TUserKey) value;
+            get => DeletedUserId;
+            set => DeletedUserId = (TUserKey) value;
         }
 
         /// <inheritdoc />
-        object ICreateTimeStampIdentitySupport.CreatedBy
+        object ICreateTimeStampIdentitySupport.CreatedUserId
         {
-            get => CreatedBy;
-            set => CreatedBy = (TUserKey) value;
+            get => CreatedUserId;
+            set => CreatedUserId = (TUserKey) value;
         }
 
         /// <inheritdoc />
-        object IUpdateTimeStampIdentitySupport.UpdatedBy
+        object IUpdateTimeStampIdentitySupport.UpdatedUserId
         {
-            get => UpdatedBy;
-            set => UpdatedBy = (TUserKey) value;
+            get => UpdatedUserId;
+            set => UpdatedUserId = (TUserKey) value;
         }
     }
 }

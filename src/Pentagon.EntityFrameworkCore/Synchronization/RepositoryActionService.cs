@@ -57,26 +57,26 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
             switch (pair.Type)
             {
                 case EntityPairType.RemoteOnly:
-                    if (pair.Local.IsDeletedFlag)
+                    if (pair.Local.DeletedFlag)
                         comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Local, TableActionType.Delete));
                     else
                         comms.Add(new RepositoryAction<TEntity>(RepositoryType.Remote, pair.Local, TableActionType.Insert));
                     break;
                 case EntityPairType.LocalOnly:
-                    if (!pair.Remote.IsDeletedFlag)
+                    if (!pair.Remote.DeletedFlag)
                         comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Remote, TableActionType.Insert));
                     break;
                 case EntityPairType.Both:
                     if (pair.Remote.UpdatedAt > pair.Local.UpdatedAt)
                     {
-                        if (pair.Remote.IsDeletedFlag)
+                        if (pair.Remote.DeletedFlag)
                             comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Local, TableActionType.Delete));
                         else
                             comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Remote, TableActionType.Update));
                     }
                     else if (pair.Remote.UpdatedAt < pair.Local.UpdatedAt)
                     {
-                        if (pair.Remote.IsDeletedFlag)
+                        if (pair.Remote.DeletedFlag)
                         {
                             comms.Add(new RepositoryAction<TEntity>(RepositoryType.Remote, pair.Local, TableActionType.Update));
                             comms.Add(new RepositoryAction<TEntity>(RepositoryType.Local, pair.Local, TableActionType.Delete));

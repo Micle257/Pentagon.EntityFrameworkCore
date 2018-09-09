@@ -46,7 +46,7 @@ namespace Pentagon.EntityFrameworkCore
             {
                 if (entry.State == EntityState.Modified)
                 {
-                    if (entry.Entity is IDeletedFlagSupport entity && entity.IsDeletedFlag)
+                    if (entry.Entity is IDeletedFlagSupport entity && entity.DeletedFlag)
                     {
                         if (entry.Entity is IDeleteTimeStampSupport entityTimed)
                         {
@@ -59,14 +59,14 @@ namespace Pentagon.EntityFrameworkCore
 
                         if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
                         {
-                            deleteEntity.DeletedBy = _userProvider.UserId;
+                            deleteEntity.DeletedUserId = _userProvider.UserId;
                         }
                     }
                 }
                 else if (!hardDelete)
                 {
                     if (entry.Entity is IDeletedFlagSupport entity)
-                        entity.IsDeletedFlag = true;
+                        entity.DeletedFlag = true;
                     else
                     {
                         _logger.LogWarning(message: "The database context is marked for soft deletion, but no IsDeletedFlag is available.");
@@ -86,7 +86,7 @@ namespace Pentagon.EntityFrameworkCore
 
                     if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
                     {
-                        deleteEntity.DeletedBy = _userProvider.UserId;
+                        deleteEntity.DeletedUserId = _userProvider.UserId;
                     }
                 }
             }

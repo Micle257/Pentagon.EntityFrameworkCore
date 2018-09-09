@@ -67,7 +67,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
 
             foreach (var e in entities)
             {
-                if (!e.IsDeletedFlag)
+                if (!e.DeletedFlag)
                 {
                     if (e.UpdatedAt == null && e.CreatedAt > lastActivityAt)
                         created.Add(e);

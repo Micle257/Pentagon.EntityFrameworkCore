@@ -54,7 +54,7 @@ namespace Pentagon.EntityFrameworkCore
                         createStamp.Uuid = Guid.NewGuid();
 
                     if (entry.Entity is ICreateTimeStampIdentitySupport identity)
-                        identity.CreatedBy = _userProvider.UserId;
+                        identity.CreatedUserId = _userProvider.UserId;
                 }
 
                 // set last updated at when the entity has modified
@@ -70,7 +70,7 @@ namespace Pentagon.EntityFrameworkCore
                     }
 
                     if (entry.Entity is IUpdateTimeStampIdentitySupport identity)
-                        identity.UpdatedBy = _userProvider.UserId;
+                        identity.UpdatedUserId = _userProvider.UserId;
                 }
 
                 // generate new concurrency id both for add and update

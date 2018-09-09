@@ -17,7 +17,7 @@ namespace Pentagon.EntityFrameworkCore
         public Guid Uuid { get; set; }
 
         /// <inheritdoc />
-        public bool IsDeletedFlag { get; set; }
+        public bool DeletedFlag { get; set; }
 
         /// <inheritdoc />
         public DateTimeOffset? DeletedAt { get; set; }
