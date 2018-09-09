@@ -42,7 +42,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
 
             db.Insert(entity);
             
-            service.Apply(unit, DateTimeOffset.Now);
+            service.Apply(unit);
 
             Assert.Null(entity.UpdatedAt);
             Assert.Null(entity.DeletedAt);
@@ -79,7 +79,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
 
             db.Update(e);
             
-            service.Apply(unit, DateTimeOffset.Now);
+            service.Apply(unit);
 
             Assert.NotNull(entity.UpdatedAt);
             Assert.Null(entity.DeletedAt);

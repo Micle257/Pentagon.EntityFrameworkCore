@@ -31,6 +31,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public TContext Context { get; }
 
         /// <inheritdoc />
+        public bool UseTimeSourceFromEntities { get; set; }
+
+        /// <inheritdoc />
         IApplicationContext IUnitOfWork.Context => Context;
 
         /// <summary> The database context. </summary>

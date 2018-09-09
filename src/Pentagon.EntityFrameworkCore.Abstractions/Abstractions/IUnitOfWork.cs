@@ -25,6 +25,14 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
         /// <value> The <see cref="IApplicationContext" />. </value>
         [NotNull]
         IApplicationContext Context { get; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether use time stamps from entities time stamps.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if time stamp source is from entity data; otherwise, <c>false</c>.
+        /// </value>
+        bool UseTimeSourceFromEntities { get; set; }
     }
 
     /// <summary> Represents an unit of work for data context and it is used to save data from related repositories. </summary>
