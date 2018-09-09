@@ -10,6 +10,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     {
         /// <summary> Gets or sets the user that last updated this entity. </summary>
         /// <value> The <see cref="object" />. </value>
-        object UpdatedBy { get; set; }
+        object UpdatedUserId { get; set; }
     }
 }

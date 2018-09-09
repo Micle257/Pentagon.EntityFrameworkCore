@@ -10,6 +10,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     {
         /// <summary> Gets or sets the user that deleted this entity. </summary>
         /// <value> The nullable <see cref="TUserId" />. </value>
-        object DeletedBy { get; set; }
+        object DeletedUserId { get; set; }
     }
 }

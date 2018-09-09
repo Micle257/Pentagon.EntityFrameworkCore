@@ -13,6 +13,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
         /// <summary> Gets or sets the user that created this entity. </summary>
         /// <value> The <see cref="object" />. </value>
         [Column(Order = OrderConstants.CreatedUserId)]
-        TUserId CreatedBy { get; set; }
+        TUserId CreatedUserId { get; set; }
     }
 }

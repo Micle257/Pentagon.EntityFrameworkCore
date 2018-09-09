@@ -13,6 +13,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
         /// <summary> Gets or sets the user that deleted this entity. </summary>
         /// <value> The nullable <see cref="TUserId" />. </value>
         [Column(Order = OrderConstants.DeletedUserId)]
-        new TUserId DeletedBy { get; set; }
+        new TUserId DeletedUserId { get; set; }
     }
 }
