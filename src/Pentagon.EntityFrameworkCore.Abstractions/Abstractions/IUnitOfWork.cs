@@ -4,18 +4,13 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions
+namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Entities;
+    using JetBrains.Annotations;
     using Repositories;
-    public interface IDatabaseCommitManager
-    {
-        event EventHandler<ManagerCommitEventArgs> Commiting;
-        void RaiseCommit(Type contextType, Type entityType, IEnumerable<Entry> entries);
-    }
+
     /// <summary> Represents a session with database provider and it is used to save data from related repositories. </summary>
     public interface IUnitOfWork : IDisposable
     {
@@ -24,14 +19,24 @@ namespace Pentagon.Data.EntityFramework.Abstractions
         /// <typeparam name="TId"> The type of the primary key. </typeparam>
         /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
         IRepository<TEntity> GetRepository<TEntity>()
-            where TEntity : class, IEntity, new();
+                where TEntity : class, IEntity, new();
 
-        /// <summary> Commits the changes of this unit of work. </summary>
-        /// <returns> An <see cref="int" />, that represents number of entities states written to the database. </returns>
-        int Commit();
+        ITimeStampSource TimeStampSource { get; }
 
-        /// <summary> Commits the changes of this unit of work asynchronously. </summary>
-        /// <returns> A <see cref="Task" /> that represents asynchronous operation, result is a number of entities states written to the database. </returns>
-        Task<int> CommitAsync();
+         /// <summary> Gets the context. </summary>
+        /// <value> The <see cref="IApplicationContext" />. </value>
+        [NotNull]
+        IApplicationContext Context { get; }
+    }
+
+    /// <summary> Represents an unit of work for data context and it is used to save data from related repositories. </summary>
+    /// <typeparam name="TContext"> The type of the context. </typeparam>
+    public interface IUnitOfWork<out TContext> : IUnitOfWork
+            where TContext : IApplicationContext
+    {
+        /// <summary> Gets the context. </summary>
+        /// <value> The <see cref="TContext" />. </value>
+        [NotNull]
+        TContext Context { get; }
     }
 }

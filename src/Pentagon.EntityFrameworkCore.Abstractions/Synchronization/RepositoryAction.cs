@@ -1,4 +1,11 @@
-namespace Pentagon.Data.EntityFramework.Synchonization {
+// -----------------------------------------------------------------------
+//  <copyright file="RepositoryAction.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Synchronization
+{
     using Abstractions.Entities;
 
     public struct RepositoryAction<T>

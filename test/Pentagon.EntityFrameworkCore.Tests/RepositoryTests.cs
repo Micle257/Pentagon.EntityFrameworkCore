@@ -3,11 +3,14 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
-namespace Pentagon.Data.EntityFramework.Tests
+
+namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System.Linq;
     using Microsoft.Extensions.Logging.Abstractions;
+    using Mocks;
     using Repositories;
+    using Specifications;
     using Xunit;
 
     public class RepositoryTests
@@ -16,29 +19,54 @@ namespace Pentagon.Data.EntityFramework.Tests
         public void GetPageAsync_Scenario_ExpectedBehavior()
         {
             var c = new Context();
-            var data = new Simple[]
+
+            var data = new[]
                        {
-                           new Simple {Data = "hi"},
-                           new Simple {Data = "hsadi"},
-                           new Simple {Data = "hid"},
-                           new Simple {Data = "hidc"},
-                           new Simple {Data = "hiw"},
-                           new Simple {Data = "hixz"},
-                           new Simple {Data = "absd"},
-                           new Simple {Data = "hcxz"},
-                           new Simple {Data = "xxxx"},
-                           new Simple {Data = "wwww"},
+                               new Person
+                               {
+                                       Name = "Pete",
+                                       Age = 12
+                               },
+                               new Person
+                               {
+                                       Name = "Pete",
+                                       Age = 46
+                               },
+                               new Person
+                               {
+                                       Name = "Zeta",
+                                       Age = 21
+                               },new Person
+                                 {
+                                         Name = "Ale",
+                                         Age = 43
+                                 },
                        };
-            var re = new Repository<Simple>(NullLogger<Repository<Simple>>.Instance, new PaginationService(), c);
-            
+
+            var re = new Repository<Person>(NullLogger<Repository<Person>>.Instance, new PaginationService(), c);
+
             foreach (var simple in data)
-            {
                 re.Insert(simple);
-            }
+
             c.SaveChanges();
 
-            var list = re.GetAllPagesAsync(new GetAllPagesSpecification<Simple>(a => true, s => s.Data, false, 3)).Result.ToList();
+            var spec = new GetManySpecification<Person>();
 
+            spec.AddOrder(p => p.Name, false)
+                .AddOrder(p => p.Age, true);
+
+            var ma = re.GetManyAsync(spec).Result.ToList();
+
+            Assert.Equal("Ale", ma[0].Name);
+            Assert.Equal("Pete", ma[1].Name);
+            Assert.Equal(46, ma[1].Age);
+            Assert.Equal(12, ma[2].Age);
+            Assert.Equal("Zeta", ma[3].Name);
+
+            var filterSpecification = new GetManySpecification<Person>();
+
+            filterSpecification.AddTextFilter(p => p.Name, TextFilter.Contain, "et");
+            filterSpecification.AddTextDoubleFilter(p => p.Name, TextFilter.Contain, "et", FilterLogicOperation.Or, TextFilter.StartWith, "A");
         }
     }
 }

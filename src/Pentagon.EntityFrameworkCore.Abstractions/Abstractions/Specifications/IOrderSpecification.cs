@@ -1,19 +1,29 @@
-namespace Pentagon.Data.EntityFramework.Abstractions.Specifications {
+// -----------------------------------------------------------------------
+//  <copyright file="IOrderSpecification.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
+{
     using System;
+    using System.Collections.Generic;
     using System.Linq.Expressions;
     using Entities;
 
     /// <summary> Represents a entity specification for query pipeline, that is capable of specifing the order of entities. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
     public interface IOrderSpecification<TEntity> : ISpecification<TEntity>
-        where TEntity : IEntity
+            where TEntity : IEntity
     {
-        /// <summary> Gets a value indicating whether the order is descending. </summary>
-        /// <value> <c> true </c> if the order is descending; otherwise, <c> false </c>. </value>
-        bool IsDescending { get; }
+        /// <summary> Gets the list of order specifications. </summary>
+        /// <value> The list of orders. </value>
+        IReadOnlyList<SpecificationOrder<TEntity>> Orders { get; }
 
-        /// <summary> Gets the order function for specification. </summary>
-        /// <value> The expression tree of the criteria. </value>
-        Expression<Func<TEntity, object>> Order { get; }
+        /// <summary> Adds the order specification. </summary>
+        /// <param name="order"> The order. </param>
+        /// <param name="isDescending"> if set to <c> true </c> is descending. </param>
+        /// <returns> Calling object (this) for fluent API. </returns>
+        IOrderSpecification<TEntity> AddOrder(Expression<Func<TEntity, object>> order, bool isDescending);
     }
 }

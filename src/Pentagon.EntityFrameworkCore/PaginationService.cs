@@ -3,28 +3,56 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
-namespace Pentagon.Data.EntityFramework
+
+namespace Pentagon.EntityFrameworkCore
 {
-    using System.Collections.Generic;
+    using System;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
+    using Collections;
     using Microsoft.EntityFrameworkCore;
-    using Pentagon.Extensions.DependencyInjection;
 
-    [Register(RegisterType.Singleton, typeof(IPaginationService))]
     public class PaginationService : IPaginationService
     {
         /// <inheritdoc />
-        public async Task<IPagedList<TEntity>> CreateAsync<TEntity>(IQueryable<TEntity> query, IPaginationSpecification<TEntity> specification)
-            where TEntity : IEntity
+        public async Task<PagedList<TSelectEntity>> CreateAsync<TSelectEntity, TEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+                                                                                        IQueryable<TEntity> query,
+                                                                                        IPaginationSpecification<TEntity> specification)
+                where TEntity : IEntity
         {
-            var specQuery = specification.Apply(query);
-            var count = await specQuery.CountAsync().ConfigureAwait(false);
-            var list = await specification.ApplyPagination(specQuery).ToListAsync().ConfigureAwait(false);
-            return new PagedList<TEntity>(list, count, specification.PageSize, specification.PageIndex);
+            var count = await query.CountAsync().ConfigureAwait(false);
+
+            var possiblePageCount = count / specification.PageSize + 1;
+
+            if (count < specification.PageSize)
+                possiblePageCount = 1;
+
+            // If page index is overflowed.
+            if (specification.PageNumber > possiblePageCount + 1)
+                throw new ArgumentOutOfRangeException(nameof(specification.PageNumber), message: "The page number is out of range.");
+
+            query = specification.ApplyPagination(query);
+            var list = await query.Select(selector).ToListAsync().ConfigureAwait(false);
+            return new PagedList<TSelectEntity>(list, count, specification.PageSize, specification.PageNumber - 1);
+        }
+
+        /// <inheritdoc />
+        public async Task<PagedList<TEntity>> CreateAsync<TEntity>(IQueryable<TEntity> query, IPaginationSpecification<TEntity> specification)
+                where TEntity : IEntity
+        {
+            var count = await query.CountAsync().ConfigureAwait(false);
+
+            var possiblePageCount = count / specification.PageSize + 1;
+
+            if (specification.PageNumber > possiblePageCount + 1)
+                throw new ArgumentOutOfRangeException(nameof(specification.PageNumber), message: "The page number is out of range.");
+
+            var list = await specification.ApplyPagination(query).ToListAsync().ConfigureAwait(false);
+            return new PagedList<TEntity>(list, count, specification.PageSize, specification.PageNumber - 1);
         }
     }
 }

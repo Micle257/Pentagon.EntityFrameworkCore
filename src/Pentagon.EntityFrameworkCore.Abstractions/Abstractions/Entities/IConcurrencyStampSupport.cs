@@ -4,19 +4,18 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions.Entities
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
-    /// <summary>
-    /// Represents an entity, that supports marking by concurrency stamp.
-    /// </summary>
+    /// <summary> Represents an entity, that supports marking by concurrency stamp. </summary>
     public interface IConcurrencyStampSupport
     {
         /// <summary> Gets or sets the concurrency stamp used as row version. </summary>
         /// <value> The <see cref="Guid" />. </value>
-        [Required]
+        [Column(Order = 101)]
         Guid ConcurrencyStamp { get; set; }
     }
 }

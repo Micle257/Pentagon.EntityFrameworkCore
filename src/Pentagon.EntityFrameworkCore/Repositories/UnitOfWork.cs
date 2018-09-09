@@ -4,151 +4,81 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Repositories
+namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Repositories;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-    using Pentagon.Extensions.DependencyInjection;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     
-    [Register(RegisterType.Singleton, typeof(IDatabaseCommitManager))]
-    public class DatabaseCommitManager : IDatabaseCommitManager
-    {
-       public event EventHandler<ManagerCommitEventArgs> Commiting;
-
-        public void RaiseCommit(Type contextType, Type entityType,IEnumerable<Entry> entries)
-        {
-            Commiting?.Invoke(this, new ManagerCommitEventArgs(contextType,entityType,entries.ToArray()));
-        }
-    }
-
     /// <summary> Represents an unit of work that communicate with a database and manage repository changes to the database. </summary>
-    /// <typeparam name="TContext"> The type of the db context. </typeparam>
-    [Register(RegisterType.Transient, typeof(IUnitOfWork<>))]
+    /// /// <typeparam name="TContext"> The type of the db context. </typeparam>
     public class UnitOfWork<TContext> : IUnitOfWork<TContext>
-        where TContext : class, IApplicationContext
+            where TContext : class, IApplicationContext
     {
         /// <summary> The repository factory. </summary>
         [NotNull]
         readonly IRepositoryFactory _repositoryFactory;
 
-        /// <summary> The update service. </summary>
         [NotNull]
-        readonly IDbContextUpdateService _updateService;
-
-        /// <summary> The update service. </summary>
-        [NotNull]
-        readonly IDbContextDeleteService _deleteService;
-
-        /// <summary>
-        /// The identity service.
-        /// </summary>
-        [NotNull]
-        readonly IDbContextIdentityService _identityService;
-        
         readonly IDatabaseCommitManager _commitManager;
 
-        /// <summary> The database context. </summary>
-        readonly DbContext _dbContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="repositoryFactory">The repository factory.</param>
-        /// <param name="updateService">The update service.</param>
-        /// <param name="deleteService">The delete service.</param>
-        /// <param name="identityService">The identity service.</param>
-        /// <param name="commitManager">The commit manager.</param>
-        public UnitOfWork([NotNull] TContext context,
-                          [NotNull] IRepositoryFactory repositoryFactory,
-                          [NotNull] IDbContextUpdateService updateService,
-                          [NotNull] IDbContextDeleteService deleteService,
-                          [NotNull] IDbContextIdentityService identityService,
-                          [NotNull] IDatabaseCommitManager commitManager)
-        {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-            Require.IsType(() => context, out _dbContext);
-            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
-            _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
-            _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
-            _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
-            _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
-            Context = context;
-        }
+        [NotNull]
+        public ITimeStampSource TimeStampSource { get; }
 
         /// <inheritdoc />
         public TContext Context { get; }
 
         /// <inheritdoc />
+        IApplicationContext IUnitOfWork.Context => Context;
+
+        /// <summary> The database context. </summary>
+        readonly DbContext _dbContext;
+
+        TContext _context;
+
+        /// <summary> Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class. </summary>
+        /// <param name="context"> The context. </param>
+        /// <param name="repositoryFactory"> The repository factory. </param>
+        /// <param name="commitManager"> The commit manager. </param>
+        public UnitOfWork([NotNull] TContext context,
+                          [NotNull] IRepositoryFactory repositoryFactory,
+                          [NotNull] IDatabaseCommitManager commitManager,
+                          [NotNull] ITimeStampSource timeStampSource)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            Require.IsType(() => context, out _dbContext);
+
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
+            TimeStampSource = timeStampSource ?? throw new ArgumentNullException(nameof(timeStampSource));
+
+            Context = context;
+
+            _dbContext.ChangeTracker.StateChanged += OnStateChanged;
+            _dbContext.ChangeTracker.Tracked += OnTracked;
+        }
+        
+        /// <inheritdoc />
+        public bool IsUserAttached => UserId != null;
+
+        /// <inheritdoc />
+        public object UserId { get; set; }
+
+        /// <inheritdoc />
         public virtual IRepository<TEntity> GetRepository<TEntity>()
-            where TEntity : class, IEntity, new()
+                where TEntity : class, IEntity, new()
         {
-            var repo =  _repositoryFactory.GetRepository<TEntity>(Context);
-            try
-            {
-                repo.Commiting -= OnCommiting;
-            }
-            finally
-            {
-                repo.Commiting += OnCommiting;
-            }
+            // get repository from factory
+            var repo = _repositoryFactory.GetRepository<TEntity>(Context);
+
             return repo;
-        }
-
-        void OnCommiting(object sender, CommitEventArgs commitEventArgs)
-        {
-            foreach (var entry in commitEventArgs.Entries)
-            {
-                if (entry.UserId == null)
-                    continue;
-
-                EntryMap.Add(entry.Entity, entry.UserId);
-            }
-
-            var repo = sender.GetType().GenericTypeArguments.FirstOrDefault();
-
-            _commitManager?.RaiseCommit(typeof(TContext), repo, commitEventArgs.Entries);
-        }
-
-        IDictionary<IEntity,object> EntryMap = new ConcurrentDictionary<IEntity, object>();
-
-        /// <inheritdoc />
-        public int Commit()
-        {
-            if (!CommitCore())
-                return 0;
-
-            return _dbContext.SaveChanges();
-        }
-
-        bool CommitCore()
-        {
-            if (!_dbContext.ChangeTracker.HasChanges())
-                return false;
-            _updateService.Apply(Context);
-            _deleteService.Apply(Context, Context.HasHardDeleteBehavior);
-            _identityService.Apply(Context, EntryMap);
-            EntryMap.Clear();
-
-            return true;
-        }
-
-        /// <inheritdoc />
-        public Task<int> CommitAsync()
-        {
-            if (!CommitCore())
-                return Task.FromResult(0);
-
-            return _dbContext.SaveChangesAsync();
         }
 
         /// <inheritdoc />
@@ -165,6 +95,37 @@ namespace Pentagon.Data.EntityFramework.Repositories
         {
             if (disposing)
                 Context.Dispose();
+        }
+
+        void OnTracked(object sender, EntityTrackedEventArgs args)
+        {
+            var entity = args.Entry.Entity as IEntity;
+
+            // entity has been tracked (get, add ...), commited is like added (for UI change)
+            OnCommiting(new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
+        }
+
+        void OnStateChanged(object sender, EntityStateChangedEventArgs args)
+        {
+            var entity = args.Entry.Entity as IEntity;
+            var state = args.NewState.ToEntityStateType();
+            var oldState = args.OldState;
+
+            // if state has not changed for the API, cancel
+            if (state == 0)
+                return;
+
+            // if the change was from unchanged to added
+            // cancel call, because it is adding entity scenario and it would end up in two event fires
+            if (oldState == EntityState.Unchanged && state == EntityStateType.Added)
+                return;
+
+            OnCommiting(new CommitEventArgs(new Entry(entity, state)));
+        }
+
+        void OnCommiting(CommitEventArgs commitEventArgs)
+        {
+            _commitManager?.RaiseCommiting(Context.GetType(), commitEventArgs.Entries.FirstOrDefault().Entity.GetType(), commitEventArgs.Entries);
         }
     }
 }

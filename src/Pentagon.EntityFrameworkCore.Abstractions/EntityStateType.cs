@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
     /// <summary> Represents a state of an entity on the context. </summary>
     public enum EntityStateType

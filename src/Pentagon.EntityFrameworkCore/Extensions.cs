@@ -4,19 +4,16 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Infrastructure;
 
-    /// <summary>
-    /// Contains extension methods.
-    /// </summary>
+    /// <summary> Contains extension methods. </summary>
     public static class Extensions
     {
         /// <summary> Determines if given <see cref="DatabaseFacade" /> has difference in migration of assembly and database migrations. </summary>
@@ -43,11 +40,9 @@ namespace Pentagon.Data.EntityFramework
             return false;
         }
 
-        /// <summary>
-        /// Gets the name of the field name from property.
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        /// <returns>The filed name.</returns>
+        /// <summary> Gets the name of the field name from property. </summary>
+        /// <param name="propertyName"> Name of the property. </param>
+        /// <returns> The filed name. </returns>
         public static string GetFieldNameFromPropertyName(this string propertyName)
         {
             return "_" + propertyName.Select((c, i) => i == 0 ? c.ToString().ToLower() : c.ToString()).Aggregate((a, b) => $"{a}{b}");

@@ -3,47 +3,14 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
-namespace Pentagon.Data.EntityFramework
+
+namespace Pentagon.EntityFrameworkCore
 {
     using System;
     using System.Linq;
     using System.Reflection;
     using Abstractions.Entities;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-    public static class EntityTypeBuilderExtensions
-    {
-        public static EntityTypeBuilder<T> SetupTimeSpanEntityDefaults<T>(this EntityTypeBuilder<T> builder)
-            where T : class, ITimeStampSupport
-        {
-            builder.Property(p => p.CreatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .IsRequired();
-
-            builder.Property(p => p.LastUpdatedAt)
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .IsRequired();
-
-            return builder;
-        }
-        
-        public static EntityTypeBuilder SetupTimeSpanEntityDefaults(this EntityTypeBuilder builder, Type type)
-        {
-            if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ITimeStampSupport)))
-                throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(ITimeStampSupport)}");
-
-            builder.Property(nameof(ITimeStampSupport.CreatedAt))
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .IsRequired();
-
-            builder.Property(nameof(ITimeStampSupport.LastUpdatedAt))
-                   .HasDefaultValueSql("SYSDATETIMEOFFSET()")
-                   .IsRequired();
-
-            return builder;
-        }
-    }
 
     public static class ModelBuilderExtensions
     {
@@ -57,19 +24,26 @@ namespace Pentagon.Data.EntityFramework
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IConcurrencyStampSupport)))
                     builder.SetupConcurrencyEntityDefaults(type.ClrType);
 
-                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ITimeStampSupport)))
-                    builder.SetupTimeSpanEntityDefaults(type.ClrType);
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreateTimeStampSupport)))
+                    builder.SetupCreatedTimeSpanEntityDefaults(type.ClrType);
+
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdateTimeStampSupport)))
+                    builder.SetupUpdatedTimeSpanEntityDefaults(type.ClrType);
+
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedFlagSupport)))
+                    builder.SetupDeleteFlagEntityDefaults(type.ClrType);
             }
 
             return builder;
         }
-
+        
         public static ModelBuilder SetupConcurrencyEntityDefaults<T>(this ModelBuilder builder)
-            where T : class, IConcurrencyStampSupport
+                where T : class, IConcurrencyStampSupport
         {
             builder.Entity<T>()
-                        .Property(p => p.ConcurrencyStamp)
-                        .HasDefaultValueSql("NEWID()");
+                   .Property(p => p.ConcurrencyStamp)
+                   .HasDefaultValueSql(sql: "NEWID()")
+                   .IsRequired();
 
             return builder;
         }
@@ -78,32 +52,47 @@ namespace Pentagon.Data.EntityFramework
         {
             builder.Entity(type)
                    .Property(nameof(IConcurrencyStampSupport.ConcurrencyStamp))
-                   .HasDefaultValueSql("NEWID()");
+                   .HasDefaultValueSql(sql: "NEWID()")
+                   .IsRequired();
 
             return builder;
         }
 
-        public static ModelBuilder SetupTimeSpanEntityDefaults<T>(this ModelBuilder builder)
-            where T : class, ITimeStampSupport
+        public static ModelBuilder SetupCreatedTimeSpanEntityDefaults<T>(this ModelBuilder builder)
+                where T : class, ICreateTimeStampSupport
         {
-            builder.Entity<T>().SetupTimeSpanEntityDefaults();
+            builder.Entity<T>().SetupCreatedTimeSpanEntityDefaults();
 
             return builder;
         }
 
-        public static ModelBuilder SetupTimeSpanEntityDefaults(this ModelBuilder builder, Type type)
+        public static ModelBuilder SetupUpdatedTimeSpanEntityDefaults<T>(this ModelBuilder builder)
+                where T : class, IUpdateTimeStampSupport
         {
-            builder.Entity(type).SetupTimeSpanEntityDefaults(type);
+            builder.Entity<T>().SetupUpdatedTimeSpanEntityDefaults();
 
             return builder;
         }
-        
+
+        public static ModelBuilder SetupCreatedTimeSpanEntityDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type).SetupCreatedTimeSpanEntityDefaults(type);
+
+            return builder;
+        }
+
+        public static ModelBuilder SetupUpdatedTimeSpanEntityDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type).SetupUpdatedTimeSpanEntityDefaults(type);
+            return builder;
+        }
+
         public static ModelBuilder SetupCreateStampEntityDefaults<T>(this ModelBuilder builder)
-            where T : class, ICreateStampSupport
+                where T : class, ICreateStampSupport
         {
             builder.Entity<T>()
-                   .Property(p => p.CreateGuid)
-                   .HasDefaultValueSql("NEWID()");
+                   .Property(p => p.Uuid)
+                   .HasDefaultValueSql(sql: "NEWID()");
 
             return builder;
         }
@@ -111,8 +100,20 @@ namespace Pentagon.Data.EntityFramework
         public static ModelBuilder SetupCreateStampEntityDefaults(this ModelBuilder builder, Type type)
         {
             builder.Entity(type)
-                   .Property(nameof(ICreateStampSupport.CreateGuid))
-                   .HasDefaultValueSql("NEWID()");
+                   .Property(nameof(ICreateStampSupport.Uuid))
+                   .HasDefaultValueSql(sql: "NEWID()");
+
+            return builder;
+        }
+
+        public static ModelBuilder SetupDeleteFlagEntityDefaults<T>(this ModelBuilder builder)
+                where T : class, ICreateStampSupport => builder.SetupDeleteFlagEntityDefaults(typeof(T));
+
+        public static ModelBuilder SetupDeleteFlagEntityDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type)
+                   .Property(nameof(IDeletedFlagSupport.IsDeletedFlag))
+                   .HasDefaultValue(0);
 
             return builder;
         }

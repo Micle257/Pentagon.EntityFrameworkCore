@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions.Repositories
+namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
 {
     using Entities;
     using JetBrains.Annotations;
@@ -18,6 +18,6 @@ namespace Pentagon.Data.EntityFramework.Abstractions.Repositories
         /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
         [NotNull]
         IRepository<TEntity> GetRepository<TEntity>([NotNull] IApplicationContext context)
-            where TEntity : class, IEntity, new();
+                where TEntity : class, IEntity, new();
     }
 }

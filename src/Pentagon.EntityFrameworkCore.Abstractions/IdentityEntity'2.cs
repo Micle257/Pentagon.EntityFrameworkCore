@@ -4,45 +4,43 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
-    using Abstractions;
     using Abstractions.Entities;
 
     /// <summary> Represents an identity type entity, with synchronization support. </summary>
     /// <typeparam name="TKey"> The type of the key. </typeparam>
-    /// <typeparam name="TUserKey"> The type of the user key. </typeparam>
-    public abstract class TimestampIdentityEntity<TKey, TUserKey> : SyncEntity<TKey>, ITimeStampIdentitySupport<TUserKey>, IDeleteTimeStampIdentitySupport<TUserKey>
-        where TUserKey : struct
+    /// <typeparam name="TUserKey"> The type of the user key for identity fields. </typeparam>
+    public abstract class TimestampIdentityEntity<TKey, TUserKey> : TimestampEntity<TKey>, ICreateTimeStampIdentitySupport<TUserKey>, IUpdateTimeStampIdentitySupport<TUserKey>, IDeleteTimeStampIdentitySupport<TUserKey>
     {
         /// <inheritdoc />
+        public TUserKey DeletedBy { get; set; }
+
+        /// <inheritdoc />
         public TUserKey CreatedBy { get; set; }
-        
-        /// <inheritdoc />
-        public TUserKey? UpdatedBy { get; set; }
 
         /// <inheritdoc />
-        public TUserKey? DeletedBy { get; set; }
+        public TUserKey UpdatedBy { get; set; }
 
         /// <inheritdoc />
-        object ITimeStampIdentitySupport.CreatedBy
+        object IDeleteTimeStampIdentitySupport.DeletedBy
+        {
+            get => DeletedBy;
+            set => DeletedBy = (TUserKey) value;
+        }
+
+        /// <inheritdoc />
+        object ICreateTimeStampIdentitySupport.CreatedBy
         {
             get => CreatedBy;
             set => CreatedBy = (TUserKey) value;
         }
 
         /// <inheritdoc />
-        object ITimeStampIdentitySupport.UpdatedBy
+        object IUpdateTimeStampIdentitySupport.UpdatedBy
         {
             get => UpdatedBy;
-            set => UpdatedBy = (TUserKey?) value;
-        }
-
-        /// <inheritdoc />
-        object IDeleteTimeStampIdentitySupport.DeletedBy
-        {
-            get => DeletedBy;
-            set => DeletedBy = (TUserKey?) value;
+            set => UpdatedBy = (TUserKey) value;
         }
     }
 }

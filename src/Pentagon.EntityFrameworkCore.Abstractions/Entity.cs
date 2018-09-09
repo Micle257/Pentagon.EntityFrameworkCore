@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
     /// <summary> Represents an entity with numeric key. </summary>
     public abstract class Entity : Entity<int> { }

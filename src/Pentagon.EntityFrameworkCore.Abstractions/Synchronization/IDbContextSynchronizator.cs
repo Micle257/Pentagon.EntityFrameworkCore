@@ -4,12 +4,12 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Abstractions
+namespace Pentagon.EntityFrameworkCore.Synchronization
 {
     using System;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using Entities;
+    using Abstractions.Entities;
 
     /// <summary> Represent a remote-local database synchronization service. </summary>
     public interface IDbContextSynchronizator
@@ -19,6 +19,6 @@ namespace Pentagon.Data.EntityFramework.Abstractions
         /// <param name="selector"> The selector. </param>
         /// <returns> <c> true </c> if synchronization succeed; otherwise <c> false </c>. </returns>
         Task<bool> SynchronizeAsync<T>(Expression<Func<T, bool>> selector = null)
-            where T : class, IEntity, ICreateStampSupport, ITimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new();
+                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new();
     }
 }

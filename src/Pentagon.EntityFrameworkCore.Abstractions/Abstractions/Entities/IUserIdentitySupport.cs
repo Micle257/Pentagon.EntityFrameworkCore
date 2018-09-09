@@ -1,4 +1,11 @@
-namespace Pentagon.Data.EntityFramework.Abstractions.Entities {
+// -----------------------------------------------------------------------
+//  <copyright file="IUserIdentitySupport.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
+{
     public interface IUserIdentitySupport<TUserId, TUser>
     {
         TUserId UserId { get; set; }

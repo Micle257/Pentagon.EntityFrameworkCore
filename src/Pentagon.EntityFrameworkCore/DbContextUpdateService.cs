@@ -4,28 +4,29 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework
+namespace Pentagon.EntityFrameworkCore
 {
     using System;
     using System.Linq;
-    using System.Reflection;
     using Abstractions;
     using Abstractions.Entities;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.ChangeTracking;
-    using Pentagon.Extensions.DependencyInjection;
 
-    /// <summary>
-    /// Represents an implementation of <see cref="IDbContextUpdateService"/> for entity framework core.
-    /// </summary>
-    [Register(RegisterType.Singleton, typeof(IDbContextUpdateService))]
+    /// <summary> Represents an implementation of <see cref="IDbContextUpdateService" /> for entity framework core. </summary>
     public class DbContextUpdateService : IDbContextUpdateService
     {
-        /// <inheritdoc />
-        public void Apply(IApplicationContext appContext)
+        readonly IDataUserProvider _userProvider;
+
+        public DbContextUpdateService(IDataUserProvider userProvider)
         {
+            _userProvider = userProvider;
+        }
+        
+        /// <inheritdoc />
+        public void Apply(IUnitOfWork unitOfWork, DateTimeOffset changedAt)
+        {
+            var appContext = unitOfWork.Context;
+
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (!(appContext is DbContext dbContext))
                 throw new ArgumentNullException(nameof(dbContext));
@@ -38,19 +39,29 @@ namespace Pentagon.Data.EntityFramework
 
             foreach (var entry in entries)
             {
-                var entity = (IEntity)entry.Entity;
                 if (entry.State == EntityState.Added)
                 {
-                    if (entry.Entity is ITimeStampSupport entityTimed)
-                        entityTimed.CreatedAt = DateTimeOffset.Now;
+                    if (entry.Entity is ICreateTimeStampSupport entityTimed)
+                        entityTimed.CreatedAt = changedAt;
 
                     if (entry.Entity is ICreateStampSupport createStamp)
-                        createStamp.CreateGuid = Guid.NewGuid();
+                        createStamp.Uuid = Guid.NewGuid();
+
+                    if (entry.Entity is ICreateTimeStampIdentitySupport identity)
+                        identity.CreatedBy = _userProvider.UserId;
                 }
 
-                if (entry.Entity is ITimeStampSupport entityTimed2)
-                    entityTimed2.LastUpdatedAt = DateTimeOffset.Now;
+                // set last updated at when the entity has modified
+                if (entry.State == EntityState.Modified)
+                {
+                    if (entry.Entity is IUpdateTimeStampSupport entityTimed2)
+                        entityTimed2.UpdatedAt = changedAt;
 
+                    if (entry.Entity is IUpdateTimeStampIdentitySupport identity)
+                        identity.UpdatedBy = _userProvider.UserId;
+                }
+
+                // generate new concurrency id both for add and update
                 if (entry.Entity is IConcurrencyStampSupport concurrency)
                     concurrency.ConcurrencyStamp = Guid.NewGuid();
             }

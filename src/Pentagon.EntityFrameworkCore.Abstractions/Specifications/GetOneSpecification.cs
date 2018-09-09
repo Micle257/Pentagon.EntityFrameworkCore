@@ -1,4 +1,11 @@
-﻿namespace Pentagon.Data.EntityFramework {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="GetOneSpecification.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Specifications
+{
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -9,31 +16,40 @@
 
     /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for get one operations. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
-    public class GetOneSpecification<TEntity> : ICriteriaSpecification<TEntity>
-        where TEntity : IEntity
+    public class GetOneSpecification<TEntity> : IFilterSpecification<TEntity>
+            where TEntity : IEntity
     {
-        /// <inheritdoc />
-        public  IQueryable<TEntity> Apply(IQueryable<TEntity> query)
+        /// <summary> Initializes a new instance of the <see cref="GetOneSpecification{TEntity}" /> class. </summary>
+        /// <param name="filter"> The filter. </param>
+        public GetOneSpecification(Expression<Func<TEntity, bool>> filter = null)
         {
-            if (Criteria != null)
-                query = query.Where(Criteria);
+            if (filter != null)
+                Filters.Add(filter);
+        }
+
+        /// <inheritdoc />
+        [NotNull]
+        public ICollection<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
+
+        /// <inheritdoc />
+        [NotNull]
+        public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
+
+        /// <inheritdoc />
+        public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
+        {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            if (Filters.Count == 0)
+                return query;
+
+            foreach (var filter in Filters)
+            {
+                query = query.Where(filter);
+            }
 
             return query;
         }
-
-        /// <inheritdoc />
-        public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GetOneSpecification{TEntity}"/> class.
-        /// </summary>
-        /// <param name="criteria">The criteria.</param>
-        public GetOneSpecification([NotNull] Expression<Func<TEntity, bool>> criteria)
-        {
-            Criteria = criteria ?? throw new ArgumentNullException(nameof(criteria));
-        }
-
-        /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Criteria { get; }
     }
 }

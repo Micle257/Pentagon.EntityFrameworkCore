@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Data.EntityFramework.Repositories
+namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using System.Collections.Generic;
@@ -15,14 +15,16 @@ namespace Pentagon.Data.EntityFramework.Repositories
     using Abstractions.Entities;
     using Abstractions.Repositories;
     using Abstractions.Specifications;
+    using Collections;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Specifications;
 
-    /// <summary> Represents a repository for the entity framework provider. </summary>
+    /// <summary> Represents a repository for the entity framework provider. It has similar behavior like <see cref="DbSet{TEntity}" />. Marks and gets data from database. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
     public class Repository<TEntity> : IRepository<TEntity>
-        where TEntity : class, IEntity, new()
+            where TEntity : class, IEntity, new()
     {
         /// <summary> The logger. </summary>
         [NotNull]
@@ -35,112 +37,57 @@ namespace Pentagon.Data.EntityFramework.Repositories
         [NotNull]
         readonly DbSet<TEntity> _set;
 
-        IQueryable<TEntity> _currectQuery;
-
+        [NotNull]
+        readonly IQueryable<TEntity> _query;
+        
         /// <summary> Initializes a new instance of the <see cref="Repository{TEntity}" /> class. </summary>
         /// <param name="logger"> The logger. </param>
         /// <param name="context"> The database context. </param>
-        public Repository([NotNull] ILogger<Repository<TEntity>> logger, [NotNull] IPaginationService paginationService, [NotNull] DbContext context)
+        public Repository([NotNull] ILogger<Repository<TEntity>> logger,
+                          [NotNull] IPaginationService paginationService,
+                          [NotNull] DbContext context)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _paginationService = paginationService ?? throw new ArgumentNullException(nameof(paginationService));
             DataContext = context ?? throw new ArgumentNullException(nameof(context));
             _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
+            _query = _set;
         }
 
-        /// <inheritdoc />
-        public event EventHandler<CommitEventArgs> Commiting;
-
         /// <summary> Gets the data context. </summary>
-        /// <value> The <see cref="ApplicationContext" />. </value>
+        /// <value> The <see cref="DbContext" />. </value>
         [NotNull]
         public DbContext DataContext { get; }
 
         /// <inheritdoc />
-        public Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector, bool trackChanges = false)
+        public IQueryable<TEntity> Query => _set;
+
+        /// <inheritdoc />
+        public void Forget([NotNull] TEntity entity)
         {
-            var q = GetPreQuery();
-            var set = trackChanges ? q.AsNoTracking() : q;
-            return set.FirstOrDefaultAsync(entitySelector);
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var entry = DataContext.Entry(entity);
+
+            if (entry != null)
+                entry.State = EntityState.Detached;
         }
 
         /// <inheritdoc />
-        public Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification)
-            where TSpecification : ICriteriaSpecification<TEntity>
-        {
-            var set = GetPreQuery();
-
-            foreach (var include in specification.Includes)
-                set = set.Include(include);
-
-            return specification.Apply(set).SingleOrDefaultAsync();
-        }
-
-        /// <inheritdoc />
-        public virtual Task<TEntity> GetByIdAsync(object id) => _set.FindAsync(id);
-
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
-        {
-            var q = GetPreQuery();
-            var set = asNoTracking ? q.AsNoTracking() : q;
-            return await set.ToListAsync().ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<TEntity>> GetAllAsync<TSpecification>(TSpecification specification)
-            where TSpecification : IOrderSpecification<TEntity>
-        {
-            var set = GetPreQuery();
-
-            foreach (var include in specification.Includes)
-                set = set.Include(include);
-
-            return await specification.Apply(set).ToListAsync().ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification)
-            where TSpecification : ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>
-        {
-            var set = GetPreQuery();
-
-            foreach (var include in specification.Includes)
-                set = set.Include(include);
-
-            return await specification.Apply(set).ToListAsync().ConfigureAwait(false);
-        }
+        public Task<TEntity> GetByIdAsync(object id) => _set.FindAsync(id);
 
         /// <inheritdoc />
         public Task<TProperty> GetPropertyByForeignKeyAsync<TProperty>(object foreignKey)
-            where TProperty : class => DataContext.Set<TProperty>().FindAsync(foreignKey);
+                where TProperty : class => DataContext.Set<TProperty>().FindAsync(foreignKey);
 
         /// <inheritdoc />
-        public Task<int> CountAsync()
-        {
-            var q = GetPreQuery();
-            return q.Select(a => a.Id).CountAsync();
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector, bool asNoTracking = false)
-        {
-            var q = GetPreQuery();
-            var set = asNoTracking ? q.AsNoTracking() : q;
-            return await set.Where(entitiesSelector).ToListAsync().ConfigureAwait(false);
-        }
+        public Task<int> CountAsync() => _set.CountAsync();
 
         /// <inheritdoc />
         public virtual void Insert(TEntity entity)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
-            _set.Add(entity);
-        }
-
-        /// <inheritdoc />
-        public virtual void Insert<TUserId>(TEntity entity, TUserId userId)
-        {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added, userId)));
+            //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
             _set.Add(entity);
         }
 
@@ -157,14 +104,7 @@ namespace Pentagon.Data.EntityFramework.Repositories
         /// <inheritdoc />
         public virtual void Update(TEntity entity)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified)));
-            _set.Update(entity);
-        }
-
-        /// <inheritdoc />
-        public void Update<TUserId>(TEntity entity, TUserId userId)
-        {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified, userId)));
+            //  Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Modified)));
             _set.Update(entity);
         }
 
@@ -178,14 +118,7 @@ namespace Pentagon.Data.EntityFramework.Repositories
         /// <inheritdoc />
         public virtual void Delete(TEntity entity)
         {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted)));
-            _set.Remove(entity);
-        }
-
-        /// <inheritdoc />
-        public void Delete<TUserId>(TEntity entity, TUserId userId)
-        {
-            Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted, userId)));
+            // Commiting?.Invoke(this, new CommitEventArgs(new Entry(entity, EntityStateType.Deleted)));
             _set.Remove(entity);
         }
 
@@ -202,68 +135,154 @@ namespace Pentagon.Data.EntityFramework.Repositories
             _set.RemoveRange(_set);
         }
 
+        #region GetOne
+
         /// <inheritdoc />
-        public Task<IEnumerable<IPagedList<TEntity>>> GetAllPagesAsync(Expression<Func<TEntity, bool>> criteria,
-                                                                       Expression<Func<TEntity, object>> orderExpression,
-                                                                       bool isDescendingOrder,
-                                                                       int pageSize)
+        public Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector)
         {
-            var specification = new GetAllPagesSpecification<TEntity>(criteria, orderExpression, isDescendingOrder, pageSize);
-            return GetAllPagesAsync(specification);
+            return GetOneAsync(e => e, entitySelector);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<IPagedList<TEntity>>> GetAllPagesAsync<TSpecification>(TSpecification specification)
-            where TSpecification : IAllPaginationSpecification<TEntity>, ICriteriaSpecification<TEntity>, IOrderSpecification<TEntity>
+        public Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate)
         {
-            var set = GetPreQuery();
-            var index = 1;
-            var result = new List<IPagedList<TEntity>>();
+            var set = _set.Where(entityPredicate).Select(selector);
+
+            return set.FirstOrDefaultAsync();
+        }
+
+        /// <inheritdoc />
+        public Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification)
+                where TSpecification : IFilterSpecification<TEntity>
+        {
+            return GetOneAsync(e => e, specification);
+        }
+
+        public Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification)
+                where TSpecification : IFilterSpecification<TEntity>
+        {
+            var set = _query;
+
+            foreach (var include in specification.Includes)
+                set = set.Include(include);
+
             set = specification.Apply(set);
-            while (true)
-            {
-                var spec = new GetPageSpecification<TEntity>(specification.Criteria, specification.Order, specification.IsDescending, specification.PageSize, index);
-                var list = await _paginationService.CreateAsync(set, spec).ConfigureAwait(false);
-                result.Add(list);
-                if (!list.HasNextPage)
-                    break;
-                index++;
-            }
-            return result;
+
+            return set.Select(entitySelector).SingleOrDefaultAsync();
         }
 
+        #endregion
+
+        #region GetAll
+
         /// <inheritdoc />
-        public Task<IPagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification)
-            where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, ICriteriaSpecification<TEntity>
+        public Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            var set = GetPreQuery();
-            set = specification.Apply(set);
-            return _paginationService.CreateAsync(set, specification);
+            return GetAllAsync(e => e);
         }
 
         /// <inheritdoc />
-        public Task<IPagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex)
+        public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector)
+        {
+            var set = _set.Select(selector);
+            
+            return await set.ToListAsync().ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public Task<IEnumerable<TEntity>> GetAllAsync<TSpecification>(TSpecification specification)
+                where TSpecification : IOrderSpecification<TEntity>
+        {
+            return GetAllAsync(e => e, specification);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+                where TSpecification : IOrderSpecification<TEntity>
+        {
+            var set = _query;
+
+            foreach (var include in specification.Includes)
+                set = set.Include(include);
+
+            set = specification.Apply(set);
+
+            return await set.Select(selector).ToListAsync().ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region GetMany
+
+        /// <inheritdoc />
+        public Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector)
+        {
+            return GetManyAsync(e => e, entitiesSelector);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entitiesSelector) =>
+                await _query.Where(entitiesSelector).Select(selector).ToListAsync().ConfigureAwait(false);
+
+        /// <inheritdoc />
+        public Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification)
+                where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
+        {
+            return GetManyAsync(e => e, specification);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+                where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
+        {
+            var set = _query;
+
+            foreach (var include in specification.Includes)
+                set = set.Include(include);
+
+            set = specification.Apply(set);
+
+            var query = set.Select(selector);
+
+            return await query.ToListAsync().ConfigureAwait(false);
+        }
+
+        #endregion
+        
+        #region GetPage
+
+        public Task<PagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex)
+        {
+            return GetPageAsync(e => e, criteria, order, isDescendingOrder, pageSize, pageIndex);
+        }
+
+        /// <inheritdoc />
+        public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+                                                                          Expression<Func<TEntity, bool>> criteria,
+                                                                          Expression<Func<TEntity, object>> order,
+                                                                          bool isDescendingOrder,
+                                                                          int pageSize,
+                                                                          int pageIndex)
         {
             var specification = new GetPageSpecification<TEntity>(criteria, order, isDescendingOrder, pageSize, pageIndex);
-            return GetPageAsync(specification);
+            return GetPageAsync(selector, specification);
         }
 
-        public IRepository<TEntity> Query(Func<IQueryable<TEntity>, IQueryable<TEntity>> function)
+        public Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification)
+                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
-            if (_currectQuery == null)
-                _currectQuery = _set;
-            _currectQuery = function(_currectQuery);
-            return this;
+            return GetPageAsync(e => e, specification);
         }
 
-        IQueryable<TEntity> GetPreQuery()
+        /// <inheritdoc />
+        public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
-            if (_currectQuery == null)
-                return _set;
-
-            var q = _currectQuery;
-            _currectQuery = null;
-            return q;
+            var set = _query;
+            set = specification.Apply(set);
+            return _paginationService.CreateAsync(selector, set, specification);
         }
+
+        #endregion
     }
 }
