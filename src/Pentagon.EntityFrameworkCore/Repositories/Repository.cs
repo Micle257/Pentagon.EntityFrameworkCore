@@ -60,6 +60,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public DbContext DataContext { get; }
 
         /// <inheritdoc />
+        public IQueryable<TEntity> Query => _set;
+
+        /// <inheritdoc />
         public void Forget([NotNull] TEntity entity)
         {
             if (entity == null)

@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Collections;
@@ -20,6 +21,14 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
     public interface IRepository<TEntity> : IDeleteRepository<TEntity>, IInsertRepository<TEntity>, IUpdateRepository<TEntity>, IPagedRepository<TEntity>
             where TEntity : IEntity
     {
+        /// <summary>
+        /// Gets the query.
+        /// </summary>
+        /// <value>
+        /// The query.
+        /// </value>
+        IQueryable<TEntity> Query { get;  }
+
         /// <summary> Stop tracking the entity (detached from data source cache, eg. in EF Core detached from change tracker). </summary>
         /// <param name="entity"> The entity. </param>
         void Forget([NotNull] TEntity entity);
