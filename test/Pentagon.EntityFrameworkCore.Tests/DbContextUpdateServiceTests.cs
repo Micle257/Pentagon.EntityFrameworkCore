@@ -35,6 +35,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
             var user = DI.GetService<IDataUserProvider>();
 
             user.UserId = 2;
+            user.UserName = "bis";
 
             var db = unit.GetRepository<Entity>();
 
@@ -46,11 +47,12 @@ namespace Pentagon.EntityFrameworkCore.Tests
 
             Assert.Null(entity.UpdatedAt);
             Assert.Null(entity.DeletedAt);
-            Assert.Null(entity.UpdatedBy);
-            Assert.Null(entity.DeletedBy);
-            Assert.False(entity.IsDeletedFlag);
+            Assert.Null(entity.UpdatedUserId);
+            Assert.Null(entity.DeletedUserId);
+            Assert.False(entity.DeletedFlag);
             
-            Assert.NotNull(entity.CreatedBy);
+            Assert.NotNull(entity.CreatedUserId);
+            Assert.Equal("bis", entity.CreatedUser);
             Assert.NotEqual(default(DateTimeOffset), entity.CreatedAt);
             Assert.NotEqual(default(Guid), entity.ConcurrencyStamp);
             Assert.NotEqual(default(Guid), entity.Uuid);
@@ -83,9 +85,10 @@ namespace Pentagon.EntityFrameworkCore.Tests
 
             Assert.NotNull(entity.UpdatedAt);
             Assert.Null(entity.DeletedAt);
-            Assert.NotNull(entity.UpdatedBy);
-            Assert.Null(entity.DeletedBy);
-            Assert.False(entity.IsDeletedFlag);
+            Assert.NotNull(entity.UpdatedUserId);
+            Assert.Null(entity.DeletedUserId);
+            Assert.False(entity.DeletedFlag);
+            Assert.Equal("dbo", entity.CreatedUser);
         }
     }
 }
