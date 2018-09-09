@@ -21,9 +21,9 @@ namespace Pentagon.EntityFrameworkCore
         {
             _userProvider = userProvider;
         }
-        
+
         /// <inheritdoc />
-        public void Apply(IUnitOfWork unitOfWork, DateTimeOffset changedAt)
+        public void Apply(IUnitOfWork unitOfWork, bool useTimestampFromEntity)
         {
             var appContext = unitOfWork.Context;
 
@@ -42,7 +42,13 @@ namespace Pentagon.EntityFrameworkCore
                 if (entry.State == EntityState.Added)
                 {
                     if (entry.Entity is ICreateTimeStampSupport entityTimed)
-                        entityTimed.CreatedAt = changedAt;
+                    {
+                        entityTimed.CreatedAt = useTimestampFromEntity
+                                                        ? (entityTimed.CreatedAt == default
+                                                                   ? DateTimeOffset.Now
+                                                                   : entityTimed.CreatedAt)
+                                                        : DateTimeOffset.Now;
+                    }
 
                     if (entry.Entity is ICreateStampSupport createStamp)
                         createStamp.Uuid = Guid.NewGuid();
@@ -55,7 +61,13 @@ namespace Pentagon.EntityFrameworkCore
                 if (entry.State == EntityState.Modified)
                 {
                     if (entry.Entity is IUpdateTimeStampSupport entityTimed2)
-                        entityTimed2.UpdatedAt = changedAt;
+                    {
+                        entityTimed2.UpdatedAt = useTimestampFromEntity
+                                                        ? (entityTimed2.UpdatedAt.HasValue
+                                                                   ? DateTimeOffset.Now
+                                                                   : entityTimed2.UpdatedAt)
+                                                        : DateTimeOffset.Now;
+                    }
 
                     if (entry.Entity is IUpdateTimeStampIdentitySupport identity)
                         identity.UpdatedBy = _userProvider.UserId;

@@ -11,10 +11,11 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     /// <summary> Represents a service for delete behavior of database context. </summary>
     public interface IDbContextDeleteService
     {
-        /// <summary> Applies the on-save delete logic. </summary>
-        /// <param name="appContext"> The application context. </param>
-        /// <param name="changedAt">The changed at.</param>
-        /// <param name="isHardDelete"> If set to <c> true </c> the deletion is hard (permanently deleted from database); otherwise the deletion is marked by IsDeleted property. </param>
-        void Apply(IUnitOfWork appContext, DateTimeOffset changedAt);
+        /// <summary>
+        /// Applies the on-save delete logic.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work.</param>
+        /// <param name="useTimestampFromEntity">If set to <c>true</c> use timestamp from entity data; otherwise, or if the data is unspecified, from current time.</param>
+        void Apply(IUnitOfWork unitOfWork, bool useTimestampFromEntity = false);
     }
 }

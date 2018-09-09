@@ -26,7 +26,7 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         /// <inheritdoc />
-        public void Apply(IUnitOfWork unitOfWork, DateTimeOffset changedAt)
+        public void Apply(IUnitOfWork unitOfWork, bool useTimestampFromEntity)
         {
             var appContext = unitOfWork.Context;
 
@@ -49,7 +49,13 @@ namespace Pentagon.EntityFrameworkCore
                     if (entry.Entity is IDeletedFlagSupport entity && entity.IsDeletedFlag)
                     {
                         if (entry.Entity is IDeleteTimeStampSupport entityTimed)
-                            entityTimed.DeletedAt = changedAt;
+                        {
+                            entityTimed.DeletedAt = useTimestampFromEntity
+                                                            ? (entityTimed.DeletedAt.HasValue
+                                                                       ? DateTimeOffset.Now
+                                                                       : entityTimed.DeletedAt)
+                                                            : DateTimeOffset.Now;
+                        }
 
                         if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
                         {
@@ -70,7 +76,13 @@ namespace Pentagon.EntityFrameworkCore
                     entry.State = EntityState.Modified;
 
                     if (entry.Entity is IDeleteTimeStampSupport entityTimed)
-                        entityTimed.DeletedAt = changedAt;
+                    {
+                        entityTimed.DeletedAt = useTimestampFromEntity
+                                                        ? (entityTimed.DeletedAt.HasValue
+                                                                   ? DateTimeOffset.Now
+                                                                   : entityTimed.DeletedAt)
+                                                        : DateTimeOffset.Now;
+                    }
 
                     if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
                     {
