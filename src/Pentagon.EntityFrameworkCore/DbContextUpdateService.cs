@@ -55,6 +55,9 @@ namespace Pentagon.EntityFrameworkCore
 
                     if (entry.Entity is ICreateTimeStampIdentitySupport identity)
                         identity.CreatedUserId = _userProvider.UserId;
+
+                    if (entry.Entity is ICreatedUserEntitySupport identityName)
+                        identityName.CreatedUser = string.IsNullOrWhiteSpace(_userProvider.UserName) ? "dbo" : _userProvider.UserName;
                 }
 
                 // set last updated at when the entity has modified
@@ -71,6 +74,9 @@ namespace Pentagon.EntityFrameworkCore
 
                     if (entry.Entity is IUpdateTimeStampIdentitySupport identity)
                         identity.UpdatedUserId = _userProvider.UserId;
+
+                    if (entry.Entity is IUpdatedUserEntitySupport identityName)
+                        identityName.UpdatedUser = _userProvider.UserName;
                 }
 
                 // generate new concurrency id both for add and update

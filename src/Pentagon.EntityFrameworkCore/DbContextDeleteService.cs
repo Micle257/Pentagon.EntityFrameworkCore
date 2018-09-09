@@ -58,9 +58,13 @@ namespace Pentagon.EntityFrameworkCore
                         }
 
                         if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
-                        {
                             deleteEntity.DeletedUserId = _userProvider.UserId;
-                        }
+
+                        if (entry.Entity is IDeletedUserEntitySupport identityName)
+                            identityName.DeletedUser = _userProvider.UserName;
+
+                        if (entry.Entity is IUpdatedUserEntitySupport identityName2)
+                            identityName2.UpdatedUser = _userProvider.UserName;
                     }
                 }
                 else if (!hardDelete)
@@ -85,9 +89,10 @@ namespace Pentagon.EntityFrameworkCore
                     }
 
                     if (entry.Entity is IDeleteTimeStampIdentitySupport deleteEntity)
-                    {
                         deleteEntity.DeletedUserId = _userProvider.UserId;
-                    }
+
+                    if (entry.Entity is IDeletedUserEntitySupport identityName)
+                        identityName.DeletedUser = _userProvider.UserName;
                 }
             }
         }

@@ -9,5 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     public interface IDataUserProvider
     {
         object UserId { get; set; }
+        
+        string UserName { get; set; }
     }
 }

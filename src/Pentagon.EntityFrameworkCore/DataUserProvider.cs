@@ -13,6 +13,7 @@ namespace Pentagon.EntityFrameworkCore
     {
         readonly ILogger<DataUserProvider> _logger;
         object _userId;
+        string _userName;
 
         public DataUserProvider(ILogger<DataUserProvider> logger)
         {
@@ -27,6 +28,17 @@ namespace Pentagon.EntityFrameworkCore
             {
                 _logger.LogDebug($"Setting user id to: {value} (previous value: {_userId})");
                 _userId = value;
+            }
+        }
+
+        /// <inheritdoc />
+        public string UserName
+        {
+            get => _userName;
+            set
+            {
+                _logger.LogDebug($"Setting user name to: {value} (previous value: {_userName})");
+                _userName = value;
             }
         }
     }
