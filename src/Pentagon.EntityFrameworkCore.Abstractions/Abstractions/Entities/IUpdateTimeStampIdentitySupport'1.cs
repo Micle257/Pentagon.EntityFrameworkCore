@@ -12,7 +12,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     {
         /// <summary> Gets or sets the user that last updated this entity. </summary>
         /// <value> The <see cref="object" />. </value>
-        [Column(Order = 105)]
+        [Column(Order = OrderConstants.UpdatedUserId)]
         TUserId UpdatedBy { get; set; }
     }
 }

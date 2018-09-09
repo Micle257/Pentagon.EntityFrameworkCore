@@ -14,7 +14,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     {
         /// <summary> Gets or sets the deleted time. </summary>
         /// <value> The <see cref="DateTimeOffset" />. </value>
-        [Column(Order = 106)]
+        [Column(Order = OrderConstants.DeletedAt)]
         DateTimeOffset? DeletedAt { get; set; }
     }
 }

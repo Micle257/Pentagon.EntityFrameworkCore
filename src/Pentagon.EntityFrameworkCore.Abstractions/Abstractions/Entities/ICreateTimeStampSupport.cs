@@ -14,7 +14,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
     {
         /// <summary> Gets or sets the creation time. </summary>
         /// <value> The <see cref="DateTimeOffset" />. </value>
-        [Column(Order = 102)]
+        [Column(Order = OrderConstants.CreatedAt)]
         DateTimeOffset CreatedAt { get; set; }
     }
 }
