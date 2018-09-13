@@ -6,13 +6,16 @@
 
 namespace Pentagon.EntityFrameworkCore
 {
+    using System;
     using Abstractions.Entities;
 
     public class ConcurrencyConflictEntity
     {
-        public IUpdateTimeStampSupport EntityUpdated => Entity as IUpdateTimeStampSupport;
+        public DateTimeOffset? UpdatedAt => (Entity as IUpdateTimeStampSupport)?.UpdatedAt;
 
-        public IUpdateTimeStampIdentitySupport EntityIdentity => Entity as IUpdateTimeStampIdentitySupport;
+        public string UpdatedUser => (Entity as IUpdatedUserEntitySupport)?.UpdatedUser;
+
+        public object UpdatedUserId => (Entity as IUpdateTimeStampIdentitySupport)?.UpdatedUserId;
 
         public IEntity Entity { get; set; }
     }
