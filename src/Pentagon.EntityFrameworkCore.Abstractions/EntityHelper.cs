@@ -28,7 +28,10 @@ namespace Pentagon.EntityFrameworkCore
                                        typeof(ICreateTimeStampIdentitySupport),
                                        typeof(IEntity),
                                        typeof(IUpdateTimeStampSupport),
-                                       typeof(IDeleteTimeStampSupport)
+                                       typeof(IDeleteTimeStampSupport),
+                                       typeof(ICreatedUserEntitySupport),
+                                       typeof(IUpdatedUserEntitySupport),
+                                       typeof(IDeletedUserEntitySupport)
                                };
 
             var props = typesToCheck.SelectMany(a => a.GetProperties().Select(b => b.Name))
