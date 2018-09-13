@@ -57,7 +57,7 @@ namespace Pentagon.EntityFrameworkCore
                         identity.CreatedUserId = _userProvider.UserId;
 
                     if (entry.Entity is ICreatedUserEntitySupport identityName)
-                        identityName.CreatedUser = string.IsNullOrWhiteSpace(_userProvider.UserName) ? "dbo" : _userProvider.UserName;
+                        identityName.CreatedUser = _userProvider.UserName;
                 }
 
                 // set last updated at when the entity has modified

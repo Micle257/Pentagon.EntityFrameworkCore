@@ -88,7 +88,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
             Assert.NotNull(entity.UpdatedUserId);
             Assert.Null(entity.DeletedUserId);
             Assert.False(entity.DeletedFlag);
-            Assert.Equal("dbo", entity.CreatedUser);
+            Assert.Null(entity.CreatedUser);
         }
     }
 }

@@ -33,6 +33,12 @@ namespace Pentagon.EntityFrameworkCore
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdateTimeStampSupport)))
                     builder.SetupUpdatedTimeSpanEntityDefaults(type.ClrType);
 
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IUpdatedUserEntitySupport)))
+                    builder.SetupUpdatedUserEntitySupportDefaults(type.ClrType);
+
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedUserEntitySupport)))
+                    builder.SetupDeletedUserEntitySupportDefaults(type.ClrType);
+
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedFlagSupport)))
                     builder.SetupDeleteFlagEntityDefaults(type.ClrType);
             }
@@ -87,8 +93,7 @@ namespace Pentagon.EntityFrameworkCore
         public static ModelBuilder SetupCreatedUserEntitySupportDefaults(this ModelBuilder builder, Type type)
         {
             builder.Entity(type).Property(nameof(ICreatedUserEntitySupport.CreatedUser))
-                   .HasDefaultValue("dbo")
-                   .IsRequired();
+                   .HasMaxLength(256);
 
             return builder;
         }
@@ -96,6 +101,22 @@ namespace Pentagon.EntityFrameworkCore
         public static ModelBuilder SetupUpdatedTimeSpanEntityDefaults(this ModelBuilder builder, Type type)
         {
             builder.Entity(type).SetupUpdatedTimeSpanEntityDefaults(type);
+            return builder;
+        }
+
+        public static ModelBuilder SetupUpdatedUserEntitySupportDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type).Property(nameof(IUpdatedUserEntitySupport.UpdatedUser))
+                   .HasMaxLength(256);
+
+            return builder;
+        }
+
+        public static ModelBuilder SetupDeletedUserEntitySupportDefaults(this ModelBuilder builder, Type type)
+        {
+            builder.Entity(type).Property(nameof(IDeletedUserEntitySupport.DeletedUser))
+                   .HasMaxLength(256);
+
             return builder;
         }
 
