@@ -45,8 +45,10 @@ namespace Pentagon.EntityFrameworkCore.Tests {
         [InlineData(NumberFilter.LessThenOrEqualTo, 5.0, 5.0, true)]
         [InlineData(NumberFilter.Empty, null, null, true)]
         [InlineData(NumberFilter.Empty, 457.0, null, false)]
+        [InlineData(NumberFilter.Empty, 0, null, false)]
         [InlineData(NumberFilter.NotEmpty, null, null, false)]
         [InlineData(NumberFilter.NotEmpty, 457.0, null, true)]
+        [InlineData(NumberFilter.NotEmpty, 0, 98745, true)]
         public void GetFilter_ForNullables_ReturnsCorrectExpression(NumberFilter filterType, double? value, double? filterValue, bool result)
         {
             var filter = NumberFilterExpressionHelper<double?>.GetFilter<double?>(p => value, filterType, filterValue);
