@@ -19,6 +19,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     {
         /// <summary> Gets the filter function collection. </summary>
         /// <value> The list of filters. </value>
-        ICollection<Expression<Func<TEntity, bool>>> Filters { get; }
+        List<Expression<Func<TEntity, bool>>> Filters { get; }
     }
 }

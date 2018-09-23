@@ -19,7 +19,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     {
         /// <summary> Gets the include query expressions. </summary>
         /// <value> The list of the expression of the include selectors. </value>
-        IList<Expression<Func<TEntity, object>>> Includes { get; }
+        List<Expression<Func<TEntity, object>>> Includes { get; }
 
         /// <summary> Applies the specification to the query. </summary>
         /// <param name="query"> The query. </param>
