@@ -29,11 +29,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         /// <inheritdoc />
         [NotNull]
-        public ICollection<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
+        public List<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
 
         /// <inheritdoc />
         [NotNull]
-        public IList<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
+        public List<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
 
         /// <inheritdoc />
         public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)

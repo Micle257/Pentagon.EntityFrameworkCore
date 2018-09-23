@@ -13,6 +13,24 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
     public static class FilterSpecificationExtensions
     {
+        public static IFilterSpecification<TEntity> AddFilter<TEntity>(this IFilterSpecification<TEntity> specification, Action<ISpecificationFilterBuilder<TEntity>> configure)
+                where TEntity : IEntity
+        {
+            var builder = new SpecificationFilterBuilder<TEntity>();
+
+            configure(builder);
+
+            var filters = builder.BuildFilters();
+
+            foreach (var expression in filters)
+            {
+                specification.Filters.Add(expression);
+            }
+
+            return specification;
+        }
+        
+        [Obsolete("User AddFilter instead.", true)]
         public static IFilterSpecification<TEntity> AddValueFilter<TEntity, TProperty>(this IFilterSpecification<TEntity> specification, Expression<Func<TEntity, TProperty>> propertySelector, params TProperty[] values)
                 where TEntity : IEntity
         {
@@ -23,6 +41,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             return specification;
         }
 
+        [Obsolete("User AddFilter instead.", true)]
         public static IFilterSpecification<TEntity> AddTextFilter<TEntity>(this IFilterSpecification<TEntity> specification, Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
                 where TEntity : IEntity
         {
@@ -33,6 +52,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             return specification;
         }
 
+        [Obsolete("User AddFilter instead.", true)]
         public static IFilterSpecification<TEntity> AddTextDoubleFilter<TEntity>(this IFilterSpecification<TEntity> specification,
                                                                                  Expression<Func<TEntity, string>> propertySelector,
                                                                                  TextFilter firstFilter,
@@ -50,6 +70,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         }
 
         /// <inheritdoc />
+        [Obsolete("User AddFilter instead.", true)]
         public static IFilterSpecification<TEntity> AddNumberFilter<TEntity, TValue>(this IFilterSpecification<TEntity> specification,
                                                                              Expression<Func<TEntity, TValue>> propertySelector,
                                                                              NumberFilter filter,
@@ -64,6 +85,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         }
 
         /// <inheritdoc />
+        [Obsolete("User AddFilter instead.", true)]
         public static IFilterSpecification<TEntity> AddNumberDoubleFilter<TEntity, TValue>(this IFilterSpecification<TEntity> specification,
                                                                                    Expression<Func<TEntity, TValue>> propertySelector,
                                                                                    NumberFilter firstFilter,

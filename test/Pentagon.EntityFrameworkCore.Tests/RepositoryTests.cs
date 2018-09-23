@@ -65,8 +65,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
 
             var filterSpecification = new GetManySpecification<Person>();
 
-            filterSpecification.AddTextFilter(p => p.Name, TextFilter.Contain, "et");
-            filterSpecification.AddTextDoubleFilter(p => p.Name, TextFilter.Contain, "et", FilterLogicOperation.Or, TextFilter.StartWith, "A");
+            filterSpecification.AddFilter(b => b.AddCompositeFilter(p => p.Name, TextFilter.Contain, "et")
+                                                .AddCompositeFilter(p => p.Name, TextFilter.Contain, "et")
+                                                .AddSubFilter(FilterLogicOperation.Or, TextFilter.StartWith, "A"));
         }
     }
 }
