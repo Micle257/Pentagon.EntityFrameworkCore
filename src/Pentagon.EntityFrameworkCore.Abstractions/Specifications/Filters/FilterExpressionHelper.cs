@@ -26,11 +26,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             switch (filter.FirstCondition)
             {
                 case NumberFilter nf:
-                    firstCallback = GetNumberFilterCallback(filter.Property, nf, filter.FirstValue);
+                    firstCallback = GetNumberFilterCallback(filter.Property.Body, nf, filter.FirstValue);
                     break;
 
                 case TextFilter tf:
-                    firstCallback = GetTextFilterCallback(filter.Property, tf, filter.FirstValue as string);
+                    firstCallback = GetTextFilterCallback(filter.Property.Body, tf, filter.FirstValue as string);
                     break;
             }
 
@@ -43,11 +43,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                 switch (filter.SecondCondition)
                 {
                     case NumberFilter nf:
-                        secondCallback = GetNumberFilterCallback(filter.Property, nf, filter.FirstValue);
+                        secondCallback = GetNumberFilterCallback(filter.Property.Body, nf, filter.FirstValue);
                         break;
 
                     case TextFilter tf:
-                        secondCallback = GetTextFilterCallback(filter.Property, tf, filter.FirstValue as string);
+                        secondCallback = GetTextFilterCallback(filter.Property.Body, tf, filter.FirstValue as string);
                         break;
                 }
 
@@ -77,30 +77,30 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             return Expression.Lambda<Func<T, bool>>(fixedBody, parameter);
         }
 
-        static Expression GetNumberFilterCallback(Expression callBody, NumberFilter textFilter, object value)
+        static Expression GetNumberFilterCallback<TValue>(Expression callBody, NumberFilter textFilter, TValue value)
         {
             switch (textFilter)
             {
                 case NumberFilter.Equal:
-                    return GetBody(callBody, v => v.Equals(value));
+                    return GetBody<TValue>(callBody, v => v.Equals(value));
                 case NumberFilter.NotEqual:
-                    return GetBody(callBody, v => !v.Equals(value));
+                    return GetBody<TValue>(callBody, v => !v.Equals(value));
                 case NumberFilter.GreatenThan:
-                    return GetBody(callBody, v => Comparer.Default.Compare(v, value) > 0);
+                    return GetBody<TValue>(callBody, v => Comparer.Default.Compare(v, value) > 0);
                 case NumberFilter.GreatenThenOrEqualTo:
-                    return GetBody(callBody, v => Comparer.Default.Compare(v, value) > 0 || v.Equals(value));
+                    return GetBody<TValue>(callBody, v => Comparer.Default.Compare(v, value) > 0 || v.Equals(value));
                 case NumberFilter.LessThen:
-                    return GetBody(callBody, v => Comparer.Default.Compare(v, value) < 0);
+                    return GetBody<TValue>(callBody, v => Comparer.Default.Compare(v, value) < 0);
                 case NumberFilter.LessThenOrEqualTo:
-                    return GetBody(callBody, v => Comparer.Default.Compare(v, value) < 0 || v.Equals(value));
+                    return GetBody<TValue>(callBody, v => Comparer.Default.Compare(v, value) < 0 || v.Equals(value));
             }
 
             switch (textFilter)
             {
                 case NumberFilter.Empty:
-                    return GetBody(callBody, v => v == null);
+                    return GetBody<TValue>(callBody, v => v == null);
                 case NumberFilter.NotEmpty:
-                    return GetBody(callBody, v => v != null);
+                    return GetBody<TValue>(callBody, v => v != null);
             }
 
             throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
@@ -111,27 +111,27 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             switch (textFilter)
             {
                 case TextFilter.Equal:
-                    return GetBody(callBody, v => v.Equals(value));
+                    return GetBody<string>(callBody, v => v.Equals(value));
                 case TextFilter.NotEqual:
-                    return GetBody(callBody, v => !v.Equals(value));
+                    return GetBody<string>(callBody, v => !v.Equals(value));
                 case TextFilter.Empty:
-                    return GetBody(callBody, v => string.IsNullOrWhiteSpace(v));
+                    return GetBody<string>(callBody, v => string.IsNullOrWhiteSpace(v));
                 case TextFilter.NotEmpty:
-                    return GetBody(callBody, v => !string.IsNullOrWhiteSpace(v));
+                    return GetBody<string>(callBody, v => !string.IsNullOrWhiteSpace(v));
                 case TextFilter.StartWith:
-                    return GetBody(callBody, v => v.StartsWith(value));
+                    return GetBody<string>(callBody, v => v.StartsWith(value));
                 case TextFilter.EndWith:
-                    return GetBody(callBody, v => v.EndsWith(value));
+                    return GetBody<string>(callBody, v => v.EndsWith(value));
                 case TextFilter.Contain:
-                    return GetBody(callBody, v => v.Contains(value));
+                    return GetBody<string>(callBody, v => v.Contains(value));
                 case TextFilter.NotContain:
-                    return GetBody(callBody, v => !v.Contains(value));
+                    return GetBody<string>(callBody, v => !v.Contains(value));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
             }
         }
 
-        static Expression GetBody(Expression callBody, Expression<Func<string, bool>> callback)
+        static Expression GetBody<TValue>(Expression callBody, Expression<Func<TValue, bool>> callback)
         {
             var parameter = callback.Parameters[0];
             var body = callback.Body;
