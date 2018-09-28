@@ -31,9 +31,16 @@ namespace Pentagon.EntityFrameworkCore.Tests {
         [InlineData(TextFilter.NotEmpty, "lol", null, true)]
         public void GetFilter_ReturnsCorrectExpression(TextFilter filterType,string value, string filterValue, bool result)
         {
+            var composite = new CompositeFilter<Person, TextFilter, string>
+                            {
+                                    Property = p => p.Name,
+                                    FirstCondition = filterType,
+                                    FirstValue = filterValue
+                            };
+            
             var person = new Person { Name = value};
 
-            var filter = TextFilterExpressionHelper.GetFilter<Person>(p => p.Name, filterType, filterValue);
+            var filter = FilterExpressionHelper.GetFilter(composite);
 
             var callback = filter.Compile();
             

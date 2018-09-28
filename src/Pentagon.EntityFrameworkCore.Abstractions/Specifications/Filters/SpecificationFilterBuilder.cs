@@ -4,6 +4,7 @@
     using System.Linq.Expressions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
+    using Helpers;
 
     public class SpecificationFilterBuilder<TEntity> : ISpecificationFilterBuilder<TEntity>
             where TEntity : IEntity
@@ -62,68 +63,69 @@
         }
 
         /// <inheritdoc />
+        public ISpecificationFilterBuilder<TEntity> AddFilter(Action<IPredicateBuilder<TEntity>> build)
+        {
+            var builder = new PredicateBuilder<TEntity>();
+
+            build(builder);
+
+            var predicate = builder.Build();
+
+            Filters.Add(predicate);
+
+            return this;
+        }
+
+        /// <inheritdoc />
         public IReadOnlyList<Expression<Func<TEntity, bool>>> BuildFilters()
         {
             var result = new List<Expression<Func<TEntity, bool>>>(Filters);
 
             foreach (var textFilter in TextFilters)
             {
-                var filterType = GetTextFilterType(textFilter);
+                var predicate = FilterExpressionHelper.GetFilter(textFilter);
 
-                if (filterType == 0)
-                    continue;
+                result.Add(predicate);
 
-                switch (filterType)
-                {
-                    case FilterCompositionType.Single:
-                        result.Add(TextFilterExpressionHelper.GetFilter(textFilter.Property, textFilter.FirstCondition, textFilter.FirstValue));
-                        break;
-                    case FilterCompositionType.Double:
-                        result.Add(TextFilterExpressionHelper.GetDoubleFilter(textFilter.Property, textFilter.FirstCondition, textFilter.FirstValue, textFilter.Operation, textFilter.SecondCondition, textFilter.SecondValue));
-                        break;
-                }
+               //var filterType = GetFilterType(textFilter);
+               //
+               //if (filterType == 0)
+               //    continue;
+               //
+               //switch (filterType)
+               //{
+               //    case FilterCompositionType.Single:
+               //        result.Add(TextFilterExpressionHelper.GetFilter(textFilter.Property, textFilter.FirstCondition.Value, textFilter.FirstValue));
+               //        break;
+               //    case FilterCompositionType.Double:
+               //        result.Add(TextFilterExpressionHelper.GetDoubleFilter(textFilter.Property, textFilter.FirstCondition.Value, textFilter.FirstValue, textFilter.Operation, textFilter.SecondCondition.Value, textFilter.SecondValue));
+               //        break;
+               //}
             }
 
             foreach (var numberFilter in NumberFilters)
             {
-                var filterType = GetNumberFilterType(numberFilter);
+                var predicate = FilterExpressionHelper.GetFilter(numberFilter);
 
-                if (filterType == 0)
-                    continue;
-
-                switch (filterType)
-                {
-                    case FilterCompositionType.Single:
-                        result.Add(NumberFilterExpressionHelper.GetFilter(numberFilter.Property, numberFilter.FirstCondition, numberFilter.FirstValue));
-                        break;
-
-                    case FilterCompositionType.Double:
-                        result.Add(NumberFilterExpressionHelper.GetDoubleFilter(numberFilter.Property, numberFilter.FirstCondition, numberFilter.FirstValue, numberFilter.Operation, numberFilter.SecondCondition, numberFilter.SecondValue));
-                        break;
-                }
+                result.Add(predicate);
+                // var filterType = GetFilterType(numberFilter);
+                //
+                // if (filterType == 0)
+                //     continue;
+                //
+                // switch (filterType)
+                // {
+                //     case FilterCompositionType.Single:
+                //         result.Add(NumberFilterExpressionHelper.GetFilter(numberFilter.Property, numberFilter.FirstCondition.Value, numberFilter.FirstValue));
+                //         break;
+                //
+                //     case FilterCompositionType.Double:
+                //         result.Add(NumberFilterExpressionHelper.GetDoubleFilter(numberFilter.Property, numberFilter.FirstCondition.Value, numberFilter.FirstValue, numberFilter.Operation, numberFilter.SecondCondition.Value, numberFilter.SecondValue));
+                //         break;
+                // }
             }
 
             return result;
-        }
-
-        FilterCompositionType GetTextFilterType(CompositeFilter<TEntity, TextFilter, string> textFilter)
-        {
-            var valid = textFilter.Property != null && textFilter.FirstCondition != 0;
-
-            if (!valid)
-                return 0;
-
-            return textFilter.Operation != 0 && textFilter.SecondCondition != 0 ? FilterCompositionType.Double : FilterCompositionType.Single;
-        }
-
-        FilterCompositionType GetNumberFilterType(CompositeFilter<TEntity, NumberFilter, object> numberFilter)
-        {
-            var valid = numberFilter.Property != null && numberFilter.FirstCondition != 0;
-
-            if (!valid)
-                return 0;
-
-            return numberFilter.Operation != 0 && numberFilter.SecondCondition != 0 ? FilterCompositionType.Double : FilterCompositionType.Single;
         }
     }
 }

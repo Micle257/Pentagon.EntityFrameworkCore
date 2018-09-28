@@ -21,7 +21,14 @@ namespace Pentagon.EntityFrameworkCore.Tests {
         [InlineData(NumberFilter.LessThenOrEqualTo, 5, 5, true)]
         public void GetFilter_ReturnsCorrectExpression(NumberFilter filterType, decimal value, decimal filterValue, bool result)
         {
-            var filter = NumberFilterExpressionHelper.GetFilter<decimal>(p => value, filterType, filterValue);
+            var composite = new CompositeFilter<decimal, NumberFilter,decimal >
+                            {
+                                    Property = p => value,
+                                    FirstCondition = filterType,
+                                    FirstValue =  filterValue
+                            };
+
+            var filter = FilterExpressionHelper.GetFilter(composite);
 
             var callback = filter.Compile();
             
@@ -51,7 +58,14 @@ namespace Pentagon.EntityFrameworkCore.Tests {
         [InlineData(NumberFilter.NotEmpty, 0, 98745, true)]
         public void GetFilter_ForNullables_ReturnsCorrectExpression(NumberFilter filterType, double? value, double? filterValue, bool result)
         {
-            var filter = NumberFilterExpressionHelper.GetFilter<double?>(p => value, filterType, filterValue);
+            var composite = new CompositeFilter<double?, NumberFilter, double?>
+                            {
+                                    Property = p => value,
+                                    FirstCondition = filterType,
+                                    FirstValue = filterValue
+                            };
+
+            var filter = FilterExpressionHelper.GetFilter(composite);
 
             var callback = filter.Compile();
             
