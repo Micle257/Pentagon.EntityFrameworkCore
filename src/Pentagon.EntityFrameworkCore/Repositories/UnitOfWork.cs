@@ -117,7 +117,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         void OnCommiting(CommitEventArgs commitEventArgs)
         {
-            _commitManager?.RaiseCommiting(Context.GetType(), commitEventArgs.Entries.FirstOrDefault().Entity.GetType(), commitEventArgs.Entries);
+            _commitManager?.RaiseCommiting(Context.GetType(), commitEventArgs?.Entries?.FirstOrDefault()?.Entity?.GetType(), commitEventArgs?.Entries);
         }
     }
 }
