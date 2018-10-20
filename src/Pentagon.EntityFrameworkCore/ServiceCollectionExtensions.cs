@@ -139,8 +139,7 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
 
-        internal static IServiceCollection AddDefaultUnitOfWork<TContext>(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
-                where TContext : class, IApplicationContext
+        internal static IServiceCollection AddDefaultUnitOfWork(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
             builder.AddTransient<IUnitOfWorkFactory, UnitOfWorkFactory<IApplicationContext>>();
             builder.AddTransient<IUnitOfWorkFactory<IApplicationContext>, UnitOfWorkFactory<IApplicationContext>>();
@@ -153,6 +152,9 @@ namespace Pentagon.EntityFrameworkCore
 
             builder.AddTransient<IUnitOfWorkScope, UnitOfWorkScope<IApplicationContext>>();
             builder.AddTransient<IUnitOfWorkScope<IApplicationContext>, UnitOfWorkScope<IApplicationContext>>();
+            
+            builder.AddTransient<IDatabaseChangeManager, DatabaseChangeManager<IApplicationContext>>();
+            builder.AddTransient<IDatabaseChangeManager<IApplicationContext>, DatabaseChangeManager<IApplicationContext>>();
 
             return builder;
         }
@@ -205,10 +207,12 @@ namespace Pentagon.EntityFrameworkCore
             builder.AddTransient<IConcurrencyConflictResolver<TContext>, ConcurrencyConflictResolver<TContext>>();
             builder.AddTransient<IUnitOfWorkCommitExecutor<TContext>, UnitOfWorkCommitExecutor<TContext>>();
 
+            builder.AddTransient<IDatabaseChangeManager<TContext>, DatabaseChangeManager<TContext>>();
+
             builder.Add(new ServiceDescriptor(typeof(IUnitOfWork<TContext>), typeof(UnitOfWork<TContext>), lifetime));
             builder.AddTransient<IUnitOfWorkScope<TContext>, UnitOfWorkScope<TContext>>();
 
-            builder.AddDefaultUnitOfWork<TContext>();
+            builder.AddDefaultUnitOfWork();
 
             return builder;
         }
