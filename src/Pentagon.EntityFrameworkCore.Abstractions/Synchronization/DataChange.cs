@@ -1,4 +1,11 @@
-namespace Pentagon.EntityFrameworkCore.Synchronization {
+// -----------------------------------------------------------------------
+//  <copyright file="DataChange.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.EntityFrameworkCore.Synchronization
+{
     using System;
     using System.Collections.Generic;
 
