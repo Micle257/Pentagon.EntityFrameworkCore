@@ -1,5 +1,6 @@
 namespace Pentagon.EntityFrameworkCore.Tests {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Abstractions;
@@ -12,6 +13,44 @@ namespace Pentagon.EntityFrameworkCore.Tests {
 
     public class UnitOfWorkTests
     {
+        [Fact]
+        public void ChangeTest()
+        {
+            var services = new ServiceCollection()
+                    .AddLogging();
+
+            services.AddUnitOfWork<Context, IContext, ContextFactory>()
+                    .AddDefaultAppContext<IContext>();
+
+            var di = services.BuildServiceProvider();
+
+            var factory = di.GetService<IUnitOfWorkFactory<IContext>>();
+            var com = di.GetService<IUnitOfWorkCommitExecutor<IContext>>();
+
+            var unit = factory.Create();
+
+            var man = new DatabaseChangeManager<IContext>(factory);
+
+            var clientPersons = new []
+                                {
+                                        new Entity
+                                        {
+                                                Value = "bis"
+                                        },
+                                        new Entity
+                                        {
+                                                Value = "lol"
+                                        }
+                                };
+
+            unit.GetRepository<Entity>().InsertMany(clientPersons);
+            com.ExecuteCommit(unit);
+
+            var entities = unit.GetRepository<Entity>().GetAllAsync().Result;
+
+            var client = man.GetChange(null, entities).Result;
+        }
+
         [Fact]
         public void Test()
         {
@@ -76,8 +115,6 @@ namespace Pentagon.EntityFrameworkCore.Tests {
 
             com.ExecuteCommit(unit);
             Task.Delay(1000);
-
-            var c= change.GetChange<Entity>(time).Result;
         }
 
         [Fact]
