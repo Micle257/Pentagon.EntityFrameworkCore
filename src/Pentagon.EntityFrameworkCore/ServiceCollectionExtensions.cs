@@ -81,7 +81,8 @@ namespace Pentagon.EntityFrameworkCore
             builder.Add(new ServiceDescriptor(typeof(TContext), c => c.GetService<IContextFactory<TContext>>().CreateContext(), lifetime));
 
             builder.AddTransient<IContextFactory<TContext>, TFactoryImplementation>();
-            
+            builder.AddTransient<IContextFactory>(c => c.GetRequiredService<IContextFactory<IApplicationContext>>());
+
             return builder;
         }
 
