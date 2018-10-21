@@ -33,6 +33,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         [NotNull]
         readonly IPaginationService _paginationService;
 
+        [NotNull]
+        IEntityIncludeConfiguration _includeConfiguration;
+
         /// <summary> The inner set. </summary>
         [NotNull]
         readonly DbSet<TEntity> _set;
@@ -50,7 +53,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _paginationService = paginationService ?? throw new ArgumentNullException(nameof(paginationService));
             DataContext = context ?? throw new ArgumentNullException(nameof(context));
+
             _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
+
+            _includeConfiguration = new EmptyEntityIncludeConfiguration();
             _query = _set;
         }
 
@@ -135,6 +141,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _set.RemoveRange(_set);
         }
 
+        public void UseIncludeConfiguration(IEntityIncludeConfiguration configuration)
+        {
+            _includeConfiguration = configuration;
+        }
+        
         #region GetOne
 
         /// <inheritdoc />
@@ -146,9 +157,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate)
         {
-            var set = _set.Where(entityPredicate).Select(selector);
+            var spec = new GetOneSpecification<TEntity>(entityPredicate);
 
-            return set.FirstOrDefaultAsync();
+            return GetOneAsync(selector, spec);
         }
 
         /// <inheritdoc />
@@ -162,6 +173,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TSpecification : IFilterSpecification<TEntity>
         {
             var set = _query;
+
+            _includeConfiguration.Configure(specification);
 
             foreach (var include in specification.Includes)
                 set = set.Include(include);
@@ -182,11 +195,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector)
+        public Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector)
         {
-            var set = _set.Select(selector);
-            
-            return await set.ToListAsync().ConfigureAwait(false);
+            var spec = new GetAllSpecification<TEntity>();
+
+            return GetAllAsync(selector, spec);
         }
 
         /// <inheritdoc />
@@ -202,6 +215,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             var set = _query;
 
+            _includeConfiguration.Configure(specification);
+
             foreach (var include in specification.Includes)
                 set = set.Include(include);
 
@@ -215,14 +230,23 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         #region GetMany
 
         /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector)
+        public Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector,
+                                                       Expression<Func<TEntity, object>> orderSelector,
+                                                       bool isDescending)
         {
-            return GetManyAsync(e => e, entitiesSelector);
+            return GetManyAsync(e => e, entitiesSelector, orderSelector, isDescending);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entitiesSelector) =>
-                await _query.Where(entitiesSelector).Select(selector).ToListAsync().ConfigureAwait(false);
+        public Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+                                                                                  Expression<Func<TEntity, bool>> entitiesSelector,
+                                                                                  Expression<Func<TEntity, object>> orderSelector,
+                                                                                  bool isDescending)
+        {
+            var spec = new GetManySpecification<TEntity>(entitiesSelector, orderSelector, isDescending);
+
+            return GetManyAsync(selector, spec);
+        }
 
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification)
@@ -236,6 +260,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             var set = _query;
+
+            _includeConfiguration.Configure(specification);
 
             foreach (var include in specification.Includes)
                 set = set.Include(include);
@@ -279,7 +305,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
             var set = _query;
+
+            _includeConfiguration.Configure(specification);
+
+            foreach (var include in specification.Includes)
+                set = set.Include(include);
+
             set = specification.Apply(set);
+
             return _paginationService.CreateAsync(selector, set, specification);
         }
 
