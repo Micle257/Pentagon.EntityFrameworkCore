@@ -20,14 +20,22 @@ namespace Pentagon.EntityFrameworkCore.Tests {
                     .AddLogging();
 
             services.AddUnitOfWork<Context, IContext, ContextFactory>()
+                    .AddUnitOfWork<NewContext, INewContext, NewContextFactory>()
                     .AddDefaultAppContext<IContext>();
 
             var di = services.BuildServiceProvider();
 
-            var factory = di.GetService<IUnitOfWorkFactory<IContext>>();
-            var com = di.GetService<IUnitOfWorkCommitExecutor<IContext>>();
+            var factory = di.GetService<IContextFactory<IContext>>();
+            var factory1 = di.GetService<IContextFactory>();
+            var factory2 = di.GetService<IContextFactory<IApplicationContext>>();
+            var factory3 = di.GetService<IContextFactory<INewContext>>();
 
-            var unit = factory.Create();
+            var com = di.GetService<IUnitOfWorkCommitExecutor<IContext>>();
+            var com1 = di.GetService<IUnitOfWorkCommitExecutor>();
+            var com2 = di.GetService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
+            var com3 = di.GetService<IUnitOfWorkCommitExecutor<INewContext>>();
+
+            var unit = factory.CreateContext();
 
             var man = new DatabaseChangeManager<IContext>(factory);
 
@@ -50,32 +58,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
 
             var client = man.GetChange(null, entities).Result;
         }
-
-        [Fact]
-        public void Test()
-        {
-            var services = new ServiceCollection()
-                    .AddLogging();
-
-            services.AddUnitOfWork<NewContext, INewContext>()
-                    .AddUnitOfWork<Context, IContext, ContextFactory>()
-                    .AddDefaultAppContext<INewContext>();
-            
-            var di = services.BuildServiceProvider();
-
-           var unit = di.GetService<IUnitOfWork>();
-
-            var unit2 = di.GetService<IUnitOfWork<INewContext>>();
-
-            var unit3 = di.GetService<IUnitOfWork<IApplicationContext>>();
-
-            var unit5= di.GetService<IUnitOfWork<IContext>>();
-
-            var ct = di.GetService<IApplicationContext>();
-            var ct2 = di.GetService<Context>();
-            var ct3 = di.GetService<NewContext>();
-        }
-
+        
         [Fact]
         public void FactMethodName()
         {
@@ -86,11 +69,11 @@ namespace Pentagon.EntityFrameworkCore.Tests {
 
             var di = services.BuildServiceProvider();
 
-            var unitFactory = di.GetRequiredService<IUnitOfWorkFactory<IApplicationContext>>();
+            var unitFactory = di.GetRequiredService<IContextFactory<IApplicationContext>>();
             var com = di.GetRequiredService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
             var change = new DatabaseChangeManager<IApplicationContext>(unitFactory);
 
-            var unit = unitFactory.Create();
+            var unit = unitFactory.CreateContext();
 
             var rep = unit.GetRepository<Entity>();
 
@@ -115,71 +98,6 @@ namespace Pentagon.EntityFrameworkCore.Tests {
 
             com.ExecuteCommit(unit);
             Task.Delay(1000);
-        }
-
-        [Fact]
-        public void ConcurrencyTest()
-        {
-            var services = new ServiceCollection()
-                    .AddLogging();
-
-            services.AddUnitOfWork<Context, IApplicationContext, ContextFactory>();
-
-            var di = services.BuildServiceProvider();
-
-            var sc = di.GetRequiredService<IUnitOfWorkScope<IApplicationContext>>();
-            var sc2 = di.GetRequiredService<IUnitOfWorkScope<IApplicationContext>>();
-            var com = di.GetRequiredService<IDatabaseCommitManager>();
-
-            using (sc)
-            {
-                var db = sc.Get();
-                var repo = db.GetRepository<Entity>();
-
-                // add sample data
-                repo.InsertMany(new Entity { Value = "first" },
-                                new Entity { Value = "second" },
-                                new Entity { Value = "last" });
-            }
-
-            try
-            {
-                using (sc)
-                {
-                    var db = sc.Get();
-                    
-                    var repo = db.GetRepository<Entity>();
-
-                    var data = repo.GetAllAsync().Result.ToList();
-
-                    data[0].Value = "new first";
-                    repo.Update(data[0]);
-
-                    using (sc2)
-                    {
-                        var db2 = sc2.Get();
-                        var repo2 = db2.GetRepository<Entity>();
-
-                        var data2 = repo2.GetAllAsync().Result.ToList();
-
-                        data2[0].Value = "new new first";
-                        repo2.Update(data2[0]);
-                    }
-
-                }
-            }
-            catch (UnitOfWorkConcurrencyConflictException e)
-            {
-
-            }
-
-            using (sc)
-            {
-                var db = sc.Get();
-                var repo = db.GetRepository<Entity>();
-
-                var data = repo.GetAllAsync().Result.ToList();
-            }
         }
     }
 }

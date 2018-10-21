@@ -8,7 +8,11 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System.Threading.Tasks;
 
-    public interface IConcurrencyConflictResolver<TContext>
+    public interface IConcurrencyConflictResolver<TContext> : IConcurrencyConflictResolver
+    {
+    }
+
+    public interface IConcurrencyConflictResolver
     {
         Task<ConcurrencyConflictResolveResult> ResolveAsync(IApplicationContext appContext);
     }

@@ -30,9 +30,9 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     public class DatabaseChangeManager<TContext> : IDatabaseChangeManager<TContext>
             where TContext : IApplicationContext
     {
-        readonly IUnitOfWorkFactory<TContext> _unitOfWorkFactory;
+        readonly IContextFactory<TContext> _unitOfWorkFactory;
 
-        public DatabaseChangeManager(IUnitOfWorkFactory<TContext> unitOfWorkFactory)
+        public DatabaseChangeManager(IContextFactory<TContext> unitOfWorkFactory)
         {
             _unitOfWorkFactory = unitOfWorkFactory;
         }
@@ -148,7 +148,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         public async Task<DataChange<T>> GetChange<T>(DateTimeOffset? lastActivityAt, IEnumerable<T> data)
                 where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new()
         {
-            var unit = _unitOfWorkFactory.Create();
+            var unit = _unitOfWorkFactory.CreateContext();
             var repo = unit.GetRepository<T>();
 
             var specification = new GetManySpecification<T>();

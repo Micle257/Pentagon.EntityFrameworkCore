@@ -4,7 +4,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
     public class ContextFactory : IContextFactory<IContext>
     {
         /// <inheritdoc />
-        public IContext CreateContext(string[] args = null)
+        public IApplicationContext CreateContext(string[] args = null)
         {
             return new Context();
         }
@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
     public class NewContextFactory : IContextFactory<INewContext>
     {
         /// <inheritdoc />
-        public INewContext CreateContext(string[] args = null)
+        public IApplicationContext CreateContext(string[] args = null)
         {
             return new NewContext();
         }

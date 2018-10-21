@@ -40,15 +40,15 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
         }
 
-        public Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IUnitOfWork unitOfWork)
+        public Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IApplicationContext appContext)
         {
-            return ExecuteCommitCoreAsync(unitOfWork, async db => await db.SaveChangesAsync(false).ConfigureAwait(false));
+            return ExecuteCommitCoreAsync(appContext, async db => await db.SaveChangesAsync(false).ConfigureAwait(false));
         }
 
         /// <inheritdoc />
-        public UnitOfWorkCommitResult ExecuteCommit(IUnitOfWork unitOfWork)
+        public UnitOfWorkCommitResult ExecuteCommit(IApplicationContext appContext)
         {
-            return ExecuteCommitCoreAsync(unitOfWork,
+            return ExecuteCommitCoreAsync(appContext,
                                           db =>
                                           {
                                               db.SaveChanges(false);
@@ -56,9 +56,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                                           }).Result;
         }
 
-        async Task<UnitOfWorkCommitResult> ExecuteCommitCoreAsync(IUnitOfWork unitOfWork, Func<DbContext, Task> callback)
+        async Task<UnitOfWorkCommitResult> ExecuteCommitCoreAsync(IApplicationContext appContext, Func<DbContext, Task> callback)
         {
-            var _dbContext = unitOfWork.Context as DbContext;
+            var _dbContext = appContext as DbContext;
 
             try
             {
@@ -67,7 +67,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 if (!_dbContext.ChangeTracker.HasChanges())
                     return new UnitOfWorkCommitResult();
 
-                var conflictResult = await _conflictResolver.ResolveAsync(unitOfWork.Context).ConfigureAwait(false);
+                var conflictResult = await _conflictResolver.ResolveAsync(appContext).ConfigureAwait(false);
 
                 if (conflictResult.HasConflicts)
                 {
@@ -81,10 +81,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                            };
                 }
 
-                var changedAt = unitOfWork.UseTimeSourceFromEntities;
+                var changedAt = appContext.UseTimeSourceFromEntities;
 
-                _updateService.Apply(unitOfWork, changedAt);
-                _deleteService.Apply(unitOfWork, changedAt);
+                _updateService.Apply(appContext, changedAt);
+                _deleteService.Apply(appContext, changedAt);
 
                 // save the database without appling changes
                 await callback(_dbContext);

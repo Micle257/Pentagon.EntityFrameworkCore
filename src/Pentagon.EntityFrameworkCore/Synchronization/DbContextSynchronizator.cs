@@ -31,7 +31,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
             if (selector == null)
                 selector = a => true;
 
-            var session = _factory.CreateTwoWay<T>();
+            var session = _factory.Create<T>();
 
             await session.SynchronizeAsync(selector).ConfigureAwait(false);
 

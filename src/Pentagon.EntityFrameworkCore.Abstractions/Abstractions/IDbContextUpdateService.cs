@@ -14,8 +14,8 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
         /// <summary>
         /// Applies the on-save update and insert logic.
         /// </summary>
-        /// <param name="unitOfWork">The unit of work.</param>
+        /// <param name="appContext">The application context.</param>
         /// <param name="useTimestampFromEntity">If set to <c>true</c> use timestamp from entity data; otherwise, or if the data is unspecified, from current time.</param>
-        void Apply(IUnitOfWork unitOfWork, bool useTimestampFromEntity = false);
+        void Apply(IApplicationContext appContext, bool useTimestampFromEntity = false);
     }
 }

@@ -19,18 +19,18 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
 
     /// <summary> Represents a synchronization session. </summary>
     /// <typeparam name="T"> The type of the entity. </typeparam>
-    public class TwoWaySynchronization<T> : ITwoWaySynchronization<T>
+    public class Synchronization<T> : ISynchronization<T>
             where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new()
     {
         readonly IRepositoryActionService _actionService;
 
-        readonly IUnitOfWorkScope _remoteFactory;
+        readonly IContextFactory _remoteFactory;
 
-        readonly IUnitOfWorkScope _localFactory;
+        readonly IContextFactory _localFactory;
 
-        public TwoWaySynchronization(IRepositoryActionService actionService,
-                                     IUnitOfWorkScope remoteFactory,
-                                     IUnitOfWorkScope localFactory)
+        public Synchronization(IRepositoryActionService actionService,
+                                     IContextFactory remoteFactory,
+                               IContextFactory localFactory)
         {
             _actionService = actionService;
             _remoteFactory = remoteFactory;
@@ -39,41 +39,34 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
 
         public async Task SynchronizeAsync(Expression<Func<T, bool>> selector)
         {
-            using (_localFactory)
+            var local = _localFactory.CreateContext();
+            var remote = _remoteFactory.CreateContext();
+
+            var localRepository = local.GetRepository<T>();
+            var remoteRepository = remote.GetRepository<T>();
+
+            var dataDiff = await GetDataPairsAsync(localRepository, remoteRepository, selector).ConfigureAwait(false);
+
+            foreach (var diff in dataDiff)
             {
-                var local = _localFactory.Get();
-
-                using (_remoteFactory)
+                var comms = _actionService.GetRepositoryActionsInOneWayMode(diff);
+                foreach (var comm in comms)
                 {
-                    var remote = _remoteFactory.Get();
+                    var repo = comm.RepositoryType == RepositoryType.Local
+                                       ? localRepository
+                                       : remoteRepository;
 
-                    var localRepository = local.GetRepository<T>();
-                    var remoteRepository = remote.GetRepository<T>();
-
-                    var dataDiff = await GetDataPairsAsync(localRepository, remoteRepository, selector).ConfigureAwait(false);
-
-                    foreach (var diff in dataDiff)
+                    switch (comm.Action)
                     {
-                        var comms = _actionService.GetRepositoryActionsInOneWayMode(diff);
-                        foreach (var comm in comms)
-                        {
-                            var repo = comm.RepositoryType == RepositoryType.Local
-                                               ? localRepository
-                                               : remoteRepository;
-
-                            switch (comm.Action)
-                            {
-                                case TableActionType.Insert:
-                                    repo.Insert(comm.Entity);
-                                    break;
-                                case TableActionType.Delete:
-                                    repo.Delete(comm.Entity);
-                                    break;
-                                case TableActionType.Update:
-                                    repo.Update(comm.Entity);
-                                    break;
-                            }
-                        }
+                        case TableActionType.Insert:
+                            repo.Insert(comm.Entity);
+                            break;
+                        case TableActionType.Delete:
+                            repo.Delete(comm.Entity);
+                            break;
+                        case TableActionType.Update:
+                            repo.Update(comm.Entity);
+                            break;
                     }
                 }
             }

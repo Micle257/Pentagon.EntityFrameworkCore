@@ -30,7 +30,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
         [Fact]
         public void ShouldApplyWhenEntityIsAdded()
         {
-            var unit = DI.GetService<IUnitOfWork<IApplicationContext>>();
+            var unit = DI.GetService<IApplicationContext>();
             var service = DI.GetService<IDbContextUpdateService>();
             var user = DI.GetService<IDataUserProvider>();
 
@@ -62,7 +62,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
         public void ShouldApplyWhenEntityIsModified()
         {
             var ex = DI.GetService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
-            var unit = DI.GetService<IUnitOfWork<IApplicationContext>>();
+            var unit = DI.GetService<IApplicationContext>();
             var service = DI.GetService<IDbContextUpdateService>();
             var user = DI.GetService<IDataUserProvider>();
 

@@ -81,7 +81,7 @@ namespace Pentagon.EntityFrameworkCore
             builder.Add(new ServiceDescriptor(typeof(TContext), c => c.GetService<IContextFactory<TContext>>().CreateContext(), lifetime));
 
             builder.AddTransient<IContextFactory<TContext>, TFactoryImplementation>();
-
+            
             return builder;
         }
 
@@ -100,7 +100,12 @@ namespace Pentagon.EntityFrameworkCore
             var descriptor = builder.FirstOrDefault(a => a.ServiceType == typeof(TContext));
 
             if (descriptor != null)
+            {
                 builder.Add(new ServiceDescriptor(typeof(IApplicationContext), c => c.GetService<TContext>(), descriptor.Lifetime));
+
+                builder.AddTransient<IContextFactory>(c => c.GetRequiredService<IContextFactory<IApplicationContext>>());
+                builder.AddTransient<IContextFactory<IApplicationContext>>(c => c.GetRequiredService<IContextFactory<TContext>>());
+            }
 
             return builder;
         }
@@ -141,20 +146,14 @@ namespace Pentagon.EntityFrameworkCore
 
         internal static IServiceCollection AddDefaultUnitOfWork(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
-            builder.AddTransient<IUnitOfWorkFactory, UnitOfWorkFactory<IApplicationContext>>();
-            builder.AddTransient<IUnitOfWorkFactory<IApplicationContext>, UnitOfWorkFactory<IApplicationContext>>();
-
             builder.AddTransient<IUnitOfWorkCommitExecutor, UnitOfWorkCommitExecutor<IApplicationContext>>();
             builder.AddTransient<IUnitOfWorkCommitExecutor<IApplicationContext>, UnitOfWorkCommitExecutor<IApplicationContext>>();
-
-            builder.Add(new ServiceDescriptor(typeof(IUnitOfWork), typeof(UnitOfWork<IApplicationContext>), lifetime));
-            builder.Add(new ServiceDescriptor(typeof(IUnitOfWork<IApplicationContext>), typeof(UnitOfWork<IApplicationContext>), lifetime));
-
-            builder.AddTransient<IUnitOfWorkScope, UnitOfWorkScope<IApplicationContext>>();
-            builder.AddTransient<IUnitOfWorkScope<IApplicationContext>, UnitOfWorkScope<IApplicationContext>>();
             
             builder.AddTransient<IDatabaseChangeManager, DatabaseChangeManager<IApplicationContext>>();
             builder.AddTransient<IDatabaseChangeManager<IApplicationContext>, DatabaseChangeManager<IApplicationContext>>();
+
+            builder.AddTransient<IConcurrencyConflictResolver, ConcurrencyConflictResolver<IApplicationContext>>();
+            builder.AddTransient<IConcurrencyConflictResolver<IApplicationContext>, ConcurrencyConflictResolver<IApplicationContext>>();
 
             return builder;
         }
@@ -167,12 +166,10 @@ namespace Pentagon.EntityFrameworkCore
             return builder;
         }
         
-        internal static IServiceCollection AddCommitManager(this IServiceCollection builder, ServiceLifetime lifetime)
+        internal static IServiceCollection AddCommitManager(this IServiceCollection builder)
         {
             builder.AddSingleton<IDatabaseCommitManager, DatabaseCommitManager>();
-
-            builder.Add(new ServiceDescriptor(typeof(IDatabaseCommitManager), typeof(DatabaseCommitManager), lifetime));
-
+            
             return builder;
         }
 
@@ -183,19 +180,15 @@ namespace Pentagon.EntityFrameworkCore
 
             // UoW
             builder.AddDbContextServices()
-                   .AddCommitManager(lifetime);
+                   .AddCommitManager();
 
             builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider), lifetime));
-
-            builder.AddTransient<IUnitOfWorkFactory<TContext>, UnitOfWorkFactory<TContext>>();
+            
             builder.AddTransient<IConcurrencyConflictResolver<TContext>, ConcurrencyConflictResolver<TContext>>();
             builder.AddTransient<IUnitOfWorkCommitExecutor<TContext>, UnitOfWorkCommitExecutor<TContext>>();
 
             builder.AddTransient<IDatabaseChangeManager<TContext>, DatabaseChangeManager<TContext>>();
-
-            builder.Add(new ServiceDescriptor(typeof(IUnitOfWork<TContext>), typeof(UnitOfWork<TContext>), lifetime));
-            builder.AddTransient<IUnitOfWorkScope<TContext>, UnitOfWorkScope<TContext>>();
-
+            
             builder.AddDefaultUnitOfWork();
 
             return builder;

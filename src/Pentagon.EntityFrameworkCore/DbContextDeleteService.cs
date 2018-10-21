@@ -26,10 +26,8 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         /// <inheritdoc />
-        public void Apply(IUnitOfWork unitOfWork, bool useTimestampFromEntity)
+        public void Apply(IApplicationContext appContext, bool useTimestampFromEntity)
         {
-            var appContext = unitOfWork.Context;
-
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (!(appContext is DbContext dbContext))
                 throw new ArgumentNullException(nameof(dbContext));

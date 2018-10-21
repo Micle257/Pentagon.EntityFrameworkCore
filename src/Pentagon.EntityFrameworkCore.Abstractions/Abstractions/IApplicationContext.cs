@@ -13,6 +13,10 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     /// <summary> Represents a database application context. </summary>
     public interface IApplicationContext : IDisposable
     {
+        bool UseTimeSourceFromEntities { get; set; }
+
+        event EventHandler<ManagerCommitEventArgs> Commiting;
+
         /// <summary> Gets the repository of given entity. </summary>
         /// <typeparam name="TEntity"> The type of the entity. </typeparam>
         /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
