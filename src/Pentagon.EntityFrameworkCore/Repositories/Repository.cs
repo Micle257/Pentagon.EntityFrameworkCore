@@ -26,13 +26,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     public class Repository<TEntity> : IRepository<TEntity>
             where TEntity : class, IEntity, new()
     {
-        /// <summary> The logger. </summary>
-        [NotNull]
-        readonly ILogger<Repository<TEntity>> _logger;
-
-        [NotNull]
-        readonly IPaginationService _paginationService;
-
         [NotNull]
         IEntityIncludeConfiguration _includeConfiguration;
 
@@ -46,12 +39,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> Initializes a new instance of the <see cref="Repository{TEntity}" /> class. </summary>
         /// <param name="logger"> The logger. </param>
         /// <param name="context"> The database context. </param>
-        public Repository([NotNull] ILogger<Repository<TEntity>> logger,
-                          [NotNull] IPaginationService paginationService,
-                          [NotNull] DbContext context)
+        public Repository([NotNull] DbContext context)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _paginationService = paginationService ?? throw new ArgumentNullException(nameof(paginationService));
             DataContext = context ?? throw new ArgumentNullException(nameof(context));
 
             _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
@@ -313,7 +302,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             set = specification.Apply(set);
 
-            return _paginationService.CreateAsync(selector, set, specification);
+            return PaginationHelper.CreateAsync(selector, set, specification);
         }
 
         #endregion

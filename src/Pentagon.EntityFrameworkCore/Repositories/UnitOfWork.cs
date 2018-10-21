@@ -20,10 +20,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     public class UnitOfWork<TContext> : IUnitOfWork<TContext>
             where TContext : class, IApplicationContext
     {
-        /// <summary> The repository factory. </summary>
-        [NotNull]
-        readonly IRepositoryFactory _repositoryFactory;
-
         [NotNull]
         readonly IDatabaseCommitManager _commitManager;
         
@@ -46,15 +42,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <param name="repositoryFactory"> The repository factory. </param>
         /// <param name="commitManager"> The commit manager. </param>
         public UnitOfWork([NotNull] TContext context,
-                          [NotNull] IRepositoryFactory repositoryFactory,
                           [NotNull] IDatabaseCommitManager commitManager)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
             Require.IsType(() => context, out _dbContext);
-
-            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            
             _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
 
             Context = context;
@@ -68,7 +62,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TEntity : class, IEntity, new()
         {
             // get repository from factory
-            var repo = _repositoryFactory.GetRepository<TEntity>(Context);
+            var repo = new Repository<TEntity>(_dbContext);
 
             return repo;
         }

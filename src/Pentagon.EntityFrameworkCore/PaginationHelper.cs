@@ -16,10 +16,9 @@ namespace Pentagon.EntityFrameworkCore
     using Collections;
     using Microsoft.EntityFrameworkCore;
 
-    public class PaginationService : IPaginationService
+    public static class PaginationHelper
     {
-        /// <inheritdoc />
-        public async Task<PagedList<TSelectEntity>> CreateAsync<TSelectEntity, TEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
+        public static async Task<PagedList<TSelectEntity>> CreateAsync<TSelectEntity, TEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                         IQueryable<TEntity> query,
                                                                                         IPaginationSpecification<TEntity> specification)
                 where TEntity : IEntity
@@ -39,9 +38,8 @@ namespace Pentagon.EntityFrameworkCore
             var list = await query.Select(selector).ToListAsync().ConfigureAwait(false);
             return new PagedList<TSelectEntity>(list, count, specification.PageSize, specification.PageNumber - 1);
         }
-
-        /// <inheritdoc />
-        public async Task<PagedList<TEntity>> CreateAsync<TEntity>(IQueryable<TEntity> query, IPaginationSpecification<TEntity> specification)
+        
+        public static async Task<PagedList<TEntity>> CreateAsync<TEntity>(IQueryable<TEntity> query, IPaginationSpecification<TEntity> specification)
                 where TEntity : IEntity
         {
             var count = await query.CountAsync().ConfigureAwait(false);
@@ -52,6 +50,7 @@ namespace Pentagon.EntityFrameworkCore
                 throw new ArgumentOutOfRangeException(nameof(specification.PageNumber), message: "The page number is out of range.");
 
             var list = await specification.ApplyPagination(query).ToListAsync().ConfigureAwait(false);
+
             return new PagedList<TEntity>(list, count, specification.PageSize, specification.PageNumber - 1);
         }
     }

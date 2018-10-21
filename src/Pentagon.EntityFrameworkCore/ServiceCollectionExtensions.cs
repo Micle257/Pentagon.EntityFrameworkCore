@@ -166,21 +166,7 @@ namespace Pentagon.EntityFrameworkCore
 
             return builder;
         }
-
-        internal static IServiceCollection AddRepositoryFactory(this IServiceCollection builder)
-        {
-            builder.AddTransient<IRepositoryFactory, RepositoryFactory>();
-
-            return builder;
-        }
-
-        internal static IServiceCollection AddPagination(this IServiceCollection builder)
-        {
-            builder.AddTransient<IPaginationService, PaginationService>();
-
-            return builder;
-        }
-
+        
         internal static IServiceCollection AddCommitManager(this IServiceCollection builder, ServiceLifetime lifetime)
         {
             builder.AddSingleton<IDatabaseCommitManager, DatabaseCommitManager>();
@@ -197,8 +183,6 @@ namespace Pentagon.EntityFrameworkCore
 
             // UoW
             builder.AddDbContextServices()
-                   .AddRepositoryFactory()
-                   .AddPagination()
                    .AddCommitManager(lifetime);
 
             builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider), lifetime));
