@@ -31,7 +31,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var factory3 = di.GetService<IContextFactory<INewContext>>();
 
             var com = di.GetService<IUnitOfWork<IContext>>();
-            var com1 = di.GetService<IUnitOfWorkCommitExecutor>();
+            var com1 = di.GetService<IUnitOfWork>();
             var com2 = di.GetService<IUnitOfWork<IApplicationContext>>();
             var com3 = di.GetService<IUnitOfWork<INewContext>>();
 

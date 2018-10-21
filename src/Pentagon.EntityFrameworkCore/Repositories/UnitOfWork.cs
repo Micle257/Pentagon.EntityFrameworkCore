@@ -25,19 +25,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         [NotNull]
         readonly IDbContextDeleteService _deleteService;
-
-        [NotNull]
-        readonly IDatabaseCommitManager _commitManager;
-
+        
         public UnitOfWork([NotNull] IConcurrencyConflictResolver<TContext> conflictResolver,
                                         [NotNull] IDbContextUpdateService updateService,
-                                        [NotNull] IDbContextDeleteService deleteService,
-                                        [NotNull] IDatabaseCommitManager commitManager)
+                                        [NotNull] IDbContextDeleteService deleteService)
         {
             _conflictResolver = conflictResolver ?? throw new ArgumentNullException(nameof(conflictResolver));
             _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
             _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
-            _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
         }
 
         public Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IApplicationContext appContext)
@@ -88,10 +83,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 // save the database without appling changes
                 await callback(_dbContext);
-
-                // raise all changes
-                _commitManager.RaiseCommited(typeof(TContext), GetEntries(_dbContext));
-
+                
                 // accept changes
                 _dbContext.ChangeTracker.AcceptAllChanges();
 

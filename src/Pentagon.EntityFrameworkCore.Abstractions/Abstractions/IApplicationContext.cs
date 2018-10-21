@@ -15,7 +15,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     {
         bool UseTimeSourceFromEntities { get; set; }
 
-        event EventHandler<ManagerCommitEventArgs> Commiting;
+        event EventHandler<CommitEventArgs> Commiting;
 
         /// <summary> Gets the repository of given entity. </summary>
         /// <typeparam name="TEntity"> The type of the entity. </typeparam>

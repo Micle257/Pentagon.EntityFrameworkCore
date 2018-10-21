@@ -23,7 +23,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public event EventHandler<ManagerCommitEventArgs> Commiting;
+        public event EventHandler<CommitEventArgs> Commiting;
 
         /// <inheritdoc />
         public bool UseTimeSourceFromEntities { get; set; }
@@ -60,7 +60,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         void OnCommiting(CommitEventArgs commitEventArgs)
         {
-            Commiting?.Invoke(this, new ManagerCommitEventArgs(GetType(), commitEventArgs?.Entries?.FirstOrDefault()?.Entity?.GetType(), commitEventArgs?.Entries.ToArray()));
+            Commiting?.Invoke(this, new CommitEventArgs(commitEventArgs?.Entries.ToArray()));
         }
     }
 }
