@@ -17,7 +17,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
     }
 
-    public class NewContext : DbContext, INewContext
+    public class NewContext : BaseDbContext, INewContext
     {
         public DbSet<Simple> Simples { get; set; }
 
@@ -26,13 +26,9 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
             optionsBuilder.UseInMemoryDatabase("DB2");
             base.OnConfiguring(optionsBuilder);
         }
-        
-        /// <inheritdoc />
-        public IRepository<TEntity> GetRepository<TEntity>()
-                where TEntity : class, IEntity, new() => new Repository<TEntity>(this);
     }
 
-    public class Context : DbContext, IContext
+    public class Context : BaseDbContext, IContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -63,11 +59,5 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
         public DbSet<Person> Persons { get; set; }
 
         public DbSet<TimestampIdentity> Identities { get; set; }
-
-        public bool HasHardDeleteBehavior { get; }
-
-        /// <inheritdoc />
-        public IRepository<TEntity> GetRepository<TEntity>()
-                where TEntity : class, IEntity, new() => new Repository<TEntity>(this);
     }
 }
