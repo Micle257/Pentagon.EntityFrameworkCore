@@ -30,10 +30,10 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var factory2 = di.GetService<IContextFactory<IApplicationContext>>();
             var factory3 = di.GetService<IContextFactory<INewContext>>();
 
-            var com = di.GetService<IUnitOfWorkCommitExecutor<IContext>>();
+            var com = di.GetService<IUnitOfWork<IContext>>();
             var com1 = di.GetService<IUnitOfWorkCommitExecutor>();
-            var com2 = di.GetService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
-            var com3 = di.GetService<IUnitOfWorkCommitExecutor<INewContext>>();
+            var com2 = di.GetService<IUnitOfWork<IApplicationContext>>();
+            var com3 = di.GetService<IUnitOfWork<INewContext>>();
 
             var unit = factory.CreateContext();
 
@@ -70,7 +70,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var di = services.BuildServiceProvider();
 
             var unitFactory = di.GetRequiredService<IContextFactory<IApplicationContext>>();
-            var com = di.GetRequiredService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
+            var com = di.GetRequiredService<IUnitOfWork<IApplicationContext>>();
             var change = new DatabaseChangeManager<IApplicationContext>(unitFactory);
 
             var unit = unitFactory.CreateContext();

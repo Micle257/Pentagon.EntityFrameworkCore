@@ -146,8 +146,8 @@ namespace Pentagon.EntityFrameworkCore
 
         internal static IServiceCollection AddDefaultUnitOfWork(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
-            builder.AddTransient<IUnitOfWorkCommitExecutor, UnitOfWorkCommitExecutor<IApplicationContext>>();
-            builder.AddTransient<IUnitOfWorkCommitExecutor<IApplicationContext>, UnitOfWorkCommitExecutor<IApplicationContext>>();
+            builder.AddTransient<IUnitOfWorkCommitExecutor, UnitOfWork<IApplicationContext>>();
+            builder.AddTransient<IUnitOfWork<IApplicationContext>, UnitOfWork<IApplicationContext>>();
             
             builder.AddTransient<IDatabaseChangeManager, DatabaseChangeManager<IApplicationContext>>();
             builder.AddTransient<IDatabaseChangeManager<IApplicationContext>, DatabaseChangeManager<IApplicationContext>>();
@@ -185,7 +185,7 @@ namespace Pentagon.EntityFrameworkCore
             builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider), lifetime));
             
             builder.AddTransient<IConcurrencyConflictResolver<TContext>, ConcurrencyConflictResolver<TContext>>();
-            builder.AddTransient<IUnitOfWorkCommitExecutor<TContext>, UnitOfWorkCommitExecutor<TContext>>();
+            builder.AddTransient<IUnitOfWork<TContext>, UnitOfWork<TContext>>();
 
             builder.AddTransient<IDatabaseChangeManager<TContext>, DatabaseChangeManager<TContext>>();
             

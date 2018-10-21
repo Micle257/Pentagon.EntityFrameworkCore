@@ -61,8 +61,8 @@ namespace Pentagon.EntityFrameworkCore.Tests
         [Fact]
         public void ShouldApplyWhenEntityIsModified()
         {
-            var ex = DI.GetService<IUnitOfWorkCommitExecutor<IApplicationContext>>();
-            var unit = DI.GetService<IApplicationContext>();
+            var ex = DI.GetService<IUnitOfWork<IApplicationContext>>();
+            var unit = DI.GetService<IContextFactory>().CreateContext();
             var service = DI.GetService<IDbContextUpdateService>();
             var user = DI.GetService<IDataUserProvider>();
 

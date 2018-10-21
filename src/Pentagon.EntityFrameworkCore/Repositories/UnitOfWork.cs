@@ -14,7 +14,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
 
-    public class UnitOfWorkCommitExecutor<TContext> : IUnitOfWorkCommitExecutor<TContext>
+    public class UnitOfWork<TContext> : IUnitOfWork<TContext>
             where TContext : IApplicationContext
     {
         [NotNull]
@@ -29,7 +29,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         [NotNull]
         readonly IDatabaseCommitManager _commitManager;
 
-        public UnitOfWorkCommitExecutor([NotNull] IConcurrencyConflictResolver<TContext> conflictResolver,
+        public UnitOfWork([NotNull] IConcurrencyConflictResolver<TContext> conflictResolver,
                                         [NotNull] IDbContextUpdateService updateService,
                                         [NotNull] IDbContextDeleteService deleteService,
                                         [NotNull] IDatabaseCommitManager commitManager)
