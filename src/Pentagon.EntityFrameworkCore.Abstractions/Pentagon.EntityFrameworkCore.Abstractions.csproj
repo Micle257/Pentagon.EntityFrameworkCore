@@ -24,7 +24,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2018.2.1" PrivateAssets="All" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
-    <PackageReference Include="Pentagon.Common" Version="1.5.3" />
+    <PackageReference Include="Pentagon.Common" Version="1.5.4" />
   </ItemGroup>
 
 </Project>
