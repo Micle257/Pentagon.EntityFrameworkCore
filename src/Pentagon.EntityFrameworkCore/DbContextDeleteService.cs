@@ -40,10 +40,10 @@ namespace Pentagon.EntityFrameworkCore
             var entries = dbContext.ChangeTracker?.Entries()
                                    .Where(e => e.Entity is IEntity && (e.State == EntityState.Deleted || e.State == EntityState.Modified));
 
-            var hardDelete = appContext.HasHardDeleteBehavior;
-
             foreach (var entry in entries)
             {
+                var hardDelete = !(entry.Entity is IDeletedFlagSupport);
+
                 if (entry.State == EntityState.Modified)
                 {
                     if (entry.Entity is IDeletedFlagSupport entity && entity.DeletedFlag)
@@ -62,20 +62,11 @@ namespace Pentagon.EntityFrameworkCore
 
                         if (entry.Entity is IDeletedUserEntitySupport identityName)
                             identityName.DeletedUser = _userProvider.UserName;
-
-                        if (entry.Entity is IUpdatedUserEntitySupport identityName2)
-                            identityName2.UpdatedUser = _userProvider.UserName;
                     }
                 }
                 else if (!hardDelete)
                 {
-                    if (entry.Entity is IDeletedFlagSupport entity)
-                        entity.DeletedFlag = true;
-                    else
-                    {
-                        _logger.LogWarning(message: "The database context is marked for soft deletion, but no IsDeletedFlag is available.");
-                        continue;
-                    }
+                    ((IDeletedFlagSupport)entry.Entity).DeletedFlag = true;
 
                     entry.State = EntityState.Modified;
 
