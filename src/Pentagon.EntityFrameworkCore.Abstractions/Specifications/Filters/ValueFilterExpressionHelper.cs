@@ -10,6 +10,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Helpers;
 
     public static class ValueFilterExpressionHelper
     {
@@ -18,8 +19,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             var ex = GetFilterCallback(propertySelector.Body, values);
 
             var parameter = Expression.Parameter(typeof(TEntity), name: "e");
-
-            ex = ParameterReplacer.Replace(ex, parameter);
+            
+            ex = ExpressionParameterReplacer.Replace(ex, parameter);
 
             return (Expression<Func<TEntity, bool>>) Expression.Lambda(typeof(Func<TEntity, bool>), ex, parameter);
         }
@@ -41,7 +42,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             var parameter = callback.Parameters[0];
             var body = callback.Body;
 
-            return ParameterReplacer.Replace(body, parameter, callBody);
+            return ExpressionParameterReplacer.Replace(body, parameter, callBody);
         }
     }
 }
