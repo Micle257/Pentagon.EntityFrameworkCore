@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="UnitOfWork.cs">
+//  <copyright file="UnitOfWorkCommitExecutor.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
@@ -7,117 +7,98 @@
 namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
-    using System.Linq;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Entities;
-    using Abstractions.Repositories;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.ChangeTracking;
-    
-    /// <summary> Represents an unit of work that communicate with a database and manage repository changes to the database. </summary>
-    /// /// <typeparam name="TContext"> The type of the db context. </typeparam>
+
     public class UnitOfWork<TContext> : IUnitOfWork<TContext>
-            where TContext : class, IApplicationContext
+            where TContext : IApplicationContext
     {
-        /// <summary> The repository factory. </summary>
         [NotNull]
-        readonly IRepositoryFactory _repositoryFactory;
+        readonly IConcurrencyConflictResolver<TContext> _conflictResolver;
 
         [NotNull]
-        readonly IDatabaseCommitManager _commitManager;
+        readonly IDbContextUpdateService _updateService;
+
+        [NotNull]
+        readonly IDbContextDeleteService _deleteService;
         
-        /// <inheritdoc />
-        public TContext Context { get; }
-
-        /// <inheritdoc />
-        public bool UseTimeSourceFromEntities { get; set; }
-
-        /// <inheritdoc />
-        IApplicationContext IUnitOfWork.Context => Context;
-
-        /// <summary> The database context. </summary>
-        readonly DbContext _dbContext;
-
-        TContext _context;
-
-        /// <summary> Initializes a new instance of the <see cref="UnitOfWork{TContext}" /> class. </summary>
-        /// <param name="context"> The context. </param>
-        /// <param name="repositoryFactory"> The repository factory. </param>
-        /// <param name="commitManager"> The commit manager. </param>
-        public UnitOfWork([NotNull] TContext context,
-                          [NotNull] IRepositoryFactory repositoryFactory,
-                          [NotNull] IDatabaseCommitManager commitManager)
+        public UnitOfWork([NotNull] IConcurrencyConflictResolver<TContext> conflictResolver,
+                                        [NotNull] IDbContextUpdateService updateService,
+                                        [NotNull] IDbContextDeleteService deleteService)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
-            Require.IsType(() => context, out _dbContext);
-
-            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
-            _commitManager = commitManager ?? throw new ArgumentNullException(nameof(commitManager));
-
-            Context = context;
-
-            _dbContext.ChangeTracker.StateChanged += OnStateChanged;
-            _dbContext.ChangeTracker.Tracked += OnTracked;
+            _conflictResolver = conflictResolver ?? throw new ArgumentNullException(nameof(conflictResolver));
+            _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
+            _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
         }
-        
-        /// <inheritdoc />
-        public virtual IRepository<TEntity> GetRepository<TEntity>()
-                where TEntity : class, IEntity, new()
-        {
-            // get repository from factory
-            var repo = _repositoryFactory.GetRepository<TEntity>(Context);
 
-            return repo;
+        public Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IApplicationContext appContext)
+        {
+            return ExecuteCommitCoreAsync(appContext, async db => await db.SaveChangesAsync(false).ConfigureAwait(false));
         }
 
         /// <inheritdoc />
-        public void Dispose()
+        public UnitOfWorkCommitResult ExecuteCommit(IApplicationContext appContext)
         {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
+            return ExecuteCommitCoreAsync(appContext,
+                                          db =>
+                                          {
+                                              db.SaveChanges(false);
+                                              return Task.CompletedTask;
+                                          }).Result;
         }
 
-        /// <summary> Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. </summary>
-        /// <param name="disposing"> The disposing. </param>
-        protected virtual void Dispose(bool disposing)
+        async Task<UnitOfWorkCommitResult> ExecuteCommitCoreAsync(IApplicationContext appContext, Func<DbContext, Task> callback)
         {
-            if (disposing)
-                Context.Dispose();
+            var _dbContext = appContext as DbContext;
+
+            try
+            {
+                _dbContext.ChangeTracker.DetectChanges();
+
+                if (!_dbContext.ChangeTracker.HasChanges())
+                    return new UnitOfWorkCommitResult();
+
+                var conflictResult = await _conflictResolver.ResolveAsync(appContext).ConfigureAwait(false);
+
+                if (conflictResult.HasConflicts)
+                {
+                    return new UnitOfWorkCommitResult
+                           {
+                                   Conflicts = conflictResult.ConflictedEntities,
+                                   Exception = new UnitOfWorkConcurrencyConflictException
+                                               {
+                                                       Conflicts = conflictResult.ConflictedEntities
+                                               }
+                           };
+                }
+
+                var changedAt = appContext.UseTimeSourceFromEntities;
+
+                _updateService.Apply(appContext, changedAt);
+                _deleteService.Apply(appContext, changedAt);
+
+                // save the database without appling changes
+                await callback(_dbContext);
+                
+                // accept changes
+                _dbContext.ChangeTracker.AcceptAllChanges();
+
+                return new UnitOfWorkCommitResult();
+            }
+            catch (Exception e)
+            {
+                return new UnitOfWorkCommitResult {Exception = e};
+            }
         }
 
-        void OnTracked(object sender, EntityTrackedEventArgs args)
+        IEnumerable<Entry> GetEntries(DbContext _dbContext)
         {
-            var entity = args.Entry.Entity as IEntity;
-
-            // entity has been tracked (get, add ...), commited is like added (for UI change)
-            OnCommiting(new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
-        }
-
-        void OnStateChanged(object sender, EntityStateChangedEventArgs args)
-        {
-            var entity = args.Entry.Entity as IEntity;
-            var state = args.NewState.ToEntityStateType();
-            var oldState = args.OldState;
-
-            // if state has not changed for the API, cancel
-            if (state == 0)
-                return;
-
-            // if the change was from unchanged to added
-            // cancel call, because it is adding entity scenario and it would end up in two event fires
-            if (oldState == EntityState.Unchanged && state == EntityStateType.Added)
-                return;
-
-            OnCommiting(new CommitEventArgs(new Entry(entity, state)));
-        }
-
-        void OnCommiting(CommitEventArgs commitEventArgs)
-        {
-            _commitManager?.RaiseCommiting(Context.GetType(), commitEventArgs?.Entries?.FirstOrDefault()?.Entity?.GetType(), commitEventArgs?.Entries);
+            foreach (var entry in _dbContext.ChangeTracker.Entries())
+                yield return new Entry(entry.Entity as IEntity, entry.State.ToEntityStateType());
         }
     }
 }

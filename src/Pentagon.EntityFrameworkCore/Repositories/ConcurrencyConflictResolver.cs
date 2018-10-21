@@ -17,9 +17,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     public class ConcurrencyConflictResolver<TContext> : IConcurrencyConflictResolver<TContext>
             where TContext : IApplicationContext
     {
-        readonly IUnitOfWorkFactory<TContext> _unitOfWorkFactory;
+        readonly IContextFactory<TContext> _unitOfWorkFactory;
 
-        public ConcurrencyConflictResolver(IUnitOfWorkFactory<TContext> unitOfWorkFactory)
+        public ConcurrencyConflictResolver(IContextFactory<TContext> unitOfWorkFactory)
         {
             _unitOfWorkFactory = unitOfWorkFactory;
         }
@@ -42,7 +42,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             foreach (var entity in localEntities)
             {
                 // for ensured data that are not in local EF cache, we create new UoW and get the entity version in database
-                var e = await (_unitOfWorkFactory.Create().Context as DbContext).FindAsync(entity.GetType(), entity.Id) as IEntity;
+                var e = await (_unitOfWorkFactory.CreateContext() as DbContext).FindAsync(entity.GetType(), entity.Id) as IEntity;
 
                 remoteEntries.Add(e);
             }

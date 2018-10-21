@@ -72,7 +72,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         {
             var parameter = Expression.Parameter(typeof(T));
 
-            var fixedBody = ParameterReplacer.Replace(body, parameter);
+            var fixedBody = ExpressionParameterReplacer.Replace(body, parameter);
 
             return Expression.Lambda<Func<T, bool>>(fixedBody, parameter);
         }
@@ -136,7 +136,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             var parameter = callback.Parameters[0];
             var body = callback.Body;
 
-            return ParameterReplacer.Replace(body, parameter, callBody);
+            return ExpressionParameterReplacer.Replace(body, parameter, callBody);
         }
     }
 }

@@ -14,18 +14,18 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
             where TLocalContext : IApplicationContext
     {
         readonly IRepositoryActionService _actionService;
-        readonly IUnitOfWorkScope<TRemoteContext> _remote;
-        readonly IUnitOfWorkScope<TLocalContext> _local;
+        readonly IContextFactory<TRemoteContext> _remote;
+        readonly IContextFactory<TLocalContext> _local;
 
-        public SynchronizationFactory(IRepositoryActionService actionService, IUnitOfWorkScope<TRemoteContext> remote, IUnitOfWorkScope<TLocalContext> local)
+        public SynchronizationFactory(IRepositoryActionService actionService, IContextFactory<TRemoteContext> remote, IContextFactory<TLocalContext> local)
         {
             _actionService = actionService;
             _remote = remote;
             _local = local;
         }
 
-        public ITwoWaySynchronization<T> CreateTwoWay<T>()
+        public ISynchronization<T> Create<T>()
                 where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport, new() 
-            => new TwoWaySynchronization<T>(_actionService, _remote, _local);
+            => new Synchronization<T>(_actionService, _remote, _local);
     }
 }

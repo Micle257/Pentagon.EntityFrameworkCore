@@ -1,8 +1,11 @@
 namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 {
     using Abstractions;
+    using Abstractions.Entities;
+    using Abstractions.Repositories;
     using EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
+    using Repositories;
 
     public interface INewContext : IApplicationContext
     {
@@ -14,7 +17,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
     }
 
-    public class NewContext : DbContext, INewContext
+    public class NewContext : BaseDbContext, INewContext
     {
         public DbSet<Simple> Simples { get; set; }
 
@@ -23,12 +26,9 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
             optionsBuilder.UseInMemoryDatabase("DB2");
             base.OnConfiguring(optionsBuilder);
         }
-
-        /// <inheritdoc />
-        public bool HasHardDeleteBehavior { get; }
     }
 
-    public class Context : DbContext, IContext
+    public class Context : BaseDbContext, IContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -59,7 +59,5 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
         public DbSet<Person> Persons { get; set; }
 
         public DbSet<TimestampIdentity> Identities { get; set; }
-
-        public bool HasHardDeleteBehavior { get; }
     }
 }

@@ -11,7 +11,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using System.Threading.Tasks;
     using Abstractions.Entities;
 
-    public interface ITwoWaySynchronization<T>
+    public interface ISynchronization<T>
             where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport
     {
         /// <summary> Synchronizes the remote/local replicas. </summary>

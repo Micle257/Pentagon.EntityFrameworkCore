@@ -7,12 +7,20 @@
 namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System;
+    using Entities;
+    using Repositories;
 
     /// <summary> Represents a database application context. </summary>
     public interface IApplicationContext : IDisposable
     {
-        /// <summary> Gets a value indicating whether this instance has hard delete behavior. </summary>
-        /// <value> <c> true </c> if this instance has hard delete behavior; otherwise, <c> false </c>. </value>
-        bool HasHardDeleteBehavior { get; }
+        bool UseTimeSourceFromEntities { get; set; }
+
+        event EventHandler<CommitEventArgs> Commiting;
+
+        /// <summary> Gets the repository of given entity. </summary>
+        /// <typeparam name="TEntity"> The type of the entity. </typeparam>
+        /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
+        IRepository<TEntity> GetRepository<TEntity>()
+                where TEntity : class, IEntity, new();
     }
 }

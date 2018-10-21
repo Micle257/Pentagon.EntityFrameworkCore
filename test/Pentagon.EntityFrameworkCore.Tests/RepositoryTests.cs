@@ -43,7 +43,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
                                  },
                        };
 
-            var re = new Repository<Person>(NullLogger<Repository<Person>>.Instance, new PaginationService(), c);
+            var re = new Repository<Person>(c);
 
             foreach (var simple in data)
                 re.Insert(simple);

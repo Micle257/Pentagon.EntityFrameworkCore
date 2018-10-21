@@ -10,6 +10,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using System.Linq.Expressions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
+    using Helpers;
 
     public static class FilterSpecificationExtensions
     {
@@ -26,6 +27,18 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             {
                 specification.Filters.Add(expression);
             }
+
+            return specification;
+        }
+
+        public static IFilterSpecification<TEntity> AddFilter<TEntity>(this IFilterSpecification<TEntity> specification, Action<IStartedPredicateBuilder<TEntity>> configure)
+                where TEntity : IEntity
+        {
+            var builder = new PredicateBuilder<TEntity>();
+
+            configure(builder);
+            
+            specification.Filters.Add(builder.Build());
 
             return specification;
         }
