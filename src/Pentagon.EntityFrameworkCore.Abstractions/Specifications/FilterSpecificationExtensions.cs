@@ -21,12 +21,9 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             configure(builder);
 
-            var filters = builder.BuildFilters();
+            var filters = builder.BuildFilter();
 
-            foreach (var expression in filters)
-            {
-                specification.Filters.Add(expression);
-            }
+            specification.Filters.Add(filters);
 
             return specification;
         }
@@ -37,7 +34,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             var builder = new PredicateBuilder<TEntity>();
 
             configure(builder);
-            
+
             specification.Filters.Add(builder.Build());
 
             return specification;

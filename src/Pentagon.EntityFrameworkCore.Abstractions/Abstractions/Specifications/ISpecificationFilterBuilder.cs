@@ -25,6 +25,8 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
 
         ISpecificationFilterBuilder<TEntity> AddFilter(Expression<Func<TEntity, bool>> condition);
 
-        IReadOnlyList<Expression<Func<TEntity, bool>>> BuildFilters();
+        FilterLogicOperation ValueFilterConcatOperation { get; set; }
+
+        Expression<Func<TEntity, bool>> BuildFilter();
     }
 }
