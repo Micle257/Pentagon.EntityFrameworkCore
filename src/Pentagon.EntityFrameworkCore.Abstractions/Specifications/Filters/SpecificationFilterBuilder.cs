@@ -1,4 +1,5 @@
-﻿namespace Pentagon.EntityFrameworkCore.Specifications {
+﻿namespace Pentagon.EntityFrameworkCore.Specifications
+{
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
@@ -15,12 +16,16 @@
 
         internal List<Expression<Func<TEntity, bool>>> Filters = new List<Expression<Func<TEntity, bool>>>();
 
+        internal List<Expression<Func<TEntity, bool>>> ValueFilters = new List<Expression<Func<TEntity, bool>>>();
+
+
+
         /// <inheritdoc />
         public ISpecificationFilterBuilder<TEntity> AddValueFilter<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector, params TProperty[] values)
         {
             var expression = ValueFilterExpressionHelper.GetFilter(propertySelector, values);
 
-            Filters.Add(expression);
+            ValueFilters.Add(expression);
 
             return this;
         }
@@ -29,11 +34,11 @@
         public ITextCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
         {
             TextFilters.Add(new CompositeFilter<TEntity, TextFilter, string>
-                            {
-                                    Property = propertySelector,
-                                    FirstCondition = filter,
-                                    FirstValue = value
-                            });
+            {
+                Property = propertySelector,
+                FirstCondition = filter,
+                FirstValue = value
+            });
 
             return new TextCompositeFilterBuilder<TEntity>(this);
         }
@@ -42,11 +47,11 @@
         public INumberCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, NumberFilter filter, object value)
         {
             NumberFilters.Add(new CompositeFilter<TEntity, NumberFilter, object>
-                              {
-                                      Property = propertySelector,
-                                      FirstCondition = filter,
-                                      FirstValue = value
-                              });
+            {
+                Property = propertySelector,
+                FirstCondition = filter,
+                FirstValue = value
+            });
 
             return new NumberCompositeFilterBuilder<TEntity>(this);
         }
@@ -63,6 +68,9 @@
         }
 
         /// <inheritdoc />
+        public FilterLogicOperation ValueFilterConcatOperation { get; set; } = FilterLogicOperation.Or;
+
+        /// <inheritdoc />
         public ISpecificationFilterBuilder<TEntity> AddFilter(Action<IPredicateBuilder<TEntity>> build)
         {
             var builder = new PredicateBuilder<TEntity>();
@@ -77,55 +85,61 @@
         }
 
         /// <inheritdoc />
-        public IReadOnlyList<Expression<Func<TEntity, bool>>> BuildFilters()
+        public Expression<Func<TEntity, bool>> BuildFilter()
         {
-            var result = new List<Expression<Func<TEntity, bool>>>(Filters);
+            var resultPredicate = new PredicateBuilder<TEntity>();
 
-            foreach (var textFilter in TextFilters)
+            if (Filters.Count > 0)
+                resultPredicate.And(b =>
+                {
+                    foreach (var filter in Filters)
+                    {
+                        b.And(filter);
+                    }
+                });
+
+            if (TextFilters.Count > 0)
+                resultPredicate.And(b =>
             {
-                var predicate = FilterExpressionHelper.GetFilter(textFilter);
+                foreach (var textFilter in TextFilters)
+                {
+                    var predicate = FilterExpressionHelper.GetFilter(textFilter);
 
-                result.Add(predicate);
+                    b.And(predicate);
+                }
+            });
 
-               //var filterType = GetFilterType(textFilter);
-               //
-               //if (filterType == 0)
-               //    continue;
-               //
-               //switch (filterType)
-               //{
-               //    case FilterCompositionType.Single:
-               //        result.Add(TextFilterExpressionHelper.GetFilter(textFilter.Property, textFilter.FirstCondition.Value, textFilter.FirstValue));
-               //        break;
-               //    case FilterCompositionType.Double:
-               //        result.Add(TextFilterExpressionHelper.GetDoubleFilter(textFilter.Property, textFilter.FirstCondition.Value, textFilter.FirstValue, textFilter.Operation, textFilter.SecondCondition.Value, textFilter.SecondValue));
-               //        break;
-               //}
+            if (NumberFilters.Count > 0)
+                resultPredicate.And(b =>
+            {
+                foreach (var numberFilter in NumberFilters)
+                {
+                    var predicate = FilterExpressionHelper.GetFilter(numberFilter);
+
+                    b.And(predicate);
+                }
+            });
+
+            if (ValueFilters.Count > 0)
+            {
+                if (ValueFilterConcatOperation == FilterLogicOperation.And)
+                    resultPredicate.And(ConfigureValueFilters());
+                else
+                    resultPredicate.Or(ConfigureValueFilters());
             }
 
-            foreach (var numberFilter in NumberFilters)
+            return resultPredicate.Build();
+        }
+
+        private Action<IPredicateBuilder<TEntity>> ConfigureValueFilters()
+        {
+            return b =>
             {
-                var predicate = FilterExpressionHelper.GetFilter(numberFilter);
-
-                result.Add(predicate);
-                // var filterType = GetFilterType(numberFilter);
-                //
-                // if (filterType == 0)
-                //     continue;
-                //
-                // switch (filterType)
-                // {
-                //     case FilterCompositionType.Single:
-                //         result.Add(NumberFilterExpressionHelper.GetFilter(numberFilter.Property, numberFilter.FirstCondition.Value, numberFilter.FirstValue));
-                //         break;
-                //
-                //     case FilterCompositionType.Double:
-                //         result.Add(NumberFilterExpressionHelper.GetDoubleFilter(numberFilter.Property, numberFilter.FirstCondition.Value, numberFilter.FirstValue, numberFilter.Operation, numberFilter.SecondCondition.Value, numberFilter.SecondValue));
-                //         break;
-                // }
-            }
-
-            return result;
+                foreach (var filter in ValueFilters)
+                {
+                    b.And(filter);
+                }
+            };
         }
     }
 }
