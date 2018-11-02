@@ -30,7 +30,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             var callbacks = new List<Expression>();
 
             foreach (var value in values)
-                callbacks.Add(GetBody<TProperty>(callBody, v => EqualityComparer<TProperty>.Default.Equals(v, value)));
+                callbacks.Add(GetBody<TProperty>(callBody, v => v.Equals(value)));
 
             var conditionExpression = callbacks.Aggregate(Expression.OrElse);
 
