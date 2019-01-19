@@ -41,6 +41,11 @@ namespace Pentagon.EntityFrameworkCore
 
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedFlagSupport)))
                     builder.SetupDeleteFlagEntityDefaults(type.ClrType);
+
+                if (type.ClrType.GetProperty(nameof(IEntity.Id)).PropertyType == typeof(Guid))
+                    builder.Entity(type.ClrType)
+                           .Property(nameof(IEntity.Id))
+                           .HasDefaultValueSql("NEWID()");
             }
 
             return builder;
@@ -125,7 +130,8 @@ namespace Pentagon.EntityFrameworkCore
         {
             builder.Entity<T>()
                    .Property(p => p.Uuid)
-                   .HasDefaultValueSql(sql: "NEWID()");
+                   .HasDefaultValueSql(sql: "NEWID()")
+                   .IsRequired();
 
             return builder;
         }
@@ -134,7 +140,8 @@ namespace Pentagon.EntityFrameworkCore
         {
             builder.Entity(type)
                    .Property(nameof(ICreateStampSupport.Uuid))
-                   .HasDefaultValueSql(sql: "NEWID()");
+                   .HasDefaultValueSql(sql: "NEWID()")
+                   .IsRequired();
 
             return builder;
         }
@@ -146,7 +153,8 @@ namespace Pentagon.EntityFrameworkCore
         {
             builder.Entity(type)
                    .Property(nameof(IDeletedFlagSupport.DeletedFlag))
-                   .HasDefaultValue(0);
+                   .HasDefaultValue(0)
+                   .IsRequired();
 
             return builder;
         }

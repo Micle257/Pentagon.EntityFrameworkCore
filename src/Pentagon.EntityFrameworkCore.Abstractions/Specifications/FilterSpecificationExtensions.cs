@@ -39,5 +39,13 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             return specification;
         }
+
+        public static IFilterSpecification<TEntity> AddFilter<TEntity>(this IFilterSpecification<TEntity> specification, Expression<Func<TEntity,bool>> selector)
+                where TEntity : IEntity
+        {
+            specification.Filters.Add(selector);
+
+            return specification;
+        }
     }
 }
