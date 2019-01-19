@@ -43,11 +43,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                 switch (filter.SecondCondition)
                 {
                     case NumberFilter nf:
-                        secondCallback = GetNumberFilterCallback(filter.Property.Body, nf, filter.FirstValue);
+                        secondCallback = GetNumberFilterCallback(filter.Property.Body, nf, filter.SecondValue);
                         break;
 
                     case TextFilter tf:
-                        secondCallback = GetTextFilterCallback(filter.Property.Body, tf, filter.FirstValue as string);
+                        secondCallback = GetTextFilterCallback(filter.Property.Body, tf, filter.SecondValue as string);
                         break;
                 }
 
