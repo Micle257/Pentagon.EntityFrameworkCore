@@ -36,10 +36,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         /// <inheritdoc />
         public IReadOnlyList<SpecificationOrder<TEntity>> Orders => _orders;
-
-        /// <inheritdoc />
-        public List<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
-
+        
         /// <inheritdoc />
         public IOrderSpecification<TEntity> AddOrder(Expression<Func<TEntity, object>> order, bool isDescending)
         {

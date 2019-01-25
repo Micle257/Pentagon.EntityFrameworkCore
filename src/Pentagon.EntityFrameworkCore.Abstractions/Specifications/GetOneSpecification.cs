@@ -30,11 +30,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         [NotNull]
         public List<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
-
-        /// <inheritdoc />
-        [NotNull]
-        public List<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
-
+        
         /// <inheritdoc />
         public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
         {

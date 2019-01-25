@@ -74,11 +74,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         /// <inheritdoc />
         public int PageNumber { get; set; }
-
-        /// <inheritdoc />
-        [NotNull]
-        public List<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
-
+        
         /// <inheritdoc />
         public IOrderSpecification<TEntity> AddOrder(Expression<Func<TEntity, object>> order, bool isDescending)
         {
