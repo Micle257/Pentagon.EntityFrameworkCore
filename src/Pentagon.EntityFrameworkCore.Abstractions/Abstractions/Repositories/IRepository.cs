@@ -21,13 +21,9 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
     public interface IRepository<TEntity> : IDeleteRepository<TEntity>, IInsertRepository<TEntity>, IUpdateRepository<TEntity>, IPagedRepository<TEntity>
             where TEntity : IEntity
     {
-        /// <summary>
-        /// Gets the query.
-        /// </summary>
-        /// <value>
-        /// The query.
-        /// </value>
-        IQueryable<TEntity> Query { get;  }
+        /// <summary> Gets the query. </summary>
+        /// <value> The query. </value>
+        IQueryable<TEntity> Query { get; }
 
         /// <summary> Stop tracking the entity (detached from data source cache, eg. in EF Core detached from change tracker). </summary>
         /// <param name="entity"> The entity. </param>
@@ -54,12 +50,10 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         Task<IEnumerable<TEntity>> GetAllAsync<TSpecification>(TSpecification specification)
                 where TSpecification : IOrderSpecification<TEntity>;
 
-        /// <summary>
-        /// Gets all selected entities from the set.
-        /// </summary>
-        /// <param name="entitiesSelector">The entities selector.</param>
-        /// <param name="orderSelector">The order selector.</param>
-        /// <param name="isDescending">If set to <c>true</c> entities will be ordered from highest to lowest.</param>
+        /// <summary> Gets all selected entities from the set. </summary>
+        /// <param name="entitiesSelector"> The entities selector. </param>
+        /// <param name="orderSelector"> The order selector. </param>
+        /// <param name="isDescending"> If set to <c> true </c> entities will be ordered from highest to lowest. </param>
         /// <returns> A <see cref="Task" /> that represents an asynchronous operation, result is an iterator of the <see cref="TEntity" />. </returns>
         Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector,
                                                 Expression<Func<TEntity, object>> orderSelector,
@@ -81,11 +75,15 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
         /// <summary> Removes all rows from repository. </summary>
         void Truncate();
 
+        /// <summary> Uses the include configuration in this repository instance. </summary>
+        /// <param name="configuration"> The configuration. </param>
+        void UseIncludeConfiguration(IEntityIncludeConfiguration<TEntity> configuration);
+
         /// <summary>
-        /// Uses the include configuration in this repository instance.
+        /// Uses the include configuration.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        void UseIncludeConfiguration(IEntityIncludeConfiguration configuration);
+        /// <param name="builder">The builder.</param>
+        void UseIncludeConfiguration(Func<IQueryable<TEntity>, IQueryable<TEntity>> builder);
 
         Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate);
 
@@ -104,7 +102,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
 
         Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>;
-        
+
         Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                    Expression<Func<TEntity, bool>> criteria,
                                                                    Expression<Func<TEntity, object>> order,
