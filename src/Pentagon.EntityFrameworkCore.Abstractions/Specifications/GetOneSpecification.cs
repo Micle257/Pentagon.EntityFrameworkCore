@@ -32,8 +32,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         public List<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
 
         /// <inheritdoc />
-        [NotNull]
-        public List<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
+        public List<Func<IQueryable<TEntity>, IQueryable<TEntity>>> QueryConfigurations { get; } = new List<Func<IQueryable<TEntity>, IQueryable<TEntity>>>();
 
         /// <inheritdoc />
         public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
@@ -41,6 +40,12 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+
+            foreach (var configuration in QueryConfigurations)
+            {
+                query = configuration(query);
+            }
+            
             if (Filters.Count == 0)
                 return query;
 

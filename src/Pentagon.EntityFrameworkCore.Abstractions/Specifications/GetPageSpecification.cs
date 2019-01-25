@@ -74,11 +74,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         /// <inheritdoc />
         public int PageNumber { get; set; }
-
-        /// <inheritdoc />
-        [NotNull]
-        public List<Expression<Func<TEntity, object>>> Includes { get; } = new List<Expression<Func<TEntity, object>>>();
-
+        
         /// <inheritdoc />
         public IOrderSpecification<TEntity> AddOrder(Expression<Func<TEntity, object>> order, bool isDescending)
         {
@@ -92,10 +88,18 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         }
 
         /// <inheritdoc />
+        public List<Func<IQueryable<TEntity>, IQueryable<TEntity>>> QueryConfigurations { get; } = new List<Func<IQueryable<TEntity>, IQueryable<TEntity>>>();
+
+        /// <inheritdoc />
         public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
+
+            foreach (var configuration in QueryConfigurations)
+            {
+                query = configuration(query);
+            }
 
             // if we have filters
             if (Filters.Count != 0)

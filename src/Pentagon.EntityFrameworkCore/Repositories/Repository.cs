@@ -18,6 +18,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Collections;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Extensions.Internal;
     using Microsoft.Extensions.Logging;
     using Specifications;
 
@@ -26,9 +27,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     public class Repository<TEntity> : IRepository<TEntity>
             where TEntity : class, IEntity, new()
     {
-        [NotNull]
-        IEntityIncludeConfiguration _includeConfiguration;
-
         /// <summary> The inner set. </summary>
         [NotNull]
         readonly DbSet<TEntity> _set;
@@ -44,8 +42,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             DataContext = context ?? throw new ArgumentNullException(nameof(context));
 
             _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
-
-            _includeConfiguration = new EmptyEntityIncludeConfiguration();
+            
             _query = _set;
         }
 
@@ -129,11 +126,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             _set.RemoveRange(_set);
         }
-
-        public void UseIncludeConfiguration(IEntityIncludeConfiguration configuration)
-        {
-            _includeConfiguration = configuration;
-        }
         
         #region GetOne
 
@@ -162,12 +154,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TSpecification : IFilterSpecification<TEntity>
         {
             var set = _query;
-
-            _includeConfiguration.Configure(specification);
-
-            foreach (var include in specification.Includes)
-                set = set.Include(include);
-
+            
             set = specification.Apply(set);
 
             return set.Select(entitySelector).SingleOrDefaultAsync();
@@ -203,12 +190,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TSpecification : IOrderSpecification<TEntity>
         {
             var set = _query;
-
-            _includeConfiguration.Configure(specification);
-
-            foreach (var include in specification.Includes)
-                set = set.Include(include);
-
+            
             set = specification.Apply(set);
 
             return await set.Select(selector).ToListAsync().ConfigureAwait(false);
@@ -249,12 +231,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             var set = _query;
-
-            _includeConfiguration.Configure(specification);
-
-            foreach (var include in specification.Includes)
-                set = set.Include(include);
-
+            
             set = specification.Apply(set);
 
             var query = set.Select(selector);
@@ -294,12 +271,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
             var set = _query;
-
-            _includeConfiguration.Configure(specification);
-
-            foreach (var include in specification.Includes)
-                set = set.Include(include);
-
+            
             set = specification.Apply(set);
 
             return PaginationHelper.CreateAsync(selector, set, specification);
