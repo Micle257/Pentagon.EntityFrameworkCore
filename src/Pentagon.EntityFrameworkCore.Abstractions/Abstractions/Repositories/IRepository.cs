@@ -74,17 +74,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
 
         /// <summary> Removes all rows from repository. </summary>
         void Truncate();
-
-        /// <summary> Uses the include configuration in this repository instance. </summary>
-        /// <param name="configuration"> The configuration. </param>
-        void UseIncludeConfiguration(IEntityIncludeConfiguration<TEntity> configuration);
-
-        /// <summary>
-        /// Uses the include configuration.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        void UseIncludeConfiguration(Func<IQueryable<TEntity>, IQueryable<TEntity>> builder);
-
+        
         Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate);
 
         Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification)

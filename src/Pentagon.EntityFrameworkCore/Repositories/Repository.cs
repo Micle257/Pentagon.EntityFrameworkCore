@@ -27,9 +27,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     public class Repository<TEntity> : IRepository<TEntity>
             where TEntity : class, IEntity, new()
     {
-        [NotNull]
-        IEntityIncludeConfiguration<TEntity> _includeConfiguration;
-
         /// <summary> The inner set. </summary>
         [NotNull]
         readonly DbSet<TEntity> _set;
@@ -45,8 +42,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             DataContext = context ?? throw new ArgumentNullException(nameof(context));
 
             _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
-
-            _includeConfiguration = new EmptyEntityIncludeConfiguration<TEntity>();
+            
             _query = _set;
         }
 
@@ -130,17 +126,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             _set.RemoveRange(_set);
         }
-
-        public void UseIncludeConfiguration(IEntityIncludeConfiguration<TEntity> configuration)
-        {
-            _includeConfiguration = configuration;
-        }
-
-        public void UseIncludeConfiguration(Func<IQueryable<TEntity>, IQueryable<TEntity>> builder)
-        {
-            _includeConfiguration = new EntityIncludeConfiguration<TEntity>(builder);
-        }
-
+        
         #region GetOne
 
         /// <inheritdoc />
@@ -169,8 +155,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             var set = _query;
             
-            set = _includeConfiguration.Configure(set);
-
             set = specification.Apply(set);
 
             return set.Select(entitySelector).SingleOrDefaultAsync();
@@ -207,8 +191,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             var set = _query;
             
-            set = _includeConfiguration.Configure(set);
-
             set = specification.Apply(set);
 
             return await set.Select(selector).ToListAsync().ConfigureAwait(false);
@@ -250,8 +232,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             var set = _query;
             
-            set = _includeConfiguration.Configure(set);
-
             set = specification.Apply(set);
 
             var query = set.Select(selector);
@@ -292,8 +272,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             var set = _query;
             
-            set = _includeConfiguration.Configure(set);
-
             set = specification.Apply(set);
 
             return PaginationHelper.CreateAsync(selector, set, specification);

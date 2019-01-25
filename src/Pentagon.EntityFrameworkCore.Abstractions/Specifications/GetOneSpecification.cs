@@ -30,13 +30,22 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         [NotNull]
         public List<Expression<Func<TEntity, bool>>> Filters { get; } = new List<Expression<Func<TEntity, bool>>>();
-        
+
+        /// <inheritdoc />
+        public List<Func<IQueryable<TEntity>, IQueryable<TEntity>>> QueryConfigurations { get; } = new List<Func<IQueryable<TEntity>, IQueryable<TEntity>>>();
+
         /// <inheritdoc />
         public IQueryable<TEntity> Apply([NotNull] IQueryable<TEntity> query)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
+
+            foreach (var configuration in QueryConfigurations)
+            {
+                query = configuration(query);
+            }
+            
             if (Filters.Count == 0)
                 return query;
 
