@@ -6,14 +6,15 @@
 
 namespace Pentagon.EntityFrameworkCore
 {
+    using System.Linq;
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
 
-    public class EmptyEntityIncludeConfiguration : IEntityIncludeConfiguration
+    public class EmptyEntityIncludeConfiguration<TEntity> : IEntityIncludeConfiguration<TEntity>
+            where TEntity : IEntity
     {
         /// <inheritdoc />
-        public void Configure<T>(ISpecification<T> specification)
-                where T : IEntity { }
+        public IQueryable<TEntity> Configure(IQueryable<TEntity> specification) => specification;
     }
 }

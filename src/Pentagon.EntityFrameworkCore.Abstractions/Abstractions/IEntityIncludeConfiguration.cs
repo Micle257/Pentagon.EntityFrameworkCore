@@ -1,10 +1,13 @@
 namespace Pentagon.EntityFrameworkCore.Abstractions {
+    using System;
+    using System.Linq;
+    using System.Linq.Expressions;
     using Entities;
     using Specifications;
 
-    public interface IEntityIncludeConfiguration
+    public interface IEntityIncludeConfiguration<TEntity>
+            where TEntity : IEntity
     {
-        void Configure<T>(ISpecification<T> specification)
-                where T : IEntity;
+        IQueryable<TEntity> Configure(IQueryable<TEntity> specification);
     }
 }
