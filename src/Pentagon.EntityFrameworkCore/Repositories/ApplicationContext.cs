@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="BaseDbContext.cs">
+//  <copyright file="ApplicationContext.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
@@ -8,16 +8,15 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using System.Linq;
-    using System.Reflection;
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Repositories;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-    public abstract class BaseDbContext : DbContext, IApplicationContext
+    public abstract class ApplicationContext : DbContext, IApplicationContext
     {
-        protected BaseDbContext()
+        protected ApplicationContext()
         {
             // disable warning due to event listener
             // ReSharper disable once VirtualMemberCallInConstructor
