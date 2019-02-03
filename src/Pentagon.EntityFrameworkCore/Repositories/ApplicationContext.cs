@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="BaseDbContext.cs">
+//  <copyright file="ApplicationContext.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
@@ -14,11 +14,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-    public abstract class BaseDbContext : DbContext, IApplicationContext
+    public abstract class ApplicationContext : DbContext, IApplicationContext
     {
-        public BaseDbContext()
+        protected ApplicationContext()
         {
+            // disable warning due to event listener
+            // ReSharper disable once VirtualMemberCallInConstructor
             ChangeTracker.StateChanged += OnStateChanged;
+            // ReSharper disable once VirtualMemberCallInConstructor
             ChangeTracker.Tracked += OnTracked;
         }
 
@@ -31,6 +34,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new() => new Repository<TEntity>(this);
+
+        /// <inheritdoc />
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.SetupBaseEntities();
+        }
 
         void OnTracked(object sender, EntityTrackedEventArgs args)
         {

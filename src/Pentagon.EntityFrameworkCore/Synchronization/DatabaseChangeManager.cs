@@ -16,7 +16,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using Specifications;
 
     class EntityUuidEqualityComparer<T> : IEqualityComparer<T>
-        where T : IEntity, ICreateStampSupport
+        where T : class, ICreateStampSupport
     {
         public static EntityUuidEqualityComparer<T> Instance { get; } = new EntityUuidEqualityComparer<T>();
 
@@ -38,7 +38,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         }
 
         public DatabaseChangeCompareResult<T> Compare<T>(DataChange<T> client, DataChange<T> server, bool autoResolve)
-                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new()
+                where T : class, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new()
         {
             var result = new DatabaseChangeCompareResult<T>();
 
@@ -128,7 +128,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
         }
 
         public DateTimeOffset? GetLastActivity<T>(IEnumerable<T> data)
-                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new()
+                where T : class, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new()
         {
             var max = DateTimeOffset.MinValue.Ticks;
 

@@ -17,6 +17,6 @@ namespace Pentagon.EntityFrameworkCore
 
         public object UpdatedUserId => (Entity as IUpdateTimeStampIdentitySupport)?.UpdatedUserId;
 
-        public IEntity Entity { get; set; }
+        public object Entity { get; set; }
     }
 }
