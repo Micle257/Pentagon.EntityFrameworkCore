@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using System.Linq;
+    using System.Reflection;
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Repositories;
@@ -16,9 +17,12 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
     public abstract class BaseDbContext : DbContext, IApplicationContext
     {
-        public BaseDbContext()
+        protected BaseDbContext()
         {
+            // disable warning due to event listener
+            // ReSharper disable once VirtualMemberCallInConstructor
             ChangeTracker.StateChanged += OnStateChanged;
+            // ReSharper disable once VirtualMemberCallInConstructor
             ChangeTracker.Tracked += OnTracked;
         }
 
@@ -31,6 +35,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new() => new Repository<TEntity>(this);
+
+        /// <inheritdoc />
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.SetupBaseEntities();
+        }
 
         void OnTracked(object sender, EntityTrackedEventArgs args)
         {
