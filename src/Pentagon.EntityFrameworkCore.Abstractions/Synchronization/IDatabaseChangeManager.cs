@@ -15,10 +15,10 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     public interface IDatabaseChangeManager
     {
         DatabaseChangeCompareResult<T> Compare<T>(DataChange<T> client, DataChange<T> server, bool autoResolve)
-                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new();
+                where T : class, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new();
 
         DateTimeOffset? GetLastActivity<T>(IEnumerable<T> data)
-                where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new();
+                where T : class, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new();
 
         Task<DataChange<T>> GetChange<T>(DateTimeOffset? lastActivityAt, IEnumerable<T> data)
                 where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, new();

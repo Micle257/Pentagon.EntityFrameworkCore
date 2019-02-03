@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore
     public abstract class Entity<TKey> : IEntity<TKey>
     {
         /// <inheritdoc />
-        public TKey Id { get; set; }
+        public virtual TKey Id { get; set; }
 
         /// <inheritdoc />
         object IEntity.Id
