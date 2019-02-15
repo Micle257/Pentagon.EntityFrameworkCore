@@ -40,6 +40,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             AddOrder(order ?? throw new ArgumentNullException(nameof(order)), isDescending);
         }
 
+        public GetManySpecification([NotNull] Expression<Func<TEntity, bool>> filter)
+        {
+            Filters.Add(filter ?? throw new ArgumentNullException(nameof(filter)));
+        }
+
         /// <summary> Initializes a new instance of the <see cref="GetManySpecification{TEntity}" /> class. </summary>
         public GetManySpecification() { }
 
