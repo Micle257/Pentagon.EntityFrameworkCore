@@ -33,7 +33,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         /// <inheritdoc />
         public IRepository<TEntity> GetRepository<TEntity>()
-                where TEntity : class, IEntity, new() => new Repository<TEntity>(this);
+                where TEntity : class, IEntity, new() => new Repository<TEntity>(Set<TEntity>());
 
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)

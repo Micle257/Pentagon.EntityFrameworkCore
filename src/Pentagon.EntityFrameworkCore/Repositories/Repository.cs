@@ -7,6 +7,7 @@
 namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
@@ -30,49 +31,18 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <summary> The inner set. </summary>
         [NotNull]
         readonly DbSet<TEntity> _set;
-
-        [NotNull]
-        readonly IQueryable<TEntity> _query;
         
         /// <summary> Initializes a new instance of the <see cref="Repository{TEntity}" /> class. </summary>
         /// <param name="logger"> The logger. </param>
         /// <param name="context"> The database context. </param>
-        public Repository([NotNull] DbContext context)
+        public Repository([NotNull] DbSet<TEntity> dbSet)
         {
-            DataContext = context ?? throw new ArgumentNullException(nameof(context));
-
-            _set = DataContext.Set<TEntity>() ?? throw new ArgumentException(message: "The given entity doesn't exist in the context.");
-            
-            _query = _set;
+            _set = dbSet;
         }
-
-        /// <summary> Gets the data context. </summary>
-        /// <value> The <see cref="DbContext" />. </value>
-        [NotNull]
-        public DbContext DataContext { get; }
-
-        /// <inheritdoc />
-        public IQueryable<TEntity> Query => _set;
-
-        /// <inheritdoc />
-        public void Forget([NotNull] TEntity entity)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            var entry = DataContext.Entry(entity);
-
-            if (entry != null)
-                entry.State = EntityState.Detached;
-        }
-
+        
         /// <inheritdoc />
         public Task<TEntity> GetByIdAsync(object id) => _set.FindAsync(id);
-
-        /// <inheritdoc />
-        public Task<TProperty> GetPropertyByForeignKeyAsync<TProperty>(object foreignKey)
-                where TProperty : class => DataContext.Set<TProperty>().FindAsync(foreignKey);
-
+        
         /// <inheritdoc />
         public Task<int> CountAsync() => _set.CountAsync();
 
@@ -153,7 +123,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification)
                 where TSpecification : IFilterSpecification<TEntity>
         {
-            var set = _query;
+            var set = (IQueryable<TEntity>) _set;
             
             set = specification.Apply(set);
 
@@ -189,7 +159,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IOrderSpecification<TEntity>
         {
-            var set = _query;
+            var set = (IQueryable<TEntity>) _set;
             
             set = specification.Apply(set);
 
@@ -230,7 +200,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
-            var set = _query;
+            var set = (IQueryable<TEntity>) _set;
             
             set = specification.Apply(set);
 
@@ -270,7 +240,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
-            var set = _query;
+            var set = (IQueryable<TEntity>) _set;
             
             set = specification.Apply(set);
 
@@ -278,5 +248,20 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public IEnumerator<TEntity> GetEnumerator() => _set.AsQueryable().GetEnumerator();
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <inheritdoc />
+        public Type ElementType => _set.AsQueryable().ElementType;
+
+        /// <inheritdoc />
+        public Expression Expression => _set.AsQueryable().Expression;
+
+        /// <inheritdoc />
+        public IQueryProvider Provider => _set.AsQueryable().Provider;
     }
 }

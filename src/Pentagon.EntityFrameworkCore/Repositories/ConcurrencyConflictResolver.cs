@@ -39,12 +39,15 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             var remoteEntries = new List<IEntity>();
 
-            foreach (var entity in localEntities)
+            using (var context = _unitOfWorkFactory.CreateContext() as DbContext)
             {
-                // for ensured data that are not in local EF cache, we create new UoW and get the entity version in database
-                var e = await (_unitOfWorkFactory.CreateContext() as DbContext).FindAsync(entity.GetType(), entity.Id) as IEntity;
+                foreach (var entity in localEntities)
+                {
+                    // for ensured data that are not in local EF cache, we create new UoW and get the entity version in database
+                    var e = await context.FindAsync(entity.GetType(), entity.Id) as IEntity;
 
-                remoteEntries.Add(e);
+                    remoteEntries.Add(e);
+                }
             }
 
             // tie together remote and local entities

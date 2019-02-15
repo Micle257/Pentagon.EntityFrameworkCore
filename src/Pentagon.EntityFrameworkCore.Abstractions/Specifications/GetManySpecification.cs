@@ -26,7 +26,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <param name="filter"> The filter. </param>
         /// <param name="order"> The order. </param>
         /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
-        public GetManySpecification([NotNull] Expression<Func<TEntity, bool>> filter, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending)
+        public GetManySpecification([NotNull] Expression<Func<TEntity, bool>> filter, [NotNull] Expression<Func<TEntity, object>> order, bool isDescending = false)
         {
             Filters.Add(filter ?? throw new ArgumentNullException(nameof(filter)));
             AddOrder(order ?? throw new ArgumentNullException(nameof(order)), isDescending);
@@ -35,9 +35,14 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <summary> Initializes a new instance of the <see cref="GetManySpecification{TEntity}" /> class. </summary>
         /// <param name="order"> The order. </param>
         /// <param name="isDescending"> If set to <c> true </c> is descending. </param>
-        public GetManySpecification([NotNull] Expression<Func<TEntity, object>> order, bool isDescending)
+        public GetManySpecification([NotNull] Expression<Func<TEntity, object>> order, bool isDescending = false)
         {
             AddOrder(order ?? throw new ArgumentNullException(nameof(order)), isDescending);
+        }
+
+        public GetManySpecification([NotNull] Expression<Func<TEntity, bool>> filter)
+        {
+            Filters.Add(filter ?? throw new ArgumentNullException(nameof(filter)));
         }
 
         /// <summary> Initializes a new instance of the <see cref="GetManySpecification{TEntity}" /> class. </summary>
