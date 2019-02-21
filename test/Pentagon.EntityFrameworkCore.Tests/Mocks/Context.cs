@@ -36,7 +36,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
             base.OnConfiguring(optionsBuilder);
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreatingCore(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
