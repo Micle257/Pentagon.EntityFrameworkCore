@@ -15,7 +15,7 @@ namespace Pentagon.EntityFrameworkCore
     public static class IndexBuilderExtensions
     {
         [NotNull]
-        public static IndexBuilder<T> HasIndexForDeletedFlag<T>([NotNull] this IndexBuilder<T> builder)
+        public static IndexBuilder HasIndexForDeletedFlag([NotNull] this IndexBuilder builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
