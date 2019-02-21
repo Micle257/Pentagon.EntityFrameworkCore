@@ -10,12 +10,16 @@ namespace Pentagon.EntityFrameworkCore
     using System.Linq;
     using System.Reflection;
     using Abstractions.Entities;
+    using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
 
     public static class ModelBuilderExtensions
     {
-        public static ModelBuilder SetupBaseEntities(this ModelBuilder builder)
+        public static ModelBuilder SetupBaseEntities([NotNull] this ModelBuilder builder)
         {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+
             foreach (var type in builder.Model.GetEntityTypes())
             {
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreateStampSupport)))
@@ -42,10 +46,14 @@ namespace Pentagon.EntityFrameworkCore
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedFlagSupport)))
                     builder.SetupDeleteFlagEntityDefaults(type.ClrType);
 
-                if (type.ClrType.GetProperty(nameof(IEntity.Id)).PropertyType == typeof(Guid))
+                var idProperty = type.ClrType.GetProperty(nameof(IEntity.Id));
+
+                if (idProperty != null && idProperty.PropertyType == typeof(Guid))
+                {
                     builder.Entity(type.ClrType)
                            .Property(nameof(IEntity.Id))
                            .HasDefaultValueSql("NEWID()");
+                }
             }
 
             return builder;

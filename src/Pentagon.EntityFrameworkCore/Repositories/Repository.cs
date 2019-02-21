@@ -54,11 +54,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public virtual void InsertMany(params TEntity[] entities)
+        public virtual void InsertMany([NotNull] params TEntity[] entities)
         {
-            Require.NotNull(() => entities);
-            Require.Condition(() => entities, en => en.Length > 0, message: "The length of entities must be greaten than zero. Use basic insert instead.");
-
+            if (entities == null)
+                throw new ArgumentNullException(nameof(entities));
+            
             foreach (var e in entities)
                 Insert(e);
         }

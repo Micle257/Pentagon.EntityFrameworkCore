@@ -16,6 +16,15 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
     public abstract class ApplicationContext : DbContext, IApplicationContext
     {
+        protected ApplicationContext(DbContextOptions options) : base(options)
+        {
+            // disable warning due to event listener
+            // ReSharper disable once VirtualMemberCallInConstructor
+            ChangeTracker.StateChanged += OnStateChanged;
+            // ReSharper disable once VirtualMemberCallInConstructor
+            ChangeTracker.Tracked += OnTracked;
+        }
+
         protected ApplicationContext()
         {
             // disable warning due to event listener
@@ -36,12 +45,16 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TEntity : class, IEntity, new() => new Repository<TEntity>(Set<TEntity>());
 
         /// <inheritdoc />
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.SetupBaseEntities();
+            OnModelCreatingCore(modelBuilder);
+
+            (modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder))).SetupBaseEntities();
         }
+
+        protected virtual void OnModelCreatingCore(ModelBuilder modelBuilder) { }
 
         void OnTracked(object sender, EntityTrackedEventArgs args)
         {
