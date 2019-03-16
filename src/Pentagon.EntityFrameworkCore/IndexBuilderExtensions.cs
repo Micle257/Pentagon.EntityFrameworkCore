@@ -7,6 +7,8 @@
 namespace Pentagon.EntityFrameworkCore
 {
     using System;
+    using System.Linq;
+    using System.Reflection;
     using Abstractions.Entities;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
@@ -15,12 +17,14 @@ namespace Pentagon.EntityFrameworkCore
     public static class IndexBuilderExtensions
     {
         [NotNull]
-        public static IndexBuilder HasIndexForDeletedFlag([NotNull] this IndexBuilder builder)
+        public static IndexBuilder HasFilterForDeletedFlag([NotNull] this IndexBuilder builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            builder.HasFilter($"{nameof(IDeletedFlagSupport.DeletedFlag)} = 0");
+            // only apply filter if entity type implements deleted flag support interface
+            if (builder.Metadata.DeclaringEntityType.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedFlagSupport)))
+                builder.HasFilter($"{nameof(IDeletedFlagSupport.DeletedFlag)} = 0");
 
             return builder;
         }
