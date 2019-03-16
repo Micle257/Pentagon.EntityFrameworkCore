@@ -46,7 +46,8 @@ namespace Pentagon.EntityFrameworkCore
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedFlagSupport)))
                     builder.SetupDeleteFlagEntityDefaults(type.ClrType);
 
-                var idProperty = type.ClrType.GetProperty(nameof(IEntity.Id));
+                var idProperty = type.ClrType.GetProperties()
+                                     .FirstOrDefault(p => p.Name == nameof(IEntity.Id) && p.PropertyType == type.ClrType);
 
                 if (idProperty != null && idProperty.PropertyType == typeof(Guid))
                 {

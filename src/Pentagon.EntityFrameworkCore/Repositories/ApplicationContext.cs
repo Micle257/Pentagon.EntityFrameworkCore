@@ -14,9 +14,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-    public abstract class ApplicationContext : DbContext, IApplicationContext
+    public abstract class BaseApplicationContext : DbContext, IApplicationContext
     {
-        protected ApplicationContext(DbContextOptions options) : base(options)
+        protected BaseApplicationContext(DbContextOptions options) : base(options)
         {
             // disable warning due to event listener
             // ReSharper disable once VirtualMemberCallInConstructor
@@ -25,7 +25,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             ChangeTracker.Tracked += OnTracked;
         }
 
-        protected ApplicationContext()
+        protected BaseApplicationContext()
         {
             // disable warning due to event listener
             // ReSharper disable once VirtualMemberCallInConstructor

@@ -17,7 +17,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
     }
 
-    public class NewContext : ApplicationContext, INewContext
+    public class NewContext : BaseApplicationContext, INewContext
     {
         public DbSet<Simple> Simples { get; set; }
 
@@ -28,7 +28,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
         }
     }
 
-    public class Context : ApplicationContext, IContext
+    public class Context : BaseApplicationContext, IContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
