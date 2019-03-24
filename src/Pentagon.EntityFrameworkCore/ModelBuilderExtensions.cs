@@ -22,6 +22,9 @@ namespace Pentagon.EntityFrameworkCore
 
             foreach (var type in builder.Model.GetEntityTypes())
             {
+                if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IEntity)))
+                    builder.SetupEntityDefaults(type.ClrType);
+
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreateStampSupport)))
                     builder.SetupCreateStampEntityDefaults(type.ClrType);
 
@@ -45,20 +48,30 @@ namespace Pentagon.EntityFrameworkCore
 
                 if (type.ClrType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IDeletedFlagSupport)))
                     builder.SetupDeleteFlagEntityDefaults(type.ClrType);
-
-                var idProperty = type.ClrType?.GetProperties().FirstOrDefault(p => p.Name == nameof(IEntity.Id));
-
-                if (idProperty != null && idProperty.PropertyType == typeof(Guid))
-                {
-                    builder.Entity(type.ClrType)
-                           .Property(nameof(IEntity.Id))
-                           .HasDefaultValueSql("NEWID()");
-                }
             }
 
             return builder;
         }
-        
+
+        public static ModelBuilder SetupEntityDefaults(this ModelBuilder builder, Type type)
+        {
+            var entity = builder.Entity(type);
+
+            entity.HasKey(nameof(IEntity.Id));
+
+            entity.Property(nameof(IEntity.Id))
+                   .ValueGeneratedOnAdd()
+                   .IsRequired();
+
+            if (entity.Property(nameof(IEntity.Id))?.Metadata?.ClrType == typeof(Guid))
+            {
+                entity.Property(nameof(IEntity.Id))
+                      .HasDefaultValueSql("NEWID()");
+            }
+
+            return builder;
+        }
+
         public static ModelBuilder SetupConcurrencyEntityDefaults<T>(this ModelBuilder builder)
                 where T : class, IConcurrencyStampSupport
         {
