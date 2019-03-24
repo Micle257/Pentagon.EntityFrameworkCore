@@ -74,8 +74,8 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
                 {
                     conficts.Add(new ConcurrencyConflictPair
                     {
-                        FromDatabase = new ConcurrencyConflictEntity { Entity = serverSide },
-                        Posted = new ConcurrencyConflictEntity { Entity = clientSide }
+                        Remote = new ConcurrencyConflictEntity { Entity = serverSide },
+                        Local = new ConcurrencyConflictEntity { Entity = clientSide }
                     });
                 }
             }
@@ -110,8 +110,8 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
                 {
                     conficts.Add(new ConcurrencyConflictPair
                     {
-                        FromDatabase = new ConcurrencyConflictEntity { Entity = serverSide },
-                        Posted = new ConcurrencyConflictEntity { Entity = clientSide }
+                        Remote = new ConcurrencyConflictEntity { Entity = serverSide },
+                        Local = new ConcurrencyConflictEntity { Entity = clientSide }
                     });
                 }
             }

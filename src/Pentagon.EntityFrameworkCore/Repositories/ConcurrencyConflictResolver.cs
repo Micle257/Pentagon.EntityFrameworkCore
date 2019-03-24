@@ -26,10 +26,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         public async Task<ConcurrencyConflictResolveResult> ResolveAsync(IApplicationContext appContext)
         {
-            // ReSharper disable once SuspiciousTypeConversion.Global
-            if (!(appContext is DbContext dbContext))
-                throw new ArgumentNullException(nameof(dbContext));
-
+            var dbContext = appContext.GetDbContext();
+            
             // get all entries tracked by EF
             var localEntities = dbContext.ChangeTracker?.Entries()
                                          // Filter only valid IEntity objects that implement concurrency support and are modified
@@ -39,7 +37,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             var remoteEntries = new List<IEntity>();
 
-            using (var context = _unitOfWorkFactory.CreateContext() as DbContext)
+            using (var context = _unitOfWorkFactory.CreateContext().GetDbContext())
             {
                 foreach (var entity in localEntities)
                 {
@@ -55,18 +53,20 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             var conflicts = new List<ConcurrencyConflictPair>();
 
-            foreach (var t in concat)
+            foreach (var (local, database) in concat)
             {
-                // check if both compared enties supports concurrency checks
-                if (t.Local is IConcurrencyStampSupport lc && t.Database is IConcurrencyStampSupport rc)
+                // check if both compared entities supports concurrency checks
+                if (!(local is IConcurrencyStampSupport lc && database is IConcurrencyStampSupport rc))
+                    continue;
+
+                // if the concurrency ids are not equal...
+                if (!lc.ConcurrencyStamp.Equals(rc.ConcurrencyStamp))
                 {
-                    // if the concurrency ids are not equal...
-                    if (!lc.ConcurrencyStamp.Equals(rc.ConcurrencyStamp))
-                        conflicts.Add(new ConcurrencyConflictPair
-                                      {
-                                              Posted = new ConcurrencyConflictEntity { Entity = t.Local },
-                                              FromDatabase = new ConcurrencyConflictEntity { Entity = t.Database }
-                                      });
+                    conflicts.Add(new ConcurrencyConflictPair
+                                  {
+                                          Local = new ConcurrencyConflictEntity { Entity = local },
+                                          Remote = new ConcurrencyConflictEntity { Entity = database }
+                                  });
                 }
             }
 
