@@ -8,8 +8,8 @@ namespace Pentagon.EntityFrameworkCore
 {
     public class ConcurrencyConflictPair
     {
-        public ConcurrencyConflictEntity Posted { get; set; }
+        public ConcurrencyConflictEntity Local { get; set; }
 
-        public ConcurrencyConflictEntity FromDatabase { get; set; }
+        public ConcurrencyConflictEntity Remote { get; set; }
     }
 }

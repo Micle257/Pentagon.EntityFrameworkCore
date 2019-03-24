@@ -53,7 +53,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         async Task<UnitOfWorkCommitResult> ExecuteCommitCoreAsync(IApplicationContext appContext, Func<DbContext, Task> callback)
         {
-            var _dbContext = appContext as DbContext;
+            var _dbContext = appContext.GetDbContext();
 
             try
             {
