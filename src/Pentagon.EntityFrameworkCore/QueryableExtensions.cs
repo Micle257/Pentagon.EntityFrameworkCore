@@ -76,18 +76,8 @@ namespace Pentagon.EntityFrameworkCore
 
             return list;
         }
-
-        public static async Task<PagedList<TEntity>> ToPagedListAsync<TEntity>([NotNull] this IPagedQueryable<TEntity> query)
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
-
-            var list = await PaginationHelper.CreateAsync(query, query.PaginationParameters);
-
-            return list;
-        }
-
-        public static async Task<int> CountPagesAsync<TEntity>([NotNull] this IPagedQueryable<TEntity> query, int pageSize)
+        
+        public static async Task<int> CountPagesAsync<TEntity>([NotNull] this IQueryable<TEntity> query, int pageSize)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
@@ -111,16 +101,6 @@ namespace Pentagon.EntityFrameworkCore
             var count = await query.CountAsync().ConfigureAwait(false);
 
             return count / parameters.PageSize + 1;
-        }
-
-        public static async Task<int> CountPagesAsync<TEntity>([NotNull] this IPagedQueryable<TEntity> query)
-        {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
-
-            var count = await query.CountAsync().ConfigureAwait(false);
-            
-            return count / query.PaginationParameters.PageSize + 1;
         }
     }
 }
