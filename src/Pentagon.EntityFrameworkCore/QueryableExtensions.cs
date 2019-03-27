@@ -45,32 +45,23 @@ namespace Pentagon.EntityFrameworkCore
             return sql;
         }
 
-        public static async Task<PagedList<TEntity>> ToPagedListAsync<TEntity>([NotNull] this IQueryable<TEntity> query, int pageNumber, int pageSize)
+        public static Task<PagedList<TEntity>> ToPagedListAsync<TEntity>([NotNull] this IQueryable<TEntity> query, int pageNumber, int pageSize)
         {
-            if (query == null)
-                throw new ArgumentNullException(nameof(query));
-
-            var parameters = new PaginationParameters
-                             {
-                                     PageSize = pageSize,
-                                     PageNumber = pageNumber
-                             };
-
-            if (!parameters.AreValid)
-                throw new InvalidPaginationParametersException(parameters);
-
-            var list = await PaginationHelper.CreateAsync(query, parameters);
-
-            return list;
+            return ToPagedListAsync(query, new PaginationParameters {PageSize = pageSize, PageNumber = pageNumber});
         }
 
-        public static async Task<PagedList<TEntity>> ToPagedListAsync<TEntity>([NotNull] this IQueryable<TEntity> query, PaginationParameters parameters)
+        public static async Task<PagedList<TEntity>> ToPagedListAsync<TEntity>([NotNull] this IQueryable<TEntity> query, [NotNull] PaginationParameters parameters)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            if (parameters?.AreValid == false)
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
+            if (parameters.AreValid == false)
                 throw new InvalidPaginationParametersException(parameters);
+
+            query = query.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize);
 
             var list = await PaginationHelper.CreateAsync(query, parameters);
 
