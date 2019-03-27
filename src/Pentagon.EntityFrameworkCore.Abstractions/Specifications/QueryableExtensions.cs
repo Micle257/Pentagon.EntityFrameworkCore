@@ -14,28 +14,38 @@ namespace Pentagon.EntityFrameworkCore.Specifications {
 
     public static class QueryableExtensions
     {
-        public static IOrderedQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, Expression<Func<TEntity, object>> order, bool isDescending = false)
+        public static IOrderedQueryable<TEntity> OrderBy<TEntity>([NotNull] this IQueryable<TEntity> query, Expression<Func<TEntity, object>> order = null, bool isDescending = false)
         {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            order = order ?? (e => e);
+
             var orderedQuery = isDescending ? query.OrderByDescending(order) : query.OrderBy(order);
 
             return orderedQuery;
         }
 
-        public static IOrderedQueryable<TEntity> ThenBy<TEntity>(this IOrderedQueryable<TEntity> query, Expression<Func<TEntity, object>> order, bool isDescending = false)
+        public static IOrderedQueryable<TEntity> ThenBy<TEntity>([NotNull] this IOrderedQueryable<TEntity> query, Expression<Func<TEntity, object>> order = null, bool isDescending = false)
         {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            order = order ?? (e => e);
+
             var orderedQuery = isDescending ? query.ThenByDescending(order) : query.ThenBy(order);
 
             return orderedQuery;
         }
 
-        public static IQueryable<TEntity> Filter<TEntity>([NotNull] this IQueryable<TEntity> query, Action<IFilterBuilder<TEntity>> configure)
+        public static IQueryable<TEntity> Filter<TEntity>([NotNull] this IQueryable<TEntity> query, Action<IFilterBuilder<TEntity>> configure = null)
                 where TEntity : IEntity
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
             var builder = new FilterBuilder<TEntity>();
-
+            
             configure?.Invoke(builder);
 
             var filters = builder.BuildFilter();
@@ -46,15 +56,15 @@ namespace Pentagon.EntityFrameworkCore.Specifications {
             return query;
         }
 
-        public static IQueryable<TEntity> Filter<TEntity>([NotNull] this IQueryable<TEntity> query, Action<IStartedPredicateBuilder<TEntity>> configure)
+        public static IQueryable<TEntity> Filter<TEntity>([NotNull] this IQueryable<TEntity> query, Action<IStartedPredicateBuilder<TEntity>> configure = null)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
             var builder = new PredicateBuilder<TEntity>();
-
+            
             configure?.Invoke(builder);
-
+            
             var filter = builder.Build();
 
             if (filter != null)
