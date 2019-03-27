@@ -4,10 +4,10 @@
     using Abstractions.Entities;
     using Abstractions.Specifications;
 
-    public class TextCompositeFilterBuilder<TEntity> : SpecificationFilterBuilder<TEntity>, ITextCompositeFilterBuilder<TEntity>
+    public class TextCompositeFilterBuilder<TEntity> : FilterBuilder<TEntity>, ITextCompositeFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        public TextCompositeFilterBuilder(SpecificationFilterBuilder<TEntity> parent)
+        public TextCompositeFilterBuilder(FilterBuilder<TEntity> parent)
         {
             TextFilters = parent.TextFilters;
             NumberFilters = parent.NumberFilters;
@@ -15,7 +15,7 @@
         }
 
         /// <inheritdoc />
-        public ISpecificationFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
+        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
         {
             var lastTextFilter = TextFilters.LastOrDefault();
 
