@@ -9,11 +9,11 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     using Entities;
     using EntityFrameworkCore.Specifications;
 
-    public interface INumberCompositeFilterBuilder<TEntity> : ISpecificationFilterBuilder<TEntity>
+    public interface INumberCompositeFilterBuilder<TEntity> : IFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        ISpecificationFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value);
+        IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value);
 
-        ISpecificationFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter);
+        IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter);
     }
 }

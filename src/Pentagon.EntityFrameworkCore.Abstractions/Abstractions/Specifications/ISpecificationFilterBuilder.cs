@@ -12,10 +12,10 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     using Entities;
     using EntityFrameworkCore.Specifications;
 
-    public interface ISpecificationFilterBuilder<TEntity>
+    public interface IFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        ISpecificationFilterBuilder<TEntity> AddValueFilter<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector, params TProperty[] values);
+        IFilterBuilder<TEntity> AddValueFilter<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector, params TProperty[] values);
 
         ITextCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value = null);
 
@@ -23,7 +23,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
 
         INumberCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, NumberFilter filter);
 
-        ISpecificationFilterBuilder<TEntity> AddFilter(Expression<Func<TEntity, bool>> condition);
+        IFilterBuilder<TEntity> AddFilter(Expression<Func<TEntity, bool>> condition);
 
         FilterLogicOperation ValueFilterConcatOperation { get; set; }
 

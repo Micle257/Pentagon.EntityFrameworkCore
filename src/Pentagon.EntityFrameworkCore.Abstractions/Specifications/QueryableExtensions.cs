@@ -1,11 +1,9 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="IQueryableExtensions.cs">
+//  <copyright file="QueryableExtensions.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
-
-namespace Pentagon.EntityFrameworkCore.Specifications
-{
+namespace Pentagon.EntityFrameworkCore.Specifications {
     using System;
     using System.Linq;
     using System.Linq.Expressions;
@@ -14,7 +12,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using Helpers;
     using JetBrains.Annotations;
 
-    public static class IQueryableExtensions
+    public static class QueryableExtensions
     {
         public static IOrderedQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, Expression<Func<TEntity, object>> order, bool isDescending = false)
         {
@@ -30,13 +28,13 @@ namespace Pentagon.EntityFrameworkCore.Specifications
             return orderedQuery;
         }
 
-        public static IQueryable<TEntity> Filter<TEntity>([NotNull] this IQueryable<TEntity> query, Action<ISpecificationFilterBuilder<TEntity>> configure)
+        public static IQueryable<TEntity> Filter<TEntity>([NotNull] this IQueryable<TEntity> query, Action<IFilterBuilder<TEntity>> configure)
                 where TEntity : IEntity
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            var builder = new SpecificationFilterBuilder<TEntity>();
+            var builder = new FilterBuilder<TEntity>();
 
             configure?.Invoke(builder);
 
@@ -75,14 +73,5 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             return query;
         }
-    }
-
-    public class PaginationParameters
-    {
-        public int PageNumber { get; set; }
-
-        public int PageSize { get; set; }
-
-        public bool AreValid => PageNumber > 0 && PageSize > 0;
     }
 }

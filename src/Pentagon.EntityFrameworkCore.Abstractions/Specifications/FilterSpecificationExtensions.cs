@@ -14,10 +14,10 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
     public static class FilterSpecificationExtensions
     {
-        public static IFilterSpecification<TEntity> AddFilter<TEntity>(this IFilterSpecification<TEntity> specification, Action<ISpecificationFilterBuilder<TEntity>> configure)
+        public static IFilterSpecification<TEntity> AddFilter<TEntity>(this IFilterSpecification<TEntity> specification, Action<IFilterBuilder<TEntity>> configure)
                 where TEntity : IEntity
         {
-            var builder = new SpecificationFilterBuilder<TEntity>();
+            var builder = new FilterBuilder<TEntity>();
 
             configure(builder);
 
