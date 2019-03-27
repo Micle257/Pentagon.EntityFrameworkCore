@@ -3,12 +3,14 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
-namespace Pentagon.EntityFrameworkCore.Specifications {
+namespace Pentagon.EntityFrameworkCore.Specifications
+{
     using System;
     using System.Linq;
     using System.Linq.Expressions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
+    using Collections;
     using Helpers;
     using JetBrains.Annotations;
 
@@ -45,7 +47,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications {
                 throw new ArgumentNullException(nameof(query));
 
             var builder = new FilterBuilder<TEntity>();
-            
+
             configure?.Invoke(builder);
 
             var filters = builder.BuildFilter();
@@ -62,9 +64,9 @@ namespace Pentagon.EntityFrameworkCore.Specifications {
                 throw new ArgumentNullException(nameof(query));
 
             var builder = new PredicateBuilder<TEntity>();
-            
+
             configure?.Invoke(builder);
-            
+
             var filter = builder.Build();
 
             if (filter != null)
@@ -73,15 +75,37 @@ namespace Pentagon.EntityFrameworkCore.Specifications {
             return query;
         }
 
-        public static IQueryable<TEntity> Page<TEntity>([NotNull] this IQueryable<TEntity> query, PaginationParameters parameters)
+        public static IPagedQueryable<TEntity> Page<TEntity>([NotNull] this IQueryable<TEntity> query, int pageNumber, int pageSize)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
-            
+
+            var parameters = new PaginationParameters
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            if (!parameters.AreValid)
+                throw new InvalidPaginationParametersException(parameters);
+
             if (parameters?.AreValid == true)
                 query = query.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize);
 
-            return query;
+            return new PagedQueryable<TEntity>(query, parameters);
+        }
+
+        public static IPagedQueryable<TEntity> Page<TEntity>([NotNull] this IQueryable<TEntity> query, PaginationParameters parameters)
+        {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            if (parameters?.AreValid != true)
+                throw new InvalidPaginationParametersException(parameters);
+
+            query = query.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize);
+
+            return new PagedQueryable<TEntity>(query, parameters);
         }
     }
 }
