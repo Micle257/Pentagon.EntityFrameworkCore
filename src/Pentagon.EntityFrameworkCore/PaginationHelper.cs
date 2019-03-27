@@ -15,6 +15,7 @@ namespace Pentagon.EntityFrameworkCore
     using Abstractions.Specifications;
     using Collections;
     using Microsoft.EntityFrameworkCore;
+    using Specifications;
 
     public static class PaginationHelper
     {
@@ -52,6 +53,20 @@ namespace Pentagon.EntityFrameworkCore
             var list = await specification.ApplyPagination(query).ToListAsync().ConfigureAwait(false);
 
             return new PagedList<TEntity>(list, count, specification.PageSize, specification.PageNumber - 1);
+        }
+
+        public static async Task<PagedList<TEntity>> CreateAsync<TEntity>(IQueryable<TEntity> query, PaginationParameters parameters)
+        {
+            var count = await query.CountAsync().ConfigureAwait(false);
+
+            var possiblePageCount = count / parameters.PageSize + 1;
+
+            if (parameters.PageNumber > possiblePageCount + 1)
+                throw new ArgumentOutOfRangeException(nameof(parameters.PageNumber), message: "The page number is out of range.");
+
+            var list = await query.ToListAsync().ConfigureAwait(false);
+
+            return new PagedList<TEntity>(list, count, parameters.PageSize, parameters.PageNumber - 1);
         }
     }
 }
