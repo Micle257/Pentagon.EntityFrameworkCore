@@ -61,11 +61,18 @@ namespace Pentagon.EntityFrameworkCore
             if (parameters.AreValid == false)
                 throw new InvalidPaginationParametersException(parameters);
 
+            var count = await query.CountAsync().ConfigureAwait(false);
+
+            var possiblePageCount = count / parameters.PageSize + 1;
+
+            if (parameters.PageNumber > possiblePageCount + 1)
+                throw new ArgumentOutOfRangeException(nameof(parameters.PageNumber), message: "The page number is out of range.");
+            
             query = query.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize);
 
-            var list = await PaginationHelper.CreateAsync(query, parameters);
+            var list = await query.ToListAsync().ConfigureAwait(false);
 
-            return list;
+            return new PagedList<TEntity>(list, count, parameters.PageSize, parameters.PageNumber - 1);
         }
         
         public static async Task<int> CountPagesAsync<TEntity>([NotNull] this IQueryable<TEntity> query, int pageSize)
