@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Linq.Expressions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
@@ -26,6 +27,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         /// <inheritdoc />
         public FilterLogicOperation ValueFilterConcatOperation { get; set; } = FilterLogicOperation.Or;
+
+        public bool HasAnyFilter => TextFilters.Any() || NumberFilters.Any() || Filters.Any() || ValueFilters.Any();
 
         /// <inheritdoc />
         public IFilterBuilder<TEntity> AddValueFilter<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector, params TProperty[] values)
@@ -77,8 +80,13 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         /// <inheritdoc />
         public Expression<Func<TEntity, bool>> BuildFilter()
         {
-            var resultPredicate = new PredicateBuilder<TEntity>();
+            if (!HasAnyFilter)
+            {
+                return a => true;
+            }
 
+            var resultPredicate = new PredicateBuilder<TEntity>();
+            
             if (Filters.Count > 0)
             {
                 resultPredicate.And(b =>
