@@ -1,5 +1,6 @@
 namespace Pentagon.EntityFrameworkCore.Tests {
     using Specifications;
+    using Specifications.Filters;
     using Xunit;
 
     public class NumberFilterHelperTests

@@ -14,7 +14,7 @@ namespace Pentagon.EntityFrameworkCore.TestApp.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Uuid = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
+                    UUID = table.Column<Guid>(nullable: false, defaultValueSql: "NEWID()"),
                     Name = table.Column<string>(maxLength: 256, nullable: false)
                 },
                 constraints: table =>

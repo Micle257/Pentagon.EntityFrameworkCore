@@ -1,4 +1,4 @@
-﻿namespace Pentagon.EntityFrameworkCore.Specifications {
+﻿namespace Pentagon.EntityFrameworkCore.Specifications.Filters {
     using System;
     using System.Linq;
     using Abstractions.Entities;

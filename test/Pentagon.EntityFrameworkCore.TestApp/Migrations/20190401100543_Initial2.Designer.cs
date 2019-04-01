@@ -10,8 +10,8 @@ using Pentagon.EntityFrameworkCore.TestApp;
 namespace Pentagon.EntityFrameworkCore.TestApp.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20190324094441_Initial")]
-    partial class Initial
+    [Migration("20190401100543_Initial2")]
+    partial class Initial2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,9 +33,13 @@ namespace Pentagon.EntityFrameworkCore.TestApp.Migrations
 
                     b.Property<Guid>("Uuid")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("UUID")
                         .HasDefaultValueSql("NEWID()");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("User");
                 });

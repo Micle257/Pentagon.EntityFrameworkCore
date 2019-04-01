@@ -14,7 +14,9 @@ namespace Pentagon.EntityFrameworkCore
     public class UnitOfWorkConcurrencyConflictException : Exception
     {
         public UnitOfWorkConcurrencyConflictException() : this(message: "Concurrency error occured when updating to the database.") { }
+
         public UnitOfWorkConcurrencyConflictException(string message) : base(message) { }
+
         public UnitOfWorkConcurrencyConflictException(string message, Exception inner) : base(message, inner) { }
 
         protected UnitOfWorkConcurrencyConflictException(

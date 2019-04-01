@@ -39,9 +39,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
         protected override void OnModelCreatingCore(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.SetupBaseEntities();
-
+            
             var entity = modelBuilder.Entity<Simple>();
 
             entity.Property(t => t.Id)

@@ -12,20 +12,20 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Entities;
+    using Extensions;
+    using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
 
-    public class ConcurrencyConflictResolver<TContext> : IConcurrencyConflictResolver<TContext>
-            where TContext : IApplicationContext
+    public class ConcurrencyConflictResolver : IConcurrencyConflictResolver
     {
-        readonly IContextFactory<TContext> _unitOfWorkFactory;
-
-        public ConcurrencyConflictResolver(IContextFactory<TContext> unitOfWorkFactory)
+        public async Task<ConcurrencyConflictResolveResult> ResolveAsync(IApplicationContext appContext, Func<IApplicationContext> contextFactory)
         {
-            _unitOfWorkFactory = unitOfWorkFactory;
-        }
+            if (appContext == null)
+                throw new ArgumentNullException(nameof(appContext));
 
-        public async Task<ConcurrencyConflictResolveResult> ResolveAsync(IApplicationContext appContext)
-        {
+            if (contextFactory == null)
+                throw new ArgumentNullException(nameof(contextFactory));
+
             var dbContext = appContext.GetDbContext();
             
             // get all entries tracked by EF
@@ -37,7 +37,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             var remoteEntries = new List<IEntity>();
 
-            using (var context = _unitOfWorkFactory.CreateContext().GetDbContext())
+            using (var context = contextFactory().GetDbContext())
             {
                 foreach (var entity in localEntities)
                 {
@@ -57,7 +57,12 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             {
                 // check if both compared entities supports concurrency checks
                 if (!(local is IConcurrencyStampSupport lc && database is IConcurrencyStampSupport rc))
-                    continue;
+                {
+                    return new ConcurrencyConflictResolveResult
+                           {
+                                   CanBeDetermine = false
+                           };
+                }
 
                 // if the concurrency ids are not equal...
                 if (!lc.ConcurrencyStamp.Equals(rc.ConcurrencyStamp))

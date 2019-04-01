@@ -7,6 +7,8 @@
 namespace Pentagon.EntityFrameworkCore.Abstractions
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Entities;
     using Repositories;
 
@@ -14,8 +16,12 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     public interface IApplicationContext : IDisposable
     {
         bool UseTimeSourceFromEntities { get; set; }
-
+        
         event EventHandler<CommitEventArgs> Commiting;
+
+        Task<UnitOfWorkCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default);
+
+        UnitOfWorkCommitResult ExecuteCommit();
 
         /// <summary> Gets the repository of given entity. </summary>
         /// <typeparam name="TEntity"> The type of the entity. </typeparam>

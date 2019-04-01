@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
     using System;
     using Abstractions;
     using EntityFrameworkCore;
+    using Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using Mocks;
     using Xunit;

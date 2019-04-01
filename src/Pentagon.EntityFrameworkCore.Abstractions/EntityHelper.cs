@@ -13,7 +13,7 @@ namespace Pentagon.EntityFrameworkCore
 
     public static class EntityHelper
     {
-        public static IEnumerable<PropertyInfo> GetPureProperties(IEntity entity)
+        public static IEnumerable<PropertyInfo> GetPureProperties(object entity)
         {
             var type = entity.GetType();
 

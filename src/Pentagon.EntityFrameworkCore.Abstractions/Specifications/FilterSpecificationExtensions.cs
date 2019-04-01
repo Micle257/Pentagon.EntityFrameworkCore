@@ -10,6 +10,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using System.Linq.Expressions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
+    using Filters;
     using Helpers;
 
     public static class FilterSpecificationExtensions
@@ -18,6 +19,9 @@ namespace Pentagon.EntityFrameworkCore.Specifications
                 where TEntity : IEntity
         {
             var builder = new FilterBuilder<TEntity>();
+
+            if (!builder.HasAnyFilter)
+                return specification;
 
             configure(builder);
 
