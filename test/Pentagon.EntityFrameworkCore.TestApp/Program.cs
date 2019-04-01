@@ -10,6 +10,7 @@ namespace Pentagon.EntityFrameworkCore.TestApp
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.DependencyInjection;
+    using PostgreSQL;
     using Repositories;
 
     class Program
@@ -24,7 +25,6 @@ namespace Pentagon.EntityFrameworkCore.TestApp
 
             using (var c = di.GetRequiredService<Context>())
             {
-
             }
         }
     }
@@ -55,8 +55,12 @@ namespace Pentagon.EntityFrameworkCore.TestApp
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlServer("Data Source=PENTAGONDELL\\SQLEXPRESS;Initial Catalog=PentagonEFTest;Integrated Security=True");
+            optionsBuilder//.UseSqlServer("Data Source=PENTAGONDELL\\SQLEXPRESS;Initial Catalog=PentagonEFTest;Integrated Security=True")
+                          .UseNpgsql("Host=my_host;Database=my_db;Username=my_user;Password=my_pw");
         }
+
+        /// <inheritdoc />
+        protected override IModelConfiguration ModelConfiguration { get;  } = new PostgreSqlModelConfiguration();
 
         /// <inheritdoc />
         protected override void OnModelCreatingCore(ModelBuilder modelBuilder)
