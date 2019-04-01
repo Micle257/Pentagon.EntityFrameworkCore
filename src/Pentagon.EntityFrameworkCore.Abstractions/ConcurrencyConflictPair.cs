@@ -6,10 +6,80 @@
 
 namespace Pentagon.EntityFrameworkCore
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+
+    public class ConflictPairDifference
+    {
+        public string PropertyName { get; set; }
+
+        public PropertyInfo PropertyInfo { get; set; }
+
+        public object LocalValue { get; set; }
+
+        public object RemoteValue { get; set; }
+    }
+
     public class ConcurrencyConflictPair
     {
         public ConcurrencyConflictEntity Local { get; set; }
 
         public ConcurrencyConflictEntity Remote { get; set; }
+
+        public bool IsValid
+        {
+            get
+            {
+                if (Local?.Entity == null || Remote?.Entity == null)
+                    return false;
+
+                return Local.Entity.GetType() == Remote.Entity.GetType();
+            }
+        }
+
+        public IReadOnlyList<ConflictPairDifference> GetDifference()
+        {
+            if (!IsValid)
+                return new List<ConflictPairDifference>();
+
+            var local = Local.Entity;
+            var remote = Remote.Entity;
+            var type = Local.Entity.GetType();
+
+            var props = EntityHelper.GetPureProperties(local)
+                            .Where(a => a.PropertyType.IsPrimitive || (Nullable.GetUnderlyingType(a.PropertyType)?.IsPrimitive ?? false)
+                                                                   || IsValueType<Guid>(a.PropertyType)
+                                                                   || IsValueType<DateTimeOffset>(a.PropertyType)
+                                                                   || IsValueType<DateTime>(a.PropertyType)
+                                                                   || a.PropertyType == typeof(string));
+
+            var res = new List<ConflictPairDifference>();
+
+            foreach (var propertyInfo in props)
+            {
+                var l = propertyInfo.GetValue(local);
+                var r = propertyInfo.GetValue(remote);
+
+                var equal = Comparer.Default.Compare(l, r) == 0;
+
+                if (!equal)
+                {
+                    res.Add(new ConflictPairDifference
+                            {
+                                    LocalValue = l,
+                                    RemoteValue = r,
+                                    PropertyInfo = propertyInfo,
+                                    PropertyName = propertyInfo.Name
+                            });
+                }
+            }
+
+            return res;
+
+            bool IsValueType<T>(Type typess) => typess == typeof(T) || Nullable.GetUnderlyingType(typess) == typeof(T);
+        }
     }
 }

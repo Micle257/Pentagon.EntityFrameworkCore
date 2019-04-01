@@ -61,15 +61,15 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         protected BaseApplicationContext(DbContextOptions options) : base(options)
         {
             _logger = NullLogger.Instance;
-
+        
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
-
+        
         protected BaseApplicationContext()
         {
             _logger = NullLogger.Instance;
-
+        
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }

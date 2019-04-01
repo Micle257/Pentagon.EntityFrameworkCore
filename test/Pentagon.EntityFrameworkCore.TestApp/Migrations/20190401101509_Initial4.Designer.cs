@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pentagon.EntityFrameworkCore.TestApp;
 
 namespace Pentagon.EntityFrameworkCore.TestApp.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20190401101509_Initial4")]
+    partial class Initial4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,8 +28,7 @@ namespace Pentagon.EntityFrameworkCore.TestApp.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<Guid>("ConcurrencyStamp")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("NEWID()");
+                        .IsConcurrencyToken();
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -37,16 +38,6 @@ namespace Pentagon.EntityFrameworkCore.TestApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnName("UUID")
                         .HasDefaultValueSql("NEWID()");
-
-                    b.Property<int?>("a1")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(6);
-
-                    b.Property<double?>("a2");
-
-                    b.Property<string>("a3")
-                        .IsRequired()
-                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 1)));
 
                     b.HasKey("Id");
 

@@ -11,7 +11,7 @@ namespace Pentagon.EntityFrameworkCore
 
     public class UnitOfWorkCommitResult
     {
-        public bool IsSuccessful => Exception != null && !HasConcurrencyConflicts;
+        public bool IsSuccessful => Exception == null && !HasConcurrencyConflicts;
 
         public bool HasConcurrencyConflicts => Conflicts != null && Conflicts.Count > 0;
 
