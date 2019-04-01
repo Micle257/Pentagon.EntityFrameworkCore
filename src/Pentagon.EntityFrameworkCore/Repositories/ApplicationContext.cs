@@ -40,6 +40,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         IDbContextDeleteService _deleteService;
 
+        protected virtual IModelConfiguration ModelConfiguration { get; } = new SqlServerModelConfiguration();
+
         readonly Lazy<IConcurrencyConflictResolver> _conflictResolver = new Lazy<IConcurrencyConflictResolver>(() => new ConcurrencyConflictResolver());
 
         protected BaseApplicationContext([NotNull] ILogger logger,
@@ -51,27 +53,27 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
             _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
             _isInitialized = true;
+
+            ChangeTracker.StateChanged += OnStateChanged;
+            ChangeTracker.Tracked += OnTracked;
         }
 
         protected BaseApplicationContext(DbContextOptions options) : base(options)
         {
             _logger = NullLogger.Instance;
+
+            ChangeTracker.StateChanged += OnStateChanged;
+            ChangeTracker.Tracked += OnTracked;
         }
 
         protected BaseApplicationContext()
         {
             _logger = NullLogger.Instance;
-        }
 
-        /// <inheritdoc />
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-            
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
-
+        
         /// <inheritdoc />
         public event EventHandler<CommitEventArgs> Commiting;
 
@@ -108,7 +110,12 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             OnModelCreatingCore(modelBuilder);
 
-            (modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder))).SetupBaseEntities(Database.ProviderName);
+            SetupCoreModel(modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder)));
+        }
+
+        protected virtual void SetupCoreModel([NotNull] ModelBuilder modelBuilder)
+        {
+            ModelConfiguration?.SetupModel(modelBuilder, Database.ProviderName);
         }
 
         async Task<UnitOfWorkCommitResult> CommitCoreAsync([NotNull] Func<DbContext, CancellationToken, Task<int>> callback, CancellationToken cancellationToken = default)
