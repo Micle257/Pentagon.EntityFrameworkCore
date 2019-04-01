@@ -38,7 +38,7 @@ namespace Pentagon.EntityFrameworkCore
         {
             if (!type.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ICreateTimeStampSupport)))
                 throw new InvalidCastException($"The type ({type.Name}) doesn't implement {nameof(ICreateTimeStampSupport)}");
-
+            
             builder.Property(nameof(ICreateTimeStampSupport.CreatedAt))
                    .HasDefaultValueSql(sql: "SYSDATETIMEOFFSET()")
                    .IsRequired();

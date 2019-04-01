@@ -15,7 +15,7 @@ namespace Pentagon.EntityFrameworkCore
 
     public static class ModelBuilderExtensions
     {
-        public static ModelBuilder SetupBaseEntities([NotNull] this ModelBuilder builder)
+        public static ModelBuilder SetupBaseEntities([NotNull] this ModelBuilder builder, string providerName)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
