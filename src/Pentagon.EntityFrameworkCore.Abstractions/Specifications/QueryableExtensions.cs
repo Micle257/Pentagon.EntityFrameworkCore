@@ -10,23 +10,22 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using System.Linq.Expressions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
-    using Collections;
     using Helpers;
     using JetBrains.Annotations;
 
     public static class QueryableExtensions
     {
-        public static IOrderedQueryable<TEntity> OrderBy<TEntity>([NotNull] this IQueryable<TEntity> query, Expression<Func<TEntity, object>> order = null, bool isDescending = false)
+        public static IOrderedQueryable<TEntity> SortBy<TEntity>([NotNull] this IQueryable<TEntity> query, Expression<Func<TEntity, object>> order = null, bool isDescending = false)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
             order = order ?? (e => e);
-
+            
             return isDescending ? query.OrderByDescending(order) : query.OrderBy(order);
         }
 
-        public static IOrderedQueryable<TEntity> ThenBy<TEntity>([NotNull] this IOrderedQueryable<TEntity> query, Expression<Func<TEntity, object>> order = null, bool isDescending = false)
+        public static IOrderedQueryable<TEntity> ThenSortBy<TEntity>([NotNull] this IOrderedQueryable<TEntity> query, Expression<Func<TEntity, object>> order = null, bool isDescending = false)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
