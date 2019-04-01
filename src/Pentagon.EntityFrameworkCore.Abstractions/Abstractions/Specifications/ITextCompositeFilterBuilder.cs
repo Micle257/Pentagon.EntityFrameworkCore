@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
 {
     using Entities;
     using EntityFrameworkCore.Specifications;
+    using EntityFrameworkCore.Specifications.Filters;
 
     public interface ITextCompositeFilterBuilder<TEntity> : IFilterBuilder<TEntity>
             where TEntity : IEntity

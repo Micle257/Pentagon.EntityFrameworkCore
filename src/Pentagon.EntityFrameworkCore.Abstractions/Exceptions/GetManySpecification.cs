@@ -4,15 +4,10 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Specifications
+namespace Pentagon.EntityFrameworkCore.Exceptions
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
-    using JetBrains.Annotations;
+    using Specifications;
 
     public class InvalidPaginationParametersException : Exception
     {

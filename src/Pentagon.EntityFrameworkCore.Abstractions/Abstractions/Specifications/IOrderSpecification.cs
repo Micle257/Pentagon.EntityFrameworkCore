@@ -10,6 +10,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using Entities;
+    using EntityFrameworkCore.Specifications;
 
     /// <summary> Represents a entity specification for query pipeline, that is capable of specifing the order of entities. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>

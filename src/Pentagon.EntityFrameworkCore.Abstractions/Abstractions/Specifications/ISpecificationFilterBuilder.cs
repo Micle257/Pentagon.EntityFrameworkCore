@@ -11,6 +11,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     using System.Linq.Expressions;
     using Entities;
     using EntityFrameworkCore.Specifications;
+    using EntityFrameworkCore.Specifications.Filters;
 
     public interface IFilterBuilder<TEntity>
             where TEntity : IEntity

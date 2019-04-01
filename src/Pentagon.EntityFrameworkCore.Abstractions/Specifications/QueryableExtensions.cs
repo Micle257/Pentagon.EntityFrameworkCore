@@ -10,6 +10,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using System.Linq.Expressions;
     using Abstractions.Entities;
     using Abstractions.Specifications;
+    using Filters;
     using Helpers;
     using JetBrains.Annotations;
 

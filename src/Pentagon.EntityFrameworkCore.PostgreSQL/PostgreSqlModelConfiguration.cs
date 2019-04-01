@@ -6,6 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore.PostgreSQL
 {
+    using Extensions;
     using Microsoft.EntityFrameworkCore;
 
     public class PostgreSqlModelConfiguration : ModelConfiguration

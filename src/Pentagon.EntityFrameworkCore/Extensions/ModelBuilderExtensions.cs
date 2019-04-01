@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore
+namespace Pentagon.EntityFrameworkCore.Extensions
 {
     using System;
     using System.Linq;

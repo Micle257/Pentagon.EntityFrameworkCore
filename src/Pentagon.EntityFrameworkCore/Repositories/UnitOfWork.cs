@@ -11,6 +11,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Entities;
+    using Extensions;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
 

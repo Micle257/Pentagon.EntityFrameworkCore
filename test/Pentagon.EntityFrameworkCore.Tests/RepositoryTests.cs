@@ -11,6 +11,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
     using Mocks;
     using Repositories;
     using Specifications;
+    using Specifications.Filters;
     using Xunit;
 
     public class RepositoryTests

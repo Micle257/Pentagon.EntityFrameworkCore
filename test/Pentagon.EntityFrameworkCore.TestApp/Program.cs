@@ -7,6 +7,7 @@ namespace Pentagon.EntityFrameworkCore.TestApp
     using System.Reflection;
     using Abstractions;
     using Abstractions.Entities;
+    using Extensions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.DependencyInjection;

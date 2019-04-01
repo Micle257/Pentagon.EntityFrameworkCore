@@ -4,15 +4,13 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore
+namespace Pentagon.EntityFrameworkCore.Extensions
 {
     using System;
     using System.Linq;
     using Abstractions;
-    using Abstractions.Repositories;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Repositories;
     using Synchronization;
 
