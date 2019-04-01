@@ -6,14 +6,12 @@
 
 namespace Pentagon.EntityFrameworkCore.Abstractions
 {
+    using System;
     using System.Threading.Tasks;
-
-    public interface IConcurrencyConflictResolver<TContext> : IConcurrencyConflictResolver
-    {
-    }
-
+    using JetBrains.Annotations;
+    
     public interface IConcurrencyConflictResolver
     {
-        Task<ConcurrencyConflictResolveResult> ResolveAsync(IApplicationContext appContext);
+        Task<ConcurrencyConflictResolveResult> ResolveAsync([NotNull] IApplicationContext appContext, [NotNull] Func<IApplicationContext> contextFactory);
     }
 }

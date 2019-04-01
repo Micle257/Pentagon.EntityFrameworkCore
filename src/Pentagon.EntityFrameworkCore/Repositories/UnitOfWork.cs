@@ -17,22 +17,24 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     public class UnitOfWork<TContext> : IUnitOfWork<TContext>
             where TContext : IApplicationContext
     {
-        [NotNull]
-        readonly IConcurrencyConflictResolver<TContext> _conflictResolver;
 
+        Lazy<IConcurrencyConflictResolver> _conflictResolver = new Lazy<IConcurrencyConflictResolver>(() => new ConcurrencyConflictResolver());
         [NotNull]
         readonly IDbContextUpdateService _updateService;
 
         [NotNull]
         readonly IDbContextDeleteService _deleteService;
-        
-        public UnitOfWork([NotNull] IConcurrencyConflictResolver<TContext> conflictResolver,
-                                        [NotNull] IDbContextUpdateService updateService,
-                                        [NotNull] IDbContextDeleteService deleteService)
+
+        [NotNull]
+        readonly IContextFactory<TContext> _factory;
+
+        public UnitOfWork([NotNull] IDbContextUpdateService updateService,
+                                        [NotNull] IDbContextDeleteService deleteService,
+                          [NotNull] IContextFactory<TContext> factory)
         {
-            _conflictResolver = conflictResolver ?? throw new ArgumentNullException(nameof(conflictResolver));
             _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
             _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         public Task<UnitOfWorkCommitResult> ExecuteCommitAsync(IApplicationContext appContext)
@@ -62,7 +64,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 if (!_dbContext.ChangeTracker.HasChanges())
                     return new UnitOfWorkCommitResult();
 
-                var conflictResult = await _conflictResolver.ResolveAsync(appContext).ConfigureAwait(false);
+                var conflictResult = await _conflictResolver.Value.ResolveAsync(appContext,() =>  _factory.CreateContext()).ConfigureAwait(false);
 
                 if (conflictResult.HasConflicts)
                 {

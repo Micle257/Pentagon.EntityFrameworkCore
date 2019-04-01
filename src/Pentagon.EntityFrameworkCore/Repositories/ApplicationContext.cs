@@ -7,30 +7,68 @@
 namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Repositories;
+    using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
 
     public abstract class BaseApplicationContext : DbContext, IApplicationContext
     {
+        HashSet<string> _supportedProviders = new HashSet<string>
+                                              {
+                                                      "Microsoft.EntityFrameworkCore.SqlServer",
+                                                      //"Microsoft.EntityFrameworkCore.Sqlite",
+                                                      //"Npgsql.EntityFrameworkCore.PostgreSQL",
+                                                      //"Pomelo.EntityFrameworkCore.MySql",
+                                                      "Microsoft.EntityFrameworkCore.InMemory"
+                                              };
+
+        [NotNull]
+        readonly ILogger _logger;
+
+        bool _isInitialized;
+
+        IDbContextUpdateService _updateService;
+
+        IDbContextDeleteService _deleteService;
+
+        readonly Lazy<IConcurrencyConflictResolver> _conflictResolver = new Lazy<IConcurrencyConflictResolver>(() => new ConcurrencyConflictResolver());
+
+        protected BaseApplicationContext([NotNull] ILogger logger,
+                                         [NotNull] IDbContextUpdateService updateService,
+                                         [NotNull] IDbContextDeleteService deleteService,
+                                         DbContextOptions options) : base(options)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
+            _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
+            _isInitialized = true;
+        }
+
         protected BaseApplicationContext(DbContextOptions options) : base(options)
         {
-            // disable warning due to event listener
-            // ReSharper disable once VirtualMemberCallInConstructor
-            ChangeTracker.StateChanged += OnStateChanged;
-            // ReSharper disable once VirtualMemberCallInConstructor
-            ChangeTracker.Tracked += OnTracked;
+            _logger = NullLogger.Instance;
         }
 
         protected BaseApplicationContext()
         {
-            // disable warning due to event listener
-            // ReSharper disable once VirtualMemberCallInConstructor
+            _logger = NullLogger.Instance;
+        }
+
+        /// <inheritdoc />
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            
             ChangeTracker.StateChanged += OnStateChanged;
-            // ReSharper disable once VirtualMemberCallInConstructor
             ChangeTracker.Tracked += OnTracked;
         }
 
@@ -45,16 +83,98 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TEntity : class, IEntity, new() => new Repository<TEntity>(Set<TEntity>());
 
         /// <inheritdoc />
+        public Task<UnitOfWorkCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default)
+        {
+            return CommitCoreAsync(async (db, ct) => await db.SaveChangesAsync(false, ct).ConfigureAwait(false), cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public UnitOfWorkCommitResult ExecuteCommit()
+        {
+            return CommitCoreAsync((db, ct) => Task.FromResult(db.SaveChanges(false))).Result;
+        }
+
+        protected virtual void OnModelCreatingCore(ModelBuilder modelBuilder) { }
+
+        /// <inheritdoc />
         protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            if (!_supportedProviders.Contains(Database.ProviderName))
+            {
+                _logger.LogWarning($"Provider ({Database.ProviderName}) is not fully supported by model. Custom operations might be needed.");
+            }
+
             OnModelCreatingCore(modelBuilder);
 
-            (modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder))).SetupBaseEntities();
+            (modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder))).SetupBaseEntities(Database.ProviderName);
         }
 
-        protected virtual void OnModelCreatingCore(ModelBuilder modelBuilder) { }
+        async Task<UnitOfWorkCommitResult> CommitCoreAsync([NotNull] Func<DbContext, CancellationToken, Task<int>> callback, CancellationToken cancellationToken = default)
+        {
+            if (!_isInitialized)
+            {
+                throw new InvalidOperationException($"Dependencies for this instance ({GetType().Name}) are not initialized.");
+            }
+
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
+
+            try
+            {
+                ChangeTracker.DetectChanges();
+
+                if (!ChangeTracker.HasChanges())
+                    return new UnitOfWorkCommitResult();
+
+                var conflictResult = await _conflictResolver.Value.ResolveAsync(this, () => (IApplicationContext)Activator.CreateInstance(GetType())).ConfigureAwait(false);
+
+                if (conflictResult.CanBeDetermine && conflictResult.HasConflicts)
+                {
+                    return new UnitOfWorkCommitResult
+                    {
+                        Conflicts = conflictResult.ConflictedEntities,
+                        Exception = new UnitOfWorkConcurrencyConflictException
+                        {
+                            Conflicts = conflictResult.ConflictedEntities
+                        }
+                    };
+                }
+
+                _updateService.Apply(this, UseTimeSourceFromEntities);
+                _deleteService.Apply(this, UseTimeSourceFromEntities);
+
+                // save the database without applying changes
+                var result = await callback(this, cancellationToken);
+
+                // accept changes
+                ChangeTracker.AcceptAllChanges();
+
+                return new UnitOfWorkCommitResult
+                {
+                    CommitResult = result
+                };
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                _logger.LogError("Unexpected concurrency error from SaveChanges method.");
+                
+                return new UnitOfWorkCommitResult { Exception = e };
+            }
+            catch (DbUpdateException e)
+            {
+                _logger.LogError($"Database update error occured. ({e.Message})");
+
+                return new UnitOfWorkCommitResult { Exception = e };
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Unexpected error occured while committing database context. ({e.Message})");
+
+                return new UnitOfWorkCommitResult { Exception = e };
+            }
+        }
 
         void OnTracked(object sender, EntityTrackedEventArgs args)
         {
