@@ -13,10 +13,12 @@ namespace Pentagon.EntityFrameworkCore
     {
         public bool IsSuccessful => Exception != null && !HasConcurrencyConflicts;
 
-        public bool HasConcurrencyConflicts => Conflicts?.Count != 0;
+        public bool HasConcurrencyConflicts => Conflicts != null && Conflicts.Count > 0;
 
         public Exception Exception { get; set; }
 
-        public List<ConcurrencyConflictPair> Conflicts { get; set; }
+        public List<ConcurrencyConflictPair> Conflicts { get; set; } = new List<ConcurrencyConflictPair>();
+
+        public int CommitResult { get; set; }
     }
 }

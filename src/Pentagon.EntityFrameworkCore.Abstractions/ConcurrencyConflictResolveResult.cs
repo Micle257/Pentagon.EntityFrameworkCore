@@ -10,8 +10,10 @@ namespace Pentagon.EntityFrameworkCore
 
     public class ConcurrencyConflictResolveResult
     {
-        public bool HasConflicts => ConflictedEntities?.Count != 0;
+        public bool CanBeDetermine { get; set; } = true;
 
-        public List<ConcurrencyConflictPair> ConflictedEntities { get; set; }
+        public bool HasConflicts =>  ConflictedEntities != null && ConflictedEntities.Count > 0;
+
+        public List<ConcurrencyConflictPair> ConflictedEntities { get; set; } = new List<ConcurrencyConflictPair>();
     }
 }
