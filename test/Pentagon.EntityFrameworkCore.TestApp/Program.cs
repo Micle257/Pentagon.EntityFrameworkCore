@@ -3,6 +3,7 @@
 namespace Pentagon.EntityFrameworkCore.TestApp
 {
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
     using System.Reflection;
     using Abstractions;
     using Abstractions.Entities;
@@ -23,7 +24,7 @@ namespace Pentagon.EntityFrameworkCore.TestApp
 
             using (var c = di.GetRequiredService<Context>())
             {
-                
+
             }
         }
     }
