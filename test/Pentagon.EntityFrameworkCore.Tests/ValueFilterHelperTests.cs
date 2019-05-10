@@ -6,6 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore.Tests
 {
+    using Abstractions.Entities;
     using Mocks;
     using Specifications;
     using Specifications.Filters;

@@ -1,17 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Pentagon.EntityFrameworkCore.Abstractions\Pentagon.EntityFrameworkCore.Abstractions.csproj" />
-    <ProjectReference Include="..\Pentagon.EntityFrameworkCore\Pentagon.EntityFrameworkCore.csproj" />
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(Configuration)'=='Debug'">
+      <ItemGroup>
+        <ProjectReference Include="..\Pentagon.EntityFrameworkCore.Abstractions\Pentagon.EntityFrameworkCore.Abstractions.csproj" />
+        <ProjectReference Include="..\Pentagon.EntityFrameworkCore\Pentagon.EntityFrameworkCore.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Pentagon.EntityFrameworkCore.Abstractions" Version="2.3.0" />
+        <PackageReference Include="Pentagon.EntityFrameworkCore" Version="2.3.0" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
 </Project>

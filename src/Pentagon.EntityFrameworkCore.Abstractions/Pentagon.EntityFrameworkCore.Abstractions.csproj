@@ -7,7 +7,7 @@
     <Description>Provides abstraction for Pentagon.EntityFrameworkCore library.</Description>
     <Copyright>Copyright (c) Michal Pokorný. All Rights Reserved.</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>2.3.0</Version>
+    <Version>2.3.1</Version>
     <LangVersion>7.3</LangVersion>
     <PackageProjectUrl>https://github.com/Micle257/Pentagon.EntityFrameworkCore</PackageProjectUrl>
   </PropertyGroup>
@@ -24,7 +24,19 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" PrivateAssets="All" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" PrivateAssets="All" />
-    <PackageReference Include="Pentagon.Common" Version="1.6.2" PrivateAssets="All" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition="'$(SolutionPath)'=='C:\Users\Michal\Source\Pentagon.All.sln' AND '$(Configuration)'=='Debug'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\Pentagon.Common\src\Pentagon.Common\Pentagon.Common.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Pentagon.Common" Version="1.6.5" PrivateAssets="All" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
 </Project>
