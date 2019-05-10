@@ -43,7 +43,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
         }
 
         /// <inheritdoc />
-        public ITextCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
+        public ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
         {
             var id = Guid.NewGuid();
 
@@ -55,11 +55,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
                                     FirstValue = value
                             });
 
-            return new TextCompositeFilterBuilder<TEntity>(this, id);
+            return new CompositeFilterBuilder<TEntity>(this, id);
         }
 
         /// <inheritdoc />
-        public INumberCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, NumberFilter filter, object value)
+        public ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, NumberFilter filter, object value)
         {
             var id = Guid.NewGuid();
 
@@ -71,7 +71,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
                                       FirstValue = value
                               });
 
-            return new NumberCompositeFilterBuilder<TEntity>(this, id);
+            return new CompositeFilterBuilder<TEntity>(this, id);
         }
 
         /// <inheritdoc />

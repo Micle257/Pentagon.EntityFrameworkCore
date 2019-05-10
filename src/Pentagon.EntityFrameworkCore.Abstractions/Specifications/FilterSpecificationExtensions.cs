@@ -20,10 +20,10 @@ namespace Pentagon.EntityFrameworkCore.Specifications
         {
             var builder = new FilterBuilder<TEntity>();
 
+            configure(builder);
+
             if (!builder.HasAnyFilter)
                 return specification;
-
-            configure(builder);
 
             var filters = builder.BuildFilter();
 

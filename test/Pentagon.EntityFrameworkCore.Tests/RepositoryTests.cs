@@ -7,6 +7,7 @@
 namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System.Linq;
+    using Abstractions.Entities;
     using Microsoft.Extensions.Logging.Abstractions;
     using Mocks;
     using Repositories;
