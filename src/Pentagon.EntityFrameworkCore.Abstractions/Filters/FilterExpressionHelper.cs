@@ -13,6 +13,38 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
 
     public static class FilterExpressionHelper
     {
+        public static Expression<Func<TEntity, bool>> GetFilter<TEntity, TValue>(CompositeFilter<TEntity, TValue> filter)
+        {
+            if (filter.Type == 0)
+                return null;
+
+            IPredicateBuilder<TEntity> builder = new PredicateBuilder<TEntity>();
+
+            Expression firstCallback = filter.FirstCondition;
+
+            builder = (IPredicateBuilder<TEntity>)builder.Start(ConvertBodyToLambda<TEntity>(firstCallback));
+
+            if (filter.Type == FilterCompositionType.Double)
+            {
+                Expression secondCallback = filter.SecondCondition;
+
+                switch (filter.Operation)
+                {
+                    case FilterLogicOperation.Or:
+                        builder = (IPredicateBuilder<TEntity>)builder.Or(ConvertBodyToLambda<TEntity>(secondCallback));
+                        break;
+
+                    case FilterLogicOperation.And:
+                        builder = (IPredicateBuilder<TEntity>)builder.And(ConvertBodyToLambda<TEntity>(secondCallback));
+                        break;
+                }
+            }
+
+            var predicate = builder.Build();
+
+            return predicate;
+        }
+
         public static Expression<Func<TEntity, bool>> GetFilter<TEntity, TFilter, TValue>(CompositeFilter<TEntity, TFilter, TValue> filter)
                 where TFilter : struct, Enum
         {

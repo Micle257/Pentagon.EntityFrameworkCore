@@ -120,6 +120,19 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
                                     });
             }
 
+            if (CompositeFilters.Count > 0)
+            {
+                resultPredicate.And(b =>
+                                    {
+                                        foreach (var textFilter in CompositeFilters)
+                                        {
+                                            var predicate = FilterExpressionHelper.GetFilter(textFilter);
+
+                                            b.And(predicate);
+                                        }
+                                    });
+            }
+
             if (TextFilters.Count > 0)
             {
                 resultPredicate.And(b =>

@@ -6,7 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore.Specifications.Filters
 {
-    public enum TextFilter 
+    public enum TextFilter
     {
         Unspecified,
         Equal,
