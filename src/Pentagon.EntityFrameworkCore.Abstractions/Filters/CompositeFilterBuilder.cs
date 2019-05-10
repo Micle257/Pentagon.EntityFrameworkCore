@@ -31,5 +31,35 @@
 
             return this;
         }
+
+        /// <inheritdoc />
+        public ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value = null)
+        {
+            var lastTextFilter = NumberFilters.FirstOrDefault(a => a.Id == ParentFilterId);
+
+            if (lastTextFilter == null)
+                throw new ArgumentNullException(nameof(lastTextFilter), message: "Number filter is missing");
+
+            lastTextFilter.Operation = operation;
+            lastTextFilter.SecondCondition = filter;
+            lastTextFilter.SecondValue = value;
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
+        {
+            var lastTextFilter = TextFilters.FirstOrDefault(a => a.Id == ParentFilterId);
+
+            if (lastTextFilter == null)
+                throw new ArgumentNullException(nameof(lastTextFilter), "Text filter is missing");
+
+            lastTextFilter.Operation = operation;
+            lastTextFilter.SecondCondition = filter;
+            lastTextFilter.SecondValue = value;
+
+            return this;
+        }
     }
 }
