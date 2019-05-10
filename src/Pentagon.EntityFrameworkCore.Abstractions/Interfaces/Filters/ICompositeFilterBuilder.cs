@@ -16,8 +16,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     public interface ICompositeFilterBuilder<TEntity> : IFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, Expression<Func<TEntity, bool>> condition, object value);
-
         ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, Expression<Func<TEntity, bool>> condition);
     }
 }

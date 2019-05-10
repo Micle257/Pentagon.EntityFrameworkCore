@@ -75,9 +75,6 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
         }
 
         /// <inheritdoc />
-        public INumberCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, NumberFilter filter) => AddCompositeFilter(propertySelector, filter, null);
-
-        /// <inheritdoc />
         public IFilterBuilder<TEntity> AddFilter(Expression<Func<TEntity, bool>> condition)
         {
             Filters.Add(condition);
@@ -86,16 +83,14 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
         }
 
         /// <inheritdoc />
-        public ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, Expression<Func<TEntity, bool>> condition, object value)
+        public ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, bool>> condition)
         {
             var id = Guid.NewGuid();
 
             CompositeFilters.Add(new CompositeFilter<TEntity, object>
             {
                 Id = id,
-                Property = propertySelector,
-                                         FirstCondition = condition,
-                                         FirstValue = value
+                                         FirstCondition = condition
                                  });
 
             return new CompositeFilterBuilder<TEntity>(this, id);

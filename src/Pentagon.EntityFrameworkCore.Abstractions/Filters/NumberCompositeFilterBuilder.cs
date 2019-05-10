@@ -21,7 +21,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
         /// <inheritdoc />
         public ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value)
         {
-            var lastTextFilter = NumberFilters.LastOrDefault();
+            var lastTextFilter = NumberFilters.FirstOrDefault(a => a.Id == ParentFilterId);
 
             if (lastTextFilter == null)
                 throw new ArgumentNullException(nameof(lastTextFilter), message: "Number filter is missing");
