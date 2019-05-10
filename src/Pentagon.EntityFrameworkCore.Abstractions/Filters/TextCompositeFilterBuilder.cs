@@ -4,18 +4,15 @@
     using Abstractions.Entities;
     using Abstractions.Specifications;
 
-    public class TextCompositeFilterBuilder<TEntity> : FilterBuilder<TEntity>, ITextCompositeFilterBuilder<TEntity>
+    public class TextCompositeFilterBuilder<TEntity> : CompositeFilterBuilder<TEntity>, ITextCompositeFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        public TextCompositeFilterBuilder(FilterBuilder<TEntity> parent)
+        public TextCompositeFilterBuilder(FilterBuilder<TEntity> parent, Guid filterId) : base(parent, filterId)
         {
-            TextFilters = parent.TextFilters;
-            NumberFilters = parent.NumberFilters;
-            Filters = parent.Filters;
         }
 
         /// <inheritdoc />
-        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
+        public ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
         {
             var lastTextFilter = TextFilters.LastOrDefault();
 

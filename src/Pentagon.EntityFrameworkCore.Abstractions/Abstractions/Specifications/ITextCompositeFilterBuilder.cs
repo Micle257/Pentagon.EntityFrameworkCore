@@ -10,9 +10,9 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     using EntityFrameworkCore.Specifications;
     using EntityFrameworkCore.Specifications.Filters;
 
-    public interface ITextCompositeFilterBuilder<TEntity> : IFilterBuilder<TEntity>
+    public interface ITextCompositeFilterBuilder<TEntity> : ICompositeFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null);
+        ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null);
     }
 }

@@ -11,18 +11,15 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
     using Abstractions.Entities;
     using Abstractions.Specifications;
 
-    public class NumberCompositeFilterBuilder<TEntity> : FilterBuilder<TEntity>, INumberCompositeFilterBuilder<TEntity>
+    public class NumberCompositeFilterBuilder<TEntity> : CompositeFilterBuilder<TEntity>, INumberCompositeFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        public NumberCompositeFilterBuilder(FilterBuilder<TEntity> parent)
+        public NumberCompositeFilterBuilder(FilterBuilder<TEntity> parent, Guid filterId) : base(parent, filterId)
         {
-            TextFilters = parent.TextFilters;
-            NumberFilters = parent.NumberFilters;
-            Filters = parent.Filters;
         }
 
         /// <inheritdoc />
-        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value)
+        public ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value)
         {
             var lastTextFilter = NumberFilters.LastOrDefault();
 
@@ -37,6 +34,6 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
         }
 
         /// <inheritdoc />
-        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter) => AddSubFilter(operation, filter, null);
+        public ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter) => AddSubFilter(operation, filter, null);
     }
 }
