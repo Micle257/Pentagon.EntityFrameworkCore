@@ -16,18 +16,14 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
     public interface ICompositeFilterBuilder<TEntity> : IFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, Expression<Func<TEntity, bool>> condition);
+        IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, Expression<Func<TEntity, bool>> condition);
     }
 
-    public interface ITextCompositeFilterBuilder<TEntity> : ICompositeFilterBuilder<TEntity>
+    public interface IConnectedCompositeFilterBuilder<TEntity> : ICompositeFilterBuilder<TEntity>
             where TEntity : IEntity
     {
-        ITextCompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null);
-    }
-
-    public interface INumberCompositeFilterBuilder<TEntity> : ICompositeFilterBuilder<TEntity>
-            where TEntity : IEntity
-    {
-        INumberCompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value = null);
+        IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null);
+        
+        IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value = null);
     }
 }

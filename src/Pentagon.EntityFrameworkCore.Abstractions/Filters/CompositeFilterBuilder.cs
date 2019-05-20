@@ -6,7 +6,7 @@
     using Abstractions.Entities;
     using Abstractions.Specifications;
 
-    public class CompositeFilterBuilder<TEntity> : FilterBuilder<TEntity>, ICompositeFilterBuilder<TEntity>, ITextCompositeFilterBuilder<TEntity>, INumberCompositeFilterBuilder<TEntity>
+    public class CompositeFilterBuilder<TEntity> : FilterBuilder<TEntity>, IConnectedCompositeFilterBuilder<TEntity>
             where TEntity : IEntity
     {
         protected Guid ParentFilterId { get; }
@@ -19,7 +19,7 @@
         }
 
         /// <inheritdoc />
-        public ICompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, Expression<Func<TEntity, bool>> condition)
+        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, Expression<Func<TEntity, bool>> condition)
         {
             var lastTextFilter = CompositeFilters.FirstOrDefault(a => a.Id == ParentFilterId);
 
@@ -33,7 +33,7 @@
         }
 
         /// <inheritdoc />
-        public INumberCompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value = null)
+        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value = null)
         {
             var lastTextFilter = CompositeFilters.FirstOrDefault(a => a.Id == ParentFilterId);
 
@@ -42,14 +42,12 @@
 
             lastTextFilter.Operation = operation;
             lastTextFilter.SecondCondition = FilterExpressionHelper.GetNumberFilterCallback(lastTextFilter.Property, filter, value);
-            //lastTextFilter.SecondCondition = filter;
-            //lastTextFilter.SecondValue = value;
 
             return this;
         }
 
         /// <inheritdoc />
-        public ITextCompositeFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
+        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
         {
             var lastTextFilter = CompositeFilters.FirstOrDefault(a => a.Id == ParentFilterId);
 
@@ -58,8 +56,6 @@
 
             lastTextFilter.Operation = operation;
             lastTextFilter.SecondCondition = FilterExpressionHelper.GetTextFilterCallback( FilterExpressionHelper.GetStringPropertySelector(lastTextFilter.Property), filter, value);
-            //lastTextFilter.SecondCondition = filter;
-            //lastTextFilter.SecondValue = value;
 
             return this;
         }

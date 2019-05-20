@@ -39,35 +39,30 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
         }
 
         /// <inheritdoc />
-        public ITextCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value)
+        public ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, bool>> condition)
         {
             var id = Guid.NewGuid();
 
             CompositeFilters.Add(new CompositeFilter<TEntity, object>
-                            {
-                                    Id = id,
-                                    FirstCondition = FilterExpressionHelper.GetTextFilterCallback(propertySelector, filter, value),
-                                    Property = FilterExpressionHelper.GetObjectPropertySelector(propertySelector)
-                //FirstCondition = filter,
-                //FirstValue = value
-            });
+                                 {
+                                         Id = id,
+                                         FirstCondition = condition
+                                 });
 
             return new CompositeFilterBuilder<TEntity>(this, id);
         }
 
         /// <inheritdoc />
-        public INumberCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, NumberFilter filter, object value)
+        public IConnectedCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, Expression<Func<TEntity, bool>> condition)
         {
             var id = Guid.NewGuid();
 
             CompositeFilters.Add(new CompositeFilter<TEntity, object>
-            {
-                    Id = id,
-                    FirstCondition = FilterExpressionHelper.GetNumberFilterCallback(propertySelector, filter, value),
-                Property = propertySelector
-                                     // FirstCondition = filter,
-                                     // FirstValue = value
-                              });
+                                 {
+                                         Id = id,
+                                         FirstCondition = condition,
+                                         Property = propertySelector
+                                 });
 
             return new CompositeFilterBuilder<TEntity>(this, id);
         }
@@ -78,20 +73,6 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
             Filters.Add(condition);
 
             return this;
-        }
-
-        /// <inheritdoc />
-        public ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, bool>> condition)
-        {
-            var id = Guid.NewGuid();
-
-            CompositeFilters.Add(new CompositeFilter<TEntity, object>
-            {
-                Id = id,
-                                         FirstCondition = condition
-                                 });
-
-            return new CompositeFilterBuilder<TEntity>(this, id);
         }
 
         /// <inheritdoc />
