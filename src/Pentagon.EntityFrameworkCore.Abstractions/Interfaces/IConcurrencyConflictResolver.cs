@@ -12,6 +12,7 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     
     public interface IConcurrencyConflictResolver
     {
-        Task<ConcurrencyConflictResolveResult> ResolveAsync([NotNull] IApplicationContext appContext, [NotNull] Func<IApplicationContext> contextFactory);
+        Task<ConcurrencyConflictResolveResult> ResolveAsync([NotNull] IApplicationContext appContext,
+                                                            [NotNull] Func<IApplicationContext> contextFactory);
     }
 }

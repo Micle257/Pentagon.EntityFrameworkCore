@@ -16,7 +16,9 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
     public interface IApplicationContext : IDisposable
     {
         bool UseTimeSourceFromEntities { get; set; }
-        
+
+        bool AutoResolveConflictsFromSameUser { get; set; }
+
         event EventHandler<CommitEventArgs> Commiting;
 
         Task<UnitOfWorkCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default);
