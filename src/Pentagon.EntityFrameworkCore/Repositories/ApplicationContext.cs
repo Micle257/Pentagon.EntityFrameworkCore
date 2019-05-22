@@ -23,27 +23,25 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
     public abstract class BaseApplicationContext : DbContext, IApplicationContext
     {
-        HashSet<string> _supportedProviders = new HashSet<string>
-                                              {
-                                                      "Microsoft.EntityFrameworkCore.SqlServer",
-                                                      //"Microsoft.EntityFrameworkCore.Sqlite",
-                                                      //"Npgsql.EntityFrameworkCore.PostgreSQL",
-                                                      //"Pomelo.EntityFrameworkCore.MySql",
-                                                      "Microsoft.EntityFrameworkCore.InMemory"
-                                              };
-
         [NotNull]
         readonly ILogger _logger;
 
-        bool _isInitialized;
-
-        IDbContextUpdateService _updateService;
-
-        IDbContextDeleteService _deleteService;
-
-        protected virtual IModelConfiguration ModelConfiguration { get; } = new SqlServerModelConfiguration();
-
         readonly Lazy<IConcurrencyConflictResolver> _conflictResolver = new Lazy<IConcurrencyConflictResolver>(() => new ConcurrencyConflictResolver());
+
+        readonly HashSet<string> _supportedProviders = new HashSet<string>
+                                                       {
+                                                               "Microsoft.EntityFrameworkCore.SqlServer",
+                                                               //"Microsoft.EntityFrameworkCore.Sqlite",
+                                                               //"Npgsql.EntityFrameworkCore.PostgreSQL",
+                                                               //"Pomelo.EntityFrameworkCore.MySql",
+                                                               "Microsoft.EntityFrameworkCore.InMemory"
+                                                       };
+
+        readonly bool _isInitialized;
+
+        readonly IDbContextUpdateService _updateService;
+
+        readonly IDbContextDeleteService _deleteService;
 
         protected BaseApplicationContext([NotNull] ILogger logger,
                                          [NotNull] IDbContextUpdateService updateService,
@@ -62,24 +60,28 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         protected BaseApplicationContext(DbContextOptions options) : base(options)
         {
             _logger = NullLogger.Instance;
-        
+
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
-        
+
         protected BaseApplicationContext()
         {
             _logger = NullLogger.Instance;
-        
+
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
-        
+
         /// <inheritdoc />
         public event EventHandler<CommitEventArgs> Commiting;
 
         /// <inheritdoc />
         public bool UseTimeSourceFromEntities { get; set; }
+
+        public bool AutoResolveConflictsFromSameUser { get; set; }
+
+        protected virtual IModelConfiguration ModelConfiguration { get; } = new SqlServerModelConfiguration();
 
         /// <inheritdoc />
         public IRepository<TEntity> GetRepository<TEntity>()
@@ -99,32 +101,28 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         protected virtual void OnModelCreatingCore(ModelBuilder modelBuilder) { }
 
+        protected virtual void SetupCoreModel([NotNull] ModelBuilder modelBuilder)
+        {
+            ModelConfiguration?.SetupModel(modelBuilder, Database.ProviderName);
+        }
+
         /// <inheritdoc />
         protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             if (!_supportedProviders.Contains(Database.ProviderName))
-            {
                 _logger.LogWarning($"Provider ({Database.ProviderName}) is not fully supported by model. Custom operations might be needed.");
-            }
 
             OnModelCreatingCore(modelBuilder);
 
             SetupCoreModel(modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder)));
         }
 
-        protected virtual void SetupCoreModel([NotNull] ModelBuilder modelBuilder)
-        {
-            ModelConfiguration?.SetupModel(modelBuilder, Database.ProviderName);
-        }
-
         async Task<UnitOfWorkCommitResult> CommitCoreAsync([NotNull] Func<DbContext, CancellationToken, Task<int>> callback, CancellationToken cancellationToken = default)
         {
             if (!_isInitialized)
-            {
                 throw new InvalidOperationException($"Dependencies for this instance ({GetType().Name}) are not initialized.");
-            }
 
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
@@ -136,18 +134,45 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 if (!ChangeTracker.HasChanges())
                     return new UnitOfWorkCommitResult();
 
-                var conflictResult = await _conflictResolver.Value.ResolveAsync(this, () => (IApplicationContext)Activator.CreateInstance(GetType())).ConfigureAwait(false);
+                var conflictResult = await _conflictResolver.Value.ResolveAsync(this, () => (IApplicationContext) Activator.CreateInstance(GetType())).ConfigureAwait(false);
+
+                var conflictPairs = new List<ConcurrencyConflictPair>();
 
                 if (conflictResult.CanBeDetermine && conflictResult.HasConflicts)
                 {
-                    return new UnitOfWorkCommitResult
+                    conflictPairs = conflictResult.ConflictedEntities.ToList();
+
+                    if (AutoResolveConflictsFromSameUser)
                     {
-                        Conflicts = conflictResult.ConflictedEntities,
-                        Exception = new UnitOfWorkConcurrencyConflictException
+                        var userConflicts = conflictResult.ConflictedEntities
+                                                          .Where(a => a.Local.UpdatedUserId != null && a.Remote.UpdatedUserId != null)
+                                                          .Where(a => a.Local.UpdatedAt != null && a.Remote.UpdatedAt != null)
+                                                          .Where(a => a.Local.UpdatedUserId == a.Remote.UpdatedUserId);
+
+                        foreach (var userConflict in userConflicts)
                         {
-                            Conflicts = conflictResult.ConflictedEntities
+                            var isLocalNewer = userConflict.Local.UpdatedAt.Value > userConflict.Remote.UpdatedAt.Value;
+
+                            if (isLocalNewer)
+                            {
+                                conflictPairs.Remove(userConflict);
+                                //Entry(userConflict.Local.Entity).State = EntityState.Modified;
+                            }
                         }
-                    };
+                    }
+
+                    // remove conflicted entities from change tracker
+                    foreach (var entityEntry in conflictPairs.Select(a => Entry(a.Local.Entity)))
+                        entityEntry.State = EntityState.Detached;
+
+                    // return new UnitOfWorkCommitResult
+                    //        {
+                    //                Conflicts = conflictPairs,
+                    //                Exception = new UnitOfWorkConcurrencyConflictException
+                    //                            {
+                    //                                    Conflicts = conflictPairs
+                    //                }
+                    //        };
                 }
 
                 _updateService.Apply(this, UseTimeSourceFromEntities);
@@ -160,27 +185,28 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 ChangeTracker.AcceptAllChanges();
 
                 return new UnitOfWorkCommitResult
-                {
-                    CommitResult = result
-                };
+                       {
+                               CommitResult = result,
+                               Conflicts = conflictPairs
+                       };
             }
             catch (DbUpdateConcurrencyException e)
             {
-                _logger.LogError("Unexpected concurrency error from SaveChanges method.");
-                
-                return new UnitOfWorkCommitResult { Exception = e };
+                _logger.LogError(message: "Unexpected concurrency error from SaveChanges method.");
+
+                return new UnitOfWorkCommitResult {Exception = e};
             }
             catch (DbUpdateException e)
             {
                 _logger.LogError($"Database update error occured. ({e.Message})");
 
-                return new UnitOfWorkCommitResult { Exception = e };
+                return new UnitOfWorkCommitResult {Exception = e};
             }
             catch (Exception e)
             {
                 _logger.LogError($"Unexpected error occured while committing database context. ({e.Message})");
 
-                return new UnitOfWorkCommitResult { Exception = e };
+                return new UnitOfWorkCommitResult {Exception = e};
             }
         }
 

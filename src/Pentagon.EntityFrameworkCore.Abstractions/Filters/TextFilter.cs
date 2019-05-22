@@ -9,6 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
     public enum TextFilter
     {
         Unspecified,
+        Custom,
         Equal,
         NotEqual,
         Empty,
