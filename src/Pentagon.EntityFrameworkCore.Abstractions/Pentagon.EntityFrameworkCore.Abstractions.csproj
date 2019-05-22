@@ -34,7 +34,7 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <PackageReference Include="Pentagon.Common" Version="1.6.5"  />
+        <PackageReference Include="Pentagon.Common" Version="1.6.7" />
       </ItemGroup>
     </Otherwise>
   </Choose>
