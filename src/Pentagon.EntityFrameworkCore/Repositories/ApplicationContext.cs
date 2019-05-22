@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -134,6 +135,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 if (!ChangeTracker.HasChanges())
                     return new UnitOfWorkCommitResult();
 
+                _updateService.Apply(this, UseTimeSourceFromEntities);
+                _deleteService.Apply(this, UseTimeSourceFromEntities);
+
                 var conflictResult = await _conflictResolver.Value.ResolveAsync(this, () => (IApplicationContext) Activator.CreateInstance(GetType())).ConfigureAwait(false);
 
                 var conflictPairs = new List<ConcurrencyConflictPair>();
@@ -147,10 +151,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                         var userConflicts = conflictResult.ConflictedEntities
                                                           .Where(a => a.Local.UpdatedUserId != null && a.Remote.UpdatedUserId != null)
                                                           .Where(a => a.Local.UpdatedAt != null && a.Remote.UpdatedAt != null)
-                                                          .Where(a => a.Local.UpdatedUserId == a.Remote.UpdatedUserId);
+                                                          .Where(a => a.Local.UpdatedUserId.Equals(a.Remote.UpdatedUserId));
 
                         foreach (var userConflict in userConflicts)
                         {
+                            Debug.Assert(userConflict.Local.UpdatedAt != null, "userConflict.Local.UpdatedAt != null");
+                            Debug.Assert(userConflict.Remote.UpdatedAt != null, "userConflict.Remote.UpdatedAt != null");
+
                             var isLocalNewer = userConflict.Local.UpdatedAt.Value > userConflict.Remote.UpdatedAt.Value;
 
                             if (isLocalNewer)
@@ -164,19 +171,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                     // remove conflicted entities from change tracker
                     foreach (var entityEntry in conflictPairs.Select(a => Entry(a.Local.Entity)))
                         entityEntry.State = EntityState.Detached;
-
-                    // return new UnitOfWorkCommitResult
-                    //        {
-                    //                Conflicts = conflictPairs,
-                    //                Exception = new UnitOfWorkConcurrencyConflictException
-                    //                            {
-                    //                                    Conflicts = conflictPairs
-                    //                }
-                    //        };
                 }
-
-                _updateService.Apply(this, UseTimeSourceFromEntities);
-                _deleteService.Apply(this, UseTimeSourceFromEntities);
 
                 // save the database without applying changes
                 var result = await callback(this, cancellationToken);
