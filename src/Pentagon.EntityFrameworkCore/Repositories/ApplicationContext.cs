@@ -40,18 +40,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         readonly bool _isInitialized;
 
-        readonly IDbContextUpdateService _updateService;
-
-        readonly IDbContextDeleteService _deleteService;
+        readonly IDbContextChangeService _changeService;
 
         protected BaseApplicationContext([NotNull] ILogger logger,
-                                         [NotNull] IDbContextUpdateService updateService,
-                                         [NotNull] IDbContextDeleteService deleteService,
+                                         [NotNull] IDbContextChangeService deleteService,
                                          DbContextOptions options) : base(options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
-            _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
+            _changeService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
             _isInitialized = true;
 
             ChangeTracker.StateChanged += OnStateChanged;
@@ -135,43 +131,12 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 if (!ChangeTracker.HasChanges())
                     return new UnitOfWorkCommitResult();
 
-                _updateService.Apply(this, UseTimeSourceFromEntities);
-                _deleteService.Apply(this, UseTimeSourceFromEntities);
+                _changeService.ApplyUpdate(this, UseTimeSourceFromEntities);
+                _changeService.ApplyDelete(this, UseTimeSourceFromEntities);
 
-                var conflictResult = await _conflictResolver.Value.ResolveAsync(this, () => (IApplicationContext) Activator.CreateInstance(GetType())).ConfigureAwait(false);
+                var conflictPairs = await ApplyConcurrencyCheckAsync();
 
-                var conflictPairs = new List<ConcurrencyConflictPair>();
-
-                if (conflictResult.CanBeDetermine && conflictResult.HasConflicts)
-                {
-                    conflictPairs = conflictResult.ConflictedEntities.ToList();
-
-                    if (AutoResolveConflictsFromSameUser)
-                    {
-                        var userConflicts = conflictResult.ConflictedEntities
-                                                          .Where(a => a.Local.UpdatedUserId != null && a.Remote.UpdatedUserId != null)
-                                                          .Where(a => a.Local.UpdatedAt != null && a.Remote.UpdatedAt != null)
-                                                          .Where(a => a.Local.UpdatedUserId.Equals(a.Remote.UpdatedUserId));
-
-                        foreach (var userConflict in userConflicts)
-                        {
-                            Debug.Assert(userConflict.Local.UpdatedAt != null, "userConflict.Local.UpdatedAt != null");
-                            Debug.Assert(userConflict.Remote.UpdatedAt != null, "userConflict.Remote.UpdatedAt != null");
-
-                            var isLocalNewer = userConflict.Local.UpdatedAt.Value > userConflict.Remote.UpdatedAt.Value;
-
-                            if (isLocalNewer)
-                            {
-                                conflictPairs.Remove(userConflict);
-                                //Entry(userConflict.Local.Entity).State = EntityState.Modified;
-                            }
-                        }
-                    }
-
-                    // remove conflicted entities from change tracker
-                    foreach (var entityEntry in conflictPairs.Select(a => Entry(a.Local.Entity)))
-                        entityEntry.State = EntityState.Detached;
-                }
+                _changeService.ApplyConcurrency(this);
 
                 // save the database without applying changes
                 var result = await callback(this, cancellationToken);
@@ -203,6 +168,46 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 return new UnitOfWorkCommitResult {Exception = e};
             }
+        }
+
+        async Task<List<ConcurrencyConflictPair>> ApplyConcurrencyCheckAsync()
+        {
+            var conflictResult = await _conflictResolver.Value.ResolveAsync(this, () => (IApplicationContext) Activator.CreateInstance(GetType())).ConfigureAwait(false);
+
+            var conflictPairs = new List<ConcurrencyConflictPair>();
+
+            if (conflictResult.CanBeDetermine && conflictResult.HasConflicts)
+            {
+                conflictPairs = conflictResult.ConflictedEntities.ToList();
+
+                if (AutoResolveConflictsFromSameUser)
+                {
+                    var userConflicts = conflictResult.ConflictedEntities
+                                                      .Where(a => a.Local.UpdatedUserId != null && a.Remote.UpdatedUserId != null)
+                                                      .Where(a => a.Local.UpdatedAt != null && a.Remote.UpdatedAt != null)
+                                                      .Where(a => a.Local.UpdatedUserId.Equals(a.Remote.UpdatedUserId));
+
+                    foreach (var userConflict in userConflicts)
+                    {
+                        Debug.Assert(userConflict.Local.UpdatedAt != null, "userConflict.Local.UpdatedAt != null");
+                        Debug.Assert(userConflict.Remote.UpdatedAt != null, "userConflict.Remote.UpdatedAt != null");
+
+                        var isLocalNewer = userConflict.Local.UpdatedAt.Value > userConflict.Remote.UpdatedAt.Value;
+
+                        if (isLocalNewer)
+                        {
+                            conflictPairs.Remove(userConflict);
+                            //Entry(userConflict.Local.Entity).State = EntityState.Modified;
+                        }
+                    }
+                }
+
+                // remove conflicted entities from change tracker
+                foreach (var entityEntry in conflictPairs.Select(a => Entry(a.Local.Entity)))
+                    entityEntry.State = EntityState.Detached;
+            }
+
+            return conflictPairs;
         }
 
         void OnTracked(object sender, EntityTrackedEventArgs args)

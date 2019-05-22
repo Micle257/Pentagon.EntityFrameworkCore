@@ -32,7 +32,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
         public void ShouldApplyWhenEntityIsAdded()
         {
             var unit = DI.GetService<IApplicationContext>();
-            var service = DI.GetService<IDbContextUpdateService>();
+            var service = DI.GetService<IDbContextChangeService>();
             var user = DI.GetService<IDataUserProvider>();
 
             user.UserId = 2;
@@ -43,8 +43,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
             var entity = new Entity { Value = "ss" };
 
             db.Insert(entity);
-            
-            service.Apply(unit);
+
+            service.ApplyUpdate(unit);
+            service.ApplyConcurrency(unit);
 
             Assert.Null(entity.UpdatedAt);
             Assert.Null(entity.DeletedAt);
@@ -62,9 +63,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
         [Fact]
         public void ShouldApplyWhenEntityIsModified()
         {
+            var service = DI.GetService<IDbContextChangeService>();
             var ex = DI.GetService<IUnitOfWork<IApplicationContext>>();
             var unit = DI.GetService<IContextFactory>().CreateContext();
-            var service = DI.GetService<IDbContextUpdateService>();
             var user = DI.GetService<IDataUserProvider>();
 
             user.UserId = 2;
@@ -81,8 +82,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
             e.Value = "qwe";
 
             db.Update(e);
-            
-            service.Apply(unit);
+
+            service.ApplyUpdate(unit);
+            service.ApplyConcurrency(unit);
 
             Assert.NotNull(entity.UpdatedAt);
             Assert.Null(entity.DeletedAt);

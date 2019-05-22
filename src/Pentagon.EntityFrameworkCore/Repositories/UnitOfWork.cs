@@ -20,20 +20,16 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     {
 
         Lazy<IConcurrencyConflictResolver> _conflictResolver = new Lazy<IConcurrencyConflictResolver>(() => new ConcurrencyConflictResolver());
+       
         [NotNull]
-        readonly IDbContextUpdateService _updateService;
-
-        [NotNull]
-        readonly IDbContextDeleteService _deleteService;
+        readonly IDbContextChangeService _deleteService;
 
         [NotNull]
         readonly IContextFactory<TContext> _factory;
 
-        public UnitOfWork([NotNull] IDbContextUpdateService updateService,
-                                        [NotNull] IDbContextDeleteService deleteService,
+        public UnitOfWork( [NotNull] IDbContextChangeService deleteService,
                           [NotNull] IContextFactory<TContext> factory)
         {
-            _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
             _deleteService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
@@ -81,8 +77,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 var changedAt = appContext.UseTimeSourceFromEntities;
 
-                _updateService.Apply(appContext, changedAt);
-                _deleteService.Apply(appContext, changedAt);
+                _deleteService.ApplyUpdate(appContext, changedAt);
+                _deleteService.ApplyConcurrency(appContext);
+                _deleteService.ApplyDelete(appContext, changedAt);
 
                 // save the database without appling changes
                 await callback(_dbContext);

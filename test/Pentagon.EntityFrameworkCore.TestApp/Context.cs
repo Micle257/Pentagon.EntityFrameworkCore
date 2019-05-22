@@ -13,9 +13,8 @@
         }
 
         public Context(ILogger<Context> logger,
-                       IDbContextUpdateService updateService,
-                       IDbContextDeleteService deleteService,
-                       DbContextOptions<Context> options) : base(logger, updateService, deleteService, options)
+                       IDbContextChangeService deleteService,
+                       DbContextOptions<Context> options) : base(logger, deleteService, options)
         {
         }
 
