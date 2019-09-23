@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assembly name="Pentagon.EntityFrameworkCore.Abstractions">
+  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.IConcurrencyConflictResolver.ResolveAsync(Pentagon.EntityFrameworkCore.Abstractions.IApplicationContext,System.Func{Pentagon.EntityFrameworkCore.Abstractions.IApplicationContext})">
+    <parameter name="appContext">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="contextFactory">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IDeleteRepository`1.Delete(`0)">
+    <parameter name="entity">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IDeleteRepository`1.DeleteMany(`0[])">
+    <parameter name="entities">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IInsertRepository`1.Insert(`0)">
+    <parameter name="entity">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IInsertRepository`1.InsertMany(`0[])">
+    <parameter name="entities">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IUpdateRepository`1.Update(`0)">
+    <parameter name="entity">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IUpdateRepository`1.UpdateMany(`0[])">
+    <parameter name="entities">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.ConcurrencyConflictEntity.UpdatedUserId">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetAllSpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetAllSpecification`1.Apply(System.Linq.IQueryable{`0})">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetManySpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+    <parameter name="filter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetManySpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
+    <parameter name="filter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetManySpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetManySpecification`1.Apply(System.Linq.IQueryable{`0})">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Specifications.GetManySpecification`1.Filters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Specifications.GetManySpecification`1.Orders">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetOneSpecification`1.Apply(System.Linq.IQueryable{`0})">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Specifications.GetOneSpecification`1.Filters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetPageSpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean,System.Int32,System.Int32)">
+    <parameter name="filter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetPageSpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean,System.Int32,System.Int32)">
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetPageSpecification`1.Apply(System.Linq.IQueryable{`0})">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetPageSpecification`1.ApplyPagination(System.Linq.IQueryable{`0})">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Specifications.GetPageSpecification`1.Filters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Specifications.GetPageSpecification`1.Orders">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.QueryableExtensions.Filter``1(System.Linq.IQueryable{``0},System.Action{Pentagon.EntityFrameworkCore.Abstractions.Specifications.IFilterBuilder{``0}})">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.QueryableExtensions.Filter``1(System.Linq.IQueryable{``0},System.Action{Pentagon.IStartedPredicateBuilder{``0}})">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.QueryableExtensions.SortBy``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Boolean)">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.QueryableExtensions.ThenSortBy``1(System.Linq.IOrderedQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Boolean)">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.Specifications.Many``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+    <parameter name="filter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.Specifications.Many``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Boolean)">
+    <parameter name="filter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.Specifications.Many``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Boolean)">
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.Specifications.Paged``1(System.Int32,System.Int32,System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+    <parameter name="filter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.Specifications.Paged``1(System.Int32,System.Int32,System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Boolean)">
+    <parameter name="filter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.Specifications.Paged``1(System.Int32,System.Int32,System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Boolean)">
+    <parameter name="order">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+</assembly>

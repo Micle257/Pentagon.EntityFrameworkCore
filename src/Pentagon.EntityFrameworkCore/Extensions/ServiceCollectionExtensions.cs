@@ -157,21 +157,13 @@ namespace Pentagon.EntityFrameworkCore.Extensions
             return builder;
         }
 
-        internal static IServiceCollection AddDbContextServices(this IServiceCollection builder)
-        {
-            builder.AddTransient<IDbContextDeleteService, DbContextDeleteService>();
-            builder.AddTransient<IDbContextUpdateService, DbContextUpdateService>();
-
-            return builder;
-        }
-        
         static IServiceCollection AddUnitOfWorkCore<TContext>(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
                 where TContext : class, IApplicationContext
         {
             builder.AddLogging();
 
             // UoW
-            builder.AddDbContextServices();
+            builder.AddTransient<IDbContextChangeService, DbContextChangeService>();
 
             builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider), lifetime));
             

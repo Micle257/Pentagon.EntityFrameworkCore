@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore
 {
     using System;
     using Abstractions.Entities;
+    using JetBrains.Annotations;
 
     public class ConcurrencyConflictEntity
     {
@@ -15,6 +16,7 @@ namespace Pentagon.EntityFrameworkCore
 
         public string UpdatedUser => (Entity as IUpdatedUserEntitySupport)?.UpdatedUser;
 
+        [CanBeNull]
         public object UpdatedUserId => (Entity as IUpdateTimeStampIdentitySupport)?.UpdatedUserId;
 
         public object Entity { get; set; }
