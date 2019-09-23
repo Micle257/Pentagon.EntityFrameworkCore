@@ -18,6 +18,8 @@ namespace Pentagon.EntityFrameworkCore.Tests
     {
         public DbContextUpdateServiceTests()
         {
+            var id = Guid.NewGuid();
+
             var services = new ServiceCollection()
                     .AddLogging();
 
@@ -65,7 +67,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
         {
             var service = DI.GetService<IDbContextChangeService>();
             var ex = DI.GetService<IUnitOfWork<IApplicationContext>>();
-            var unit = DI.GetService<IContextFactory>().CreateContext();
+            var unit = DI.GetService<IContextFactory>().CreateContext( );
             var user = DI.GetService<IDataUserProvider>();
 
             user.UserId = 2;

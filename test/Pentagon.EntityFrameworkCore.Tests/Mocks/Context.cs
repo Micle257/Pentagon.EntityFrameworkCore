@@ -1,5 +1,6 @@
 namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 {
+    using System;
     using Abstractions;
     using Abstractions.Entities;
     using Abstractions.Repositories;
@@ -23,7 +24,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase("DB2");
+            optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
             base.OnConfiguring(optionsBuilder);
         }
     }
@@ -32,13 +33,13 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase("DB");
+            optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
             base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreatingCore(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreatingCore(modelBuilder);
             
             var entity = modelBuilder.Entity<Simple>();
 
