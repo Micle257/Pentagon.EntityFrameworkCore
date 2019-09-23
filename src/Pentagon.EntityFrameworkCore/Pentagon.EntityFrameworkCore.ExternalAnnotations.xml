@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assembly name="Pentagon.EntityFrameworkCore">
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.Extensions.HasMigrationDifferenceAsync(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade)">
+    <parameter name="db">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.IModelConfiguration.SetupModel(Microsoft.EntityFrameworkCore.ModelBuilder,System.String)">
+    <parameter name="builder">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.IndexBuilderExtensions.HasFilterForDeletedFlag(Microsoft.EntityFrameworkCore.Metadata.Builders.IndexBuilder)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="builder">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.ModelConfiguration.SetupModel(Microsoft.EntityFrameworkCore.ModelBuilder,System.String)">
+    <parameter name="builder">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.QueryableExtensions.CountPagesAsync``1(System.Linq.IQueryable{``0},Pentagon.EntityFrameworkCore.Specifications.PaginationParameters)">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.QueryableExtensions.CountPagesAsync``1(System.Linq.IQueryable{``0},System.Int32)">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.QueryableExtensions.ToPagedListAsync``1(System.Linq.IQueryable{``0},Pentagon.EntityFrameworkCore.Specifications.PaginationParameters)">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="parameters">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.QueryableExtensions.ToPagedListAsync``1(System.Linq.IQueryable{``0},System.Int32,System.Int32)">
+    <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.BaseApplicationContext.#ctor(Microsoft.Extensions.Logging.ILogger,Pentagon.EntityFrameworkCore.Abstractions.IDbContextChangeService,Microsoft.EntityFrameworkCore.DbContextOptions)">
+    <parameter name="logger">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="deleteService">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.BaseApplicationContext.SetupCoreModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+    <parameter name="modelBuilder">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.Repository`1.#ctor(Microsoft.EntityFrameworkCore.DbSet{`0})">
+    <parameter name="dbSet">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.Repository`1.InsertMany(`0[])">
+    <parameter name="entities">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.UnitOfWork`1.#ctor(Pentagon.EntityFrameworkCore.Abstractions.IDbContextChangeService,Pentagon.EntityFrameworkCore.Abstractions.IContextFactory{`0})">
+    <parameter name="deleteService">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="factory">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+</assembly>
