@@ -57,7 +57,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
             spec.AddOrder(p => p.Name, false)
                 .AddOrder(p => p.Age, true);
 
-            var ma = re.GetManyAsync(spec).Result.ToList();
+            var ma = re.GetManyAsync(spec).GetAwaiter().GetResult().ToList();
 
             Assert.Equal("Ale", ma[0].Name);
             Assert.Equal("Pete", ma[1].Name);

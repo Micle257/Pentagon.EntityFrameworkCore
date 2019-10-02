@@ -8,9 +8,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
 {
     using System;
     using System.Collections;
+    using System.Diagnostics;
     using System.Linq.Expressions;
     using Abstractions.Entities;
     using Helpers;
+    using JetBrains.Annotations;
 
     public static class FilterExpressionHelper
     {
@@ -167,8 +169,13 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
             return ExpressionParameterReplacer.Replace(body, parameter, callBody);
         }
 
-        static Expression<Func<T, bool>> ConvertBodyToLambda<T>(Expression body)
+        static Expression<Func<T, bool>> ConvertBodyToLambda<T>([NotNull] Expression body)
         {
+            if (body == null)
+                throw new ArgumentNullException(nameof(body));
+
+            Debug.Assert(body.Type == typeof(bool));
+
             var parameter = Expression.Parameter(typeof(T), "a");
 
             var fixedBody = ExpressionParameterReplacer.Replace(body, parameter);

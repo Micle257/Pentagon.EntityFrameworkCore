@@ -13,19 +13,27 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
     using Abstractions.Entities;
     using Abstractions.Specifications;
     using Helpers;
+    using JetBrains.Annotations;
 
     public class FilterBuilder<TEntity> : IFilterBuilder<TEntity>
             where TEntity : IEntity
     {
+        [NotNull]
         internal List<Expression<Func<TEntity, bool>>> Filters = new List<Expression<Func<TEntity, bool>>>();
 
+        [NotNull]
         internal List<CompositeFilter<TEntity, object>> CompositeFilters = new List<CompositeFilter<TEntity, object>>();
 
+        [NotNull]
         internal List<Expression<Func<TEntity, bool>>> ValueFilters = new List<Expression<Func<TEntity, bool>>>();
 
         /// <inheritdoc />
         public FilterLogicOperation ValueFilterConcatOperation { get; set; } = FilterLogicOperation.Or;
 
+        /// <inheritdoc />
+        public FilterLogicOperation FilterConcatOperation { get; set; } = FilterLogicOperation.And;
+
+        /// <inheritdoc />
         public bool HasAnyFilter => CompositeFilters.Any() || Filters.Any() || ValueFilters.Any();
 
         /// <inheritdoc />
@@ -87,24 +95,51 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
             
             if (Filters.Count > 0)
             {
-                resultPredicate.And(b =>
-                                    {
-                                        foreach (var filter in Filters)
-                                            b.And(filter);
-                                    });
+
+                if (FilterConcatOperation == FilterLogicOperation.Or)
+                {
+                    resultPredicate.Or(b =>
+                                       {
+                                           foreach (var filter in Filters)
+                                               b.Or(filter);
+                                       });
+                }
+                else
+                {
+                    resultPredicate.And(b =>
+                                        {
+                                            foreach (var filter in Filters)
+                                                b.And(filter);
+                                        });
+                }
             }
 
             if (CompositeFilters.Count > 0)
             {
-                resultPredicate.And(b =>
-                                    {
-                                        foreach (var textFilter in CompositeFilters)
+                if (FilterConcatOperation == FilterLogicOperation.Or)
+                {
+                    resultPredicate.Or(b =>
                                         {
-                                            var predicate = FilterExpressionHelper.GetFilter(textFilter);
+                                            foreach (var textFilter in CompositeFilters)
+                                            {
+                                                var predicate = FilterExpressionHelper.GetFilter(textFilter);
 
-                                            b.And(predicate);
-                                        }
-                                    });
+                                                b.Or(predicate);
+                                            }
+                                        });
+                }
+                else
+                {
+                    resultPredicate.And(b =>
+                                        {
+                                            foreach (var textFilter in CompositeFilters)
+                                            {
+                                                var predicate = FilterExpressionHelper.GetFilter(textFilter);
+
+                                                b.And(predicate);
+                                            }
+                                        });
+                }
             }
 
             if (ValueFilters.Count > 0)

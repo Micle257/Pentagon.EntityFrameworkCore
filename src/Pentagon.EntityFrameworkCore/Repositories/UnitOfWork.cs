@@ -47,7 +47,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                                           {
                                               db.SaveChanges(false);
                                               return Task.CompletedTask;
-                                          }).Result;
+                                          }).GetAwaiter().GetResult();
         }
 
         async Task<UnitOfWorkCommitResult> ExecuteCommitCoreAsync(IApplicationContext appContext, Func<DbContext, Task> callback)

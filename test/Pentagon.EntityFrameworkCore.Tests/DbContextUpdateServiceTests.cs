@@ -80,7 +80,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
 
             ex.ExecuteCommit(unit);
 
-            var e = db.GetOneAsync(a => true).Result;
+            var e = db.GetOneAsync(a => true).GetAwaiter().GetResult();
             e.Value = "qwe";
 
             db.Update(e);
