@@ -55,9 +55,9 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             unit.GetRepository<Entity>().InsertMany(clientPersons);
             com.ExecuteCommit(unit);
 
-            var entities = unit.GetRepository<Entity>().GetAllAsync().Result;
+            var entities = unit.GetRepository<Entity>().GetAllAsync().GetAwaiter().GetResult();
 
-            var client = man.GetChange(null, entities).Result;
+            var client = man.GetChange(null, entities).GetAwaiter().GetResult();
         }
         
         [Fact]

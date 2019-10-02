@@ -93,7 +93,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public UnitOfWorkCommitResult ExecuteCommit()
         {
-            return CommitCoreAsync((db, ct) => Task.FromResult(db.SaveChanges(false))).Result;
+            return CommitCoreAsync((db, ct) => Task.FromResult(db.SaveChanges(false))).GetAwaiter().GetResult();
         }
 
         protected virtual void OnModelCreatingCore(ModelBuilder modelBuilder) { }
