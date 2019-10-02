@@ -9,6 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
     using Microsoft.Extensions.DependencyInjection;
     using Mocks;
     using Synchronization;
+    using Threading;
     using Xunit;
     using Entity = Mocks.Entity;
 
@@ -87,14 +88,14 @@ namespace Pentagon.EntityFrameworkCore.Tests {
 
             rep.Insert(new Entity{Value = "3"});
             rep.Insert(new Entity{Value = "4"});
-            var two = rep.GetOneAsync(a => a.Value == "2").Result;
+            var two = rep.GetOneAsync(a => a.Value == "2").AwaitSynchronously();
             two.Value = "2new";
             rep.Update(two);
 
             com.ExecuteCommit(unit);
             Task.Delay(1000);
 
-           var one = rep.GetOneAsync(a => a.Value == "1").Result;
+           var one = rep.GetOneAsync(a => a.Value == "1").AwaitSynchronously();
             rep.Delete(one);
 
             com.ExecuteCommit(unit);
