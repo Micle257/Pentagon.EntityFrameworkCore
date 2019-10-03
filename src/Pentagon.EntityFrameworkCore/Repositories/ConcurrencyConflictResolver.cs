@@ -60,7 +60,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 {
                     return new ConcurrencyConflictResolveResult
                            {
-                                   CanBeDetermine = false
+                                   CanBeDetermined = false
                            };
                 }
 
