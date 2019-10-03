@@ -10,18 +10,6 @@ namespace Pentagon.EntityFrameworkCore
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-
-    public class ConflictPairDifference
-    {
-        public string PropertyName { get; set; }
-
-        public PropertyInfo PropertyInfo { get; set; }
-
-        public object LocalValue { get; set; }
-
-        public object RemoteValue { get; set; }
-    }
 
     public class ConcurrencyConflictPair
     {
