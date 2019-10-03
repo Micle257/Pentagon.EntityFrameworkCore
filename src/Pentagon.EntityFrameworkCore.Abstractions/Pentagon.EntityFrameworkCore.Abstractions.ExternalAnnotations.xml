@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <assembly name="Pentagon.EntityFrameworkCore.Abstractions">
-  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.IConcurrencyConflictResolver.ResolveAsync(Pentagon.EntityFrameworkCore.Abstractions.IApplicationContext,System.Func{Pentagon.EntityFrameworkCore.Abstractions.IApplicationContext})">
+  <member name="P:Pentagon.EntityFrameworkCore.ConcurrencyConflictEntity.UpdatedUserId">
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.IConcurrencyConflictResolver.ResolveAsync(Pentagon.EntityFrameworkCore.Interfaces.IApplicationContext,System.Func{Pentagon.EntityFrameworkCore.Interfaces.IApplicationContext})">
     <parameter name="appContext">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -8,38 +11,35 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IDeleteRepository`1.Delete(`0)">
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Repositories.IDeleteRepository`1.Delete(`0)">
     <parameter name="entity">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IDeleteRepository`1.DeleteMany(`0[])">
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Repositories.IDeleteRepository`1.DeleteMany(`0[])">
     <parameter name="entities">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IInsertRepository`1.Insert(`0)">
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Repositories.IInsertRepository`1.Insert(`0)">
     <parameter name="entity">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IInsertRepository`1.InsertMany(`0[])">
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Repositories.IInsertRepository`1.InsertMany(`0[])">
     <parameter name="entities">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IUpdateRepository`1.Update(`0)">
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Repositories.IUpdateRepository`1.Update(`0)">
     <parameter name="entity">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Abstractions.Repositories.IUpdateRepository`1.UpdateMany(`0[])">
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Repositories.IUpdateRepository`1.UpdateMany(`0[])">
     <parameter name="entities">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
-  </member>
-  <member name="P:Pentagon.EntityFrameworkCore.ConcurrencyConflictEntity.UpdatedUserId">
-    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
   </member>
   <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetAllSpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
     <parameter name="order">
@@ -117,7 +117,7 @@
   <member name="P:Pentagon.EntityFrameworkCore.Specifications.GetPageSpecification`1.Orders">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Specifications.QueryableExtensions.Filter``1(System.Linq.IQueryable{``0},System.Action{Pentagon.EntityFrameworkCore.Abstractions.Specifications.IFilterBuilder{``0}})">
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.QueryableExtensions.Filter``1(System.Linq.IQueryable{``0},System.Action{Pentagon.EntityFrameworkCore.Interfaces.Filters.IFilterBuilder{``0}})">
     <parameter name="query">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>

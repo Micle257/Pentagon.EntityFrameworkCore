@@ -160,7 +160,8 @@ namespace Pentagon.EntityFrameworkCore.Extensions
             builder.AddTransient<IDbContextChangeService, DbContextChangeService>();
 
             builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider), lifetime));
-            
+            builder.Add(new ServiceDescriptor(typeof(IDataUserIdentityWriter), c => (DataUserProvider)c.GetService<IDataUserProvider>(), lifetime));
+
             builder.AddTransient<IDatabaseChangeManager<TContext>, DatabaseChangeManager<TContext>>();
             
             builder.AddDefaultUnitOfWork();

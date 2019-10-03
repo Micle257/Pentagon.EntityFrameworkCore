@@ -35,7 +35,6 @@ namespace Pentagon.EntityFrameworkCore
 
             var local = Local.Entity;
             var remote = Remote.Entity;
-            var type = Local.Entity.GetType();
 
             var props = EntityHelper.GetPureProperties(local)
                             .Where(a => a.PropertyType.IsPrimitive || (Nullable.GetUnderlyingType(a.PropertyType)?.IsPrimitive ?? false)

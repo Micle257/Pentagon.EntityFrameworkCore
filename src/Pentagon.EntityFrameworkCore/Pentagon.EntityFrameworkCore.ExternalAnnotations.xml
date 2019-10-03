@@ -44,7 +44,7 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Repositories.BaseApplicationContext.#ctor(Microsoft.Extensions.Logging.ILogger,Pentagon.EntityFrameworkCore.Abstractions.IDbContextChangeService,Microsoft.EntityFrameworkCore.DbContextOptions)">
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.BaseApplicationContext.#ctor(Microsoft.Extensions.Logging.ILogger,Pentagon.EntityFrameworkCore.Interfaces.IDbContextChangeService,Microsoft.EntityFrameworkCore.DbContextOptions)">
     <parameter name="logger">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -64,14 +64,6 @@
   </member>
   <member name="M:Pentagon.EntityFrameworkCore.Repositories.Repository`1.InsertMany(`0[])">
     <parameter name="entities">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Repositories.UnitOfWork`1.#ctor(Pentagon.EntityFrameworkCore.Abstractions.IDbContextChangeService,Pentagon.EntityFrameworkCore.Abstractions.IContextFactory{`0})">
-    <parameter name="deleteService">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-    <parameter name="factory">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
