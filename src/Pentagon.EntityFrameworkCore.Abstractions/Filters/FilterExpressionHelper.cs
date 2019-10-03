@@ -4,13 +4,12 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Specifications.Filters
+namespace Pentagon.EntityFrameworkCore.Filters
 {
     using System;
     using System.Collections;
     using System.Diagnostics;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
     using Helpers;
     using JetBrains.Annotations;
 

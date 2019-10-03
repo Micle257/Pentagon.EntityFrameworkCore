@@ -8,10 +8,11 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 {
     using System;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
     using Filters;
     using Helpers;
+    using Interfaces.Entities;
+    using Interfaces.Filters;
+    using Interfaces.Specifications;
 
     public static class FilterSpecificationExtensions
     {

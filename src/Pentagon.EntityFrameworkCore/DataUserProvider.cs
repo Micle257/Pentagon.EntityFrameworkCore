@@ -6,7 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore
 {
-    using Abstractions;
+    using Interfaces;
     using Microsoft.Extensions.Logging;
 
     public class DataUserProvider : IDataUserProvider

@@ -8,7 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 {
     using System;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
     using JetBrains.Annotations;
 
     public static class Specifications

@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
+namespace Pentagon.EntityFrameworkCore.Interfaces.Repositories
 {
     using System.Threading.Tasks;
     using Entities;

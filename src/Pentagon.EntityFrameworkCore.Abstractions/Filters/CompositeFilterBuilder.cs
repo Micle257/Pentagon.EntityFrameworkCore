@@ -1,10 +1,10 @@
-﻿namespace Pentagon.EntityFrameworkCore.Specifications.Filters
+﻿namespace Pentagon.EntityFrameworkCore.Filters
 {
     using System;
     using System.Linq;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
+    using Interfaces.Entities;
+    using Interfaces.Filters;
 
     public class CompositeFilterBuilder<TEntity> : FilterBuilder<TEntity>, IConnectedCompositeFilterBuilder<TEntity>
             where TEntity : IEntity

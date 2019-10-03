@@ -8,7 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
 {
     using System;
     using System.Collections.Generic;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     public class RepositoryActionService : IRepositoryActionService
     {

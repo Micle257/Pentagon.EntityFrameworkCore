@@ -10,10 +10,9 @@ namespace Pentagon.EntityFrameworkCore
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
     using Collections;
+    using Interfaces.Entities;
+    using Interfaces.Specifications;
     using Microsoft.EntityFrameworkCore;
     using Specifications;
 

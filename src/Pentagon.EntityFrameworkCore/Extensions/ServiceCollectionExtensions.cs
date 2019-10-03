@@ -8,7 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Extensions
 {
     using System;
     using System.Linq;
-    using Abstractions;
+    using Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Repositories;

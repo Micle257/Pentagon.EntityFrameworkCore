@@ -1,5 +1,5 @@
 namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     public class Simple : IEntity<int>
     {

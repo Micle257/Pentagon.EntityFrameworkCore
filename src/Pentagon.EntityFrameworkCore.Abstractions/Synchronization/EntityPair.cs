@@ -6,7 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore.Synchronization
 {
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     public struct EntityPair<TEntity>
             where TEntity : class, IEntity

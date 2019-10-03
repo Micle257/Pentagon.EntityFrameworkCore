@@ -6,7 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore.Synchronization
 {
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     public struct RepositoryAction<T>
             where T : class, IEntity

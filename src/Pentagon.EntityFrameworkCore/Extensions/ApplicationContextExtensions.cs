@@ -7,7 +7,7 @@
 namespace Pentagon.EntityFrameworkCore.Extensions
 {
     using System;
-    using Abstractions;
+    using Interfaces;
     using Microsoft.EntityFrameworkCore;
 
     public static class ApplicationContextExtensions

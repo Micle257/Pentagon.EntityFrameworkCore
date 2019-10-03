@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Specifications.Filters
+namespace Pentagon.EntityFrameworkCore.Filters
 {
     using System;
     using System.Collections.Generic;

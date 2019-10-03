@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions
+namespace Pentagon.EntityFrameworkCore.Interfaces
 {
     /// <summary> Represents a context factory for <see cref="IApplicationContext" />s. </summary>
     /// <typeparam name="TContext"> The type of the context. </typeparam>

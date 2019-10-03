@@ -6,7 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore
 {
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     /// <summary> Represents an identity type entity, with synchronization support. </summary>
     /// <typeparam name="TKey"> The type of the key. </typeparam>

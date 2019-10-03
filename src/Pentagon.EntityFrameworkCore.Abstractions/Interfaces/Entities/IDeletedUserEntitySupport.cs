@@ -1,4 +1,4 @@
-namespace Pentagon.EntityFrameworkCore.Abstractions.Entities {
+namespace Pentagon.EntityFrameworkCore.Interfaces.Entities {
     using System.ComponentModel.DataAnnotations.Schema;
 
     public interface IDeletedUserEntitySupport

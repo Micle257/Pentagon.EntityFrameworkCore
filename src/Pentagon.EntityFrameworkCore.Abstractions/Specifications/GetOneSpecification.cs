@@ -10,8 +10,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
+    using Interfaces.Entities;
+    using Interfaces.Specifications;
     using JetBrains.Annotations;
 
     /// <summary> Represents a implementation of <see cref="ISpecification{TEntity}" /> for get one operations. </summary>

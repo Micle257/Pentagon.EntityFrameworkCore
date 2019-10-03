@@ -6,7 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore
 {
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     /// <summary> Represents an entity with typed identifier. </summary>
     /// <typeparam name="TKey"> The type of the key. </typeparam>

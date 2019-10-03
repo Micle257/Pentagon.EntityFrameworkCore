@@ -7,12 +7,11 @@
 namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System.Linq;
-    using Abstractions.Entities;
+    using Filters;
     using Microsoft.Extensions.Logging.Abstractions;
     using Mocks;
     using Repositories;
     using Specifications;
-    using Specifications.Filters;
     using Xunit;
 
     public class RepositoryTests

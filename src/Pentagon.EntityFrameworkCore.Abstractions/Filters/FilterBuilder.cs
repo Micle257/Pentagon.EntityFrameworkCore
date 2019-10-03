@@ -4,15 +4,15 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Specifications.Filters
+namespace Pentagon.EntityFrameworkCore.Filters
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
     using Helpers;
+    using Interfaces.Entities;
+    using Interfaces.Filters;
     using JetBrains.Annotations;
 
     public class FilterBuilder<TEntity> : IFilterBuilder<TEntity>

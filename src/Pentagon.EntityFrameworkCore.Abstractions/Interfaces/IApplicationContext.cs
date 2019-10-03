@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions
+namespace Pentagon.EntityFrameworkCore.Interfaces
 {
     using System;
     using System.Threading;

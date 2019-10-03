@@ -12,10 +12,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
-    using Abstractions.Repositories;
     using Extensions;
+    using Interfaces;
+    using Interfaces.Entities;
+    using Interfaces.Repositories;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;

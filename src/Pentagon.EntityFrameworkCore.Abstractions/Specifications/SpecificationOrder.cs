@@ -8,7 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 {
     using System;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     /// <summary> Represents a pair of order specification. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>

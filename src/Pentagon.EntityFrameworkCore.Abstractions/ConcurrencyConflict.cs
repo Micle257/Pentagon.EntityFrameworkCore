@@ -7,7 +7,7 @@
 namespace Pentagon.EntityFrameworkCore
 {
     using System;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
     using JetBrains.Annotations;
 
     public class ConcurrencyConflictEntity

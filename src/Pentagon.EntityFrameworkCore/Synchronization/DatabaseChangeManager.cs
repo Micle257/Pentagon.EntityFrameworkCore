@@ -10,8 +10,8 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
+    using Interfaces;
+    using Interfaces.Entities;
     using Microsoft.EntityFrameworkCore.Internal;
     using Specifications;
 

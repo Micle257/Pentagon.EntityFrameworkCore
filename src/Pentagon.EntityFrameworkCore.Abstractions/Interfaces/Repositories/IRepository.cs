@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
+namespace Pentagon.EntityFrameworkCore.Interfaces.Repositories
 {
     using System;
     using System.Collections.Generic;
@@ -14,7 +14,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Repositories
     using System.Threading.Tasks;
     using Collections;
     using Entities;
-    using JetBrains.Annotations;
     using Specifications;
 
     /// <summary> Provides a standard interface for repository which is data-access mechanism agnostic with typed identifier. </summary>

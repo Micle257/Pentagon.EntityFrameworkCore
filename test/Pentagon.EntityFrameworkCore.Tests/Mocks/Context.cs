@@ -1,10 +1,8 @@
 namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 {
     using System;
-    using Abstractions;
-    using Abstractions.Entities;
-    using Abstractions.Repositories;
     using EntityFrameworkCore;
+    using Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Repositories;
 

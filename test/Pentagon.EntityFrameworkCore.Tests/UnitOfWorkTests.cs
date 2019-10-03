@@ -3,9 +3,9 @@ namespace Pentagon.EntityFrameworkCore.Tests {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Abstractions;
     using EntityFrameworkCore;
     using Extensions;
+    using Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Mocks;
     using Synchronization;

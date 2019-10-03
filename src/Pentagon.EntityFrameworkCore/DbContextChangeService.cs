@@ -8,8 +8,8 @@ namespace Pentagon.EntityFrameworkCore
 {
     using System;
     using System.Linq;
-    using Abstractions;
-    using Abstractions.Entities;
+    using Interfaces;
+    using Interfaces.Entities;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 

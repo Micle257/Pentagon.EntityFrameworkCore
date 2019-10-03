@@ -2,8 +2,8 @@
 {
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using Abstractions;
     using Extensions;
+    using Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging.Abstractions;

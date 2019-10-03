@@ -9,7 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using System;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     public interface ISynchronization<T>
             where T : class, IEntity, ICreateStampSupport, ICreateTimeStampSupport, IUpdateTimeStampSupport, IDeletedFlagSupport, IDeleteTimeStampSupport

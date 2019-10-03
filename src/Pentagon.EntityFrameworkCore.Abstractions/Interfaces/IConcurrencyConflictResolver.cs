@@ -4,12 +4,12 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions
+namespace Pentagon.EntityFrameworkCore.Interfaces
 {
     using System;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
-    
+
     public interface IConcurrencyConflictResolver
     {
         Task<ConcurrencyConflictResolveResult> ResolveAsync([NotNull] IApplicationContext appContext,

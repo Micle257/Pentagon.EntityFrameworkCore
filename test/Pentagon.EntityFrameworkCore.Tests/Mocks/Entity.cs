@@ -1,7 +1,7 @@
 namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
     using System;
-    using Abstractions.Entities;
     using EntityFrameworkCore;
+    using Interfaces.Entities;
 
     public class Entity : TimestampIdentityEntity<int?>, IConcurrencyStampSupport, ICreatedUserEntitySupport, IUpdatedUserEntitySupport,IDeletedUserEntitySupport
     {

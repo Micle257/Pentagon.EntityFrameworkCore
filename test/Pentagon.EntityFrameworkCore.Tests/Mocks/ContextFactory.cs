@@ -1,5 +1,5 @@
 namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
-    using Abstractions;
+    using Interfaces;
 
     public class ContextFactory : IContextFactory<IContext>
     {
