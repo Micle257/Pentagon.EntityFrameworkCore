@@ -7,10 +7,10 @@
     public static class FilterBuilderExtensions
     {
         /// <inheritdoc />
-        public static IConnectedCompositeFilterBuilder<TEntity> AddCompositeFilter<TEntity>(this IFilterBuilder<TEntity> that, Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value = null)
+        public static IConnectedCompositeFilterBuilder<TEntity> AddCompositeFilter<TEntity>(this IFilterBuilder<TEntity> that, Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value = null, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
                 where TEntity : IEntity
         {
-            return that.AddCompositeFilter(FilterExpressionHelper.GetObjectPropertySelector(propertySelector), FilterExpressionHelper.GetTextFilterCallback(propertySelector, filter, value));
+            return that.AddCompositeFilter(FilterExpressionHelper.GetObjectPropertySelector(propertySelector), FilterExpressionHelper.GetTextFilterCallback(propertySelector, filter, value, stringComparison));
         }
 
         /// <inheritdoc />

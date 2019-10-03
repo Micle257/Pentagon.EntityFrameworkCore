@@ -8,6 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq.Expressions;
     using Helpers;
@@ -15,7 +16,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
 
     public static class FilterExpressionHelper
     {
-        public static Expression<Func<TEntity, bool>> GetFilter<TEntity, TValue>(CompositeFilter<TEntity, TValue> filter)
+        public static Expression<Func<TEntity, bool>> GetFilter<TEntity, TValue>([NotNull] CompositeFilter<TEntity, TValue> filter)
         {
             if (filter.Type == 0)
                 return null;
@@ -47,120 +48,44 @@ namespace Pentagon.EntityFrameworkCore.Filters
             return predicate;
         }
 
-       //public static Expression<Func<TEntity, bool>> GetFilter<TEntity, TFilter, TValue>(CompositeFilter<TEntity, TFilter, TValue> filter)
-       //        where TFilter : struct, Enum
-       //{
-       //    if (filter.Type == 0)
-       //        return null;
-       //
-       //    IPredicateBuilder<TEntity> builder = new PredicateBuilder<TEntity>();
-       //
-       //    Expression firstCallback = null;
-       //
-       //    switch (filter.FirstCondition)
-       //    {
-       //        case NumberFilter nf:
-       //            firstCallback = GetNumberFilterCallback(filter.Property.Body, nf, filter.FirstValue);
-       //            break;
-       //
-       //        case TextFilter tf:
-       //            firstCallback = GetTextFilterCallback(filter.Property.Body, tf, filter.FirstValue as string);
-       //            break;
-       //    }
-       //
-       //    builder = (IPredicateBuilder<TEntity>) builder.Start(ConvertBodyToLambda<TEntity>(firstCallback));
-       //
-       //    if (filter.Type == FilterCompositionType.Double)
-       //    {
-       //        Expression secondCallback = null;
-       //
-       //        switch (filter.SecondCondition)
-       //        {
-       //            case NumberFilter nf:
-       //                secondCallback = GetNumberFilterCallback(filter.Property.Body, nf, filter.SecondValue);
-       //                break;
-       //
-       //            case TextFilter tf:
-       //                secondCallback = GetTextFilterCallback(filter.Property.Body, tf, filter.SecondValue as string);
-       //                break;
-       //        }
-       //
-       //        switch (filter.Operation)
-       //        {
-       //            case FilterLogicOperation.Or:
-       //                builder = (IPredicateBuilder<TEntity>) builder.Or(ConvertBodyToLambda<TEntity>(secondCallback));
-       //                break;
-       //
-       //            case FilterLogicOperation.And:
-       //                builder = (IPredicateBuilder<TEntity>) builder.And(ConvertBodyToLambda<TEntity>(secondCallback));
-       //                break;
-       //        }
-       //    }
-       //
-       //    var predicate = builder.Build();
-       //
-       //    return predicate;
-       //}
-
-       public static Expression<Func<TEntity, bool>> GetNumberFilterCallback<TEntity, TValue>(Expression<Func<TEntity, TValue>> propertySelector, NumberFilter textFilter, TValue value)
+        public static Expression<Func<TEntity, bool>> GetNumberFilterCallback<TEntity, TValue>(Expression<Func<TEntity, TValue>> propertySelector, NumberFilter textFilter, TValue value)
         {
             var callBody = propertySelector.Body;
 
-            switch (textFilter)
+            return textFilter switch
             {
-                case NumberFilter.Equal:
-                    return ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => v.Equals(value)));
-                case NumberFilter.NotEqual:
-                    return ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => !v.Equals(value)));
-                case NumberFilter.GreatenThan:
-                    return ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => Comparer.Default.Compare(v, value) > 0));
-                case NumberFilter.GreatenThenOrEqualTo:
-                    return ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => Comparer.Default.Compare(v, value) > 0 || v.Equals(value)));
-                case NumberFilter.LessThen:
-                    return ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => Comparer.Default.Compare(v, value) < 0));
-                case NumberFilter.LessThenOrEqualTo:
-                    return ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => Comparer.Default.Compare(v, value) < 0 || v.Equals(value)));
-            }
-
-            switch (textFilter)
-            {
-                case NumberFilter.Empty:
-                    return ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => v == null));
-                case NumberFilter.NotEmpty:
-                    return ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => v != null));
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
+                NumberFilter.Equal => ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => v.Equals(value))),
+                NumberFilter.NotEqual => ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => !v.Equals(value))),
+                NumberFilter.GreatenThan => ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => Comparer<TValue>.Default.Compare(v, value) > 0)),
+                NumberFilter.GreatenThenOrEqualTo => ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => Comparer<TValue>.Default.Compare(v, value) > 0 || v.Equals(value))),
+                NumberFilter.LessThen => ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => Comparer<TValue>.Default.Compare(v, value) < 0)),
+                NumberFilter.LessThenOrEqualTo => ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => Comparer<TValue>.Default.Compare(v, value) < 0 || v.Equals(value))),
+                NumberFilter.Empty => ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => v == null)),
+                NumberFilter.NotEmpty => ConvertBodyToLambda<TEntity>(GetBody<TValue>(callBody, v => v != null)),
+                _ => throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null)
+            };
         }
 
-        public static Expression<Func<TEntity, bool>> GetTextFilterCallback<TEntity>(Expression<Func<TEntity, string>> propertySelector, TextFilter textFilter, string value)
+        public static Expression<Func<TEntity, bool>> GetTextFilterCallback<TEntity>([NotNull] Expression<Func<TEntity, string>> propertySelector, TextFilter textFilter, string value, StringComparison stringComparison)
         {
             var callBody = propertySelector.Body;
 
-            switch (textFilter)
+            return textFilter switch
             {
-                case TextFilter.Equal:
-                    return ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Equals(value)));
-                case TextFilter.NotEqual:
-                    return ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Equals(value)));
-                case TextFilter.Empty:
-                    return ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => string.IsNullOrWhiteSpace(v)));
-                case TextFilter.NotEmpty:
-                    return ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !string.IsNullOrWhiteSpace(v)));
-                case TextFilter.StartWith:
-                    return ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.StartsWith(value)));
-                case TextFilter.EndWith:
-                    return ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.EndsWith(value)));
-                case TextFilter.Contain:
-                    return ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Contains(value)));
-                case TextFilter.NotContain:
-                    return ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Contains(value)));
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null);
-            }
+                TextFilter.Equal => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Equals(value, stringComparison))),
+                TextFilter.NotEqual => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Equals(value, stringComparison))),
+                TextFilter.Empty => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => string.IsNullOrWhiteSpace(v))),
+                TextFilter.NotEmpty => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !string.IsNullOrWhiteSpace(v))),
+                TextFilter.StartWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.StartsWith(value, stringComparison))),
+                TextFilter.EndWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.EndsWith(value, stringComparison))),
+                TextFilter.Contain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Contains(value, stringComparison))),
+                TextFilter.NotContain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Contains(value, stringComparison))),
+                _ => throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null)
+            };
         }
 
-        static Expression GetBody<TValue>(Expression callBody, Expression<Func<TValue, bool>> callback)
+        [NotNull]
+        static Expression GetBody<TValue>([NotNull] Expression callBody, [NotNull] Expression<Func<TValue, bool>> callback)
         {
             var parameter = callback.Parameters[0];
             var body = callback.Body;
@@ -168,6 +93,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
             return ExpressionParameterReplacer.Replace(body, parameter, callBody);
         }
 
+        [NotNull]
         static Expression<Func<T, bool>> ConvertBodyToLambda<T>([NotNull] Expression body)
         {
             if (body == null)
@@ -182,7 +108,8 @@ namespace Pentagon.EntityFrameworkCore.Filters
             return Expression.Lambda<Func<T, bool>>(fixedBody, parameter);
         }
 
-        public static Expression<Func<TEntity, object>> GetObjectPropertySelector<TEntity, TValue>(Expression<Func<TEntity, TValue>> propertySelector)
+        [NotNull]
+        public static Expression<Func<TEntity, object>> GetObjectPropertySelector<TEntity, TValue>([NotNull] Expression<Func<TEntity, TValue>> propertySelector)
         {
             var body = propertySelector.Body;
 
@@ -195,7 +122,8 @@ namespace Pentagon.EntityFrameworkCore.Filters
             return Expression.Lambda<Func<TEntity, object>>(fixedBody, parameter);
         }
 
-        public static Expression<Func<TEntity, string>> GetStringPropertySelector<TEntity, TValue>(Expression<Func<TEntity, TValue>> propertySelector)
+        [NotNull]
+        public static Expression<Func<TEntity, string>> GetStringPropertySelector<TEntity, TValue>([NotNull] Expression<Func<TEntity, TValue>> propertySelector)
         {
             var body = propertySelector.Body;
 
