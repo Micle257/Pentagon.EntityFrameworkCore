@@ -32,10 +32,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var factory2 = di.GetService<IContextFactory<IApplicationContext>>();
             var factory3 = di.GetService<IContextFactory<INewContext>>();
 
-            var com = di.GetService<IUnitOfWork<IContext>>();
-            var com1 = di.GetService<IUnitOfWork>();
-            var com2 = di.GetService<IUnitOfWork<IApplicationContext>>();
-            var com3 = di.GetService<IUnitOfWork<INewContext>>();
+            var com = di.GetService<IContext>();
 
             var unit = factory.CreateContext();
 
@@ -54,7 +51,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
                                 };
 
             unit.GetRepository<Entity>().InsertMany(clientPersons);
-            com.ExecuteCommit(unit);
+            com.ExecuteCommit();
 
             var entities = unit.GetRepository<Entity>().GetAllAsync().GetAwaiter().GetResult();
 
@@ -72,7 +69,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var di = services.BuildServiceProvider();
 
             var unitFactory = di.GetRequiredService<IContextFactory<IApplicationContext>>();
-            var com = di.GetRequiredService<IUnitOfWork<IApplicationContext>>();
+            var com = di.GetRequiredService<IApplicationContext>();
             var change = new DatabaseChangeManager<IApplicationContext>(unitFactory);
 
             var unit = unitFactory.CreateContext();
@@ -82,7 +79,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             rep.Insert(new Entity{Value = "1"});
             rep.Insert(new Entity{Value = "2"});
 
-            com.ExecuteCommit(unit);
+            com.ExecuteCommit();
             Task.Delay(1000);
             var time = DateTimeOffset.Now;
 
@@ -92,13 +89,13 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             two.Value = "2new";
             rep.Update(two);
 
-            com.ExecuteCommit(unit);
+            com.ExecuteCommit();
             Task.Delay(1000);
 
            var one = rep.GetOneAsync(a => a.Value == "1").AwaitSynchronously();
             rep.Delete(one);
 
-            com.ExecuteCommit(unit);
+            com.ExecuteCommit();
             Task.Delay(1000);
         }
     }

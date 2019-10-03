@@ -66,7 +66,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
         public void ShouldApplyWhenEntityIsModified()
         {
             var service = DI.GetService<IDbContextChangeService>();
-            var ex = DI.GetService<IUnitOfWork<IApplicationContext>>();
+            var ex = DI.GetService<IApplicationContext>();
             var unit = DI.GetService<IContextFactory>().CreateContext( );
             var user = DI.GetService<IDataUserProvider>();
 
@@ -78,7 +78,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
 
             db.Insert(entity);
 
-            ex.ExecuteCommit(unit);
+            ex.ExecuteCommit();
 
             var e = db.GetOneAsync(a => true).GetAwaiter().GetResult();
             e.Value = "qwe";
