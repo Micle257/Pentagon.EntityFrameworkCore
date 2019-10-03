@@ -3,11 +3,38 @@
   <member name="P:Pentagon.EntityFrameworkCore.ConcurrencyConflictEntity.UpdatedUserId">
     <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
   </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetFilter``2(Pentagon.EntityFrameworkCore.Filters.CompositeFilter{``0,``1})">
+    <parameter name="filter">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetObjectPropertySelector``2(System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="propertySelector">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetStringPropertySelector``2(System.Linq.Expressions.Expression{System.Func{``0,``1}})">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="propertySelector">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetTextFilterCallback``1(System.Linq.Expressions.Expression{System.Func{``0,System.String}},Pentagon.EntityFrameworkCore.Filters.TextFilter,System.String,System.StringComparison)">
+    <parameter name="propertySelector">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:Pentagon.EntityFrameworkCore.Interfaces.IConcurrencyConflictResolver.ResolveAsync(Pentagon.EntityFrameworkCore.Interfaces.IApplicationContext,System.Func{Pentagon.EntityFrameworkCore.Interfaces.IApplicationContext})">
     <parameter name="appContext">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
     <parameter name="contextFactory">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.IDataUserIdentityWriter.SetIdentity(System.Object,System.String)">
+    <parameter name="id">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

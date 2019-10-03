@@ -50,6 +50,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _changeService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
             _isInitialized = true;
 
+            ChangeTracker.AutoDetectChangesEnabled = false;
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
@@ -58,6 +59,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             _logger = NullLogger.Instance;
 
+            ChangeTracker.AutoDetectChangesEnabled = false;
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
@@ -66,6 +68,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             _logger = NullLogger.Instance;
 
+            ChangeTracker.AutoDetectChangesEnabled = false;
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
@@ -119,7 +122,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         async Task<ContextCommitResult> CommitCoreAsync([NotNull] Func<DbContext, CancellationToken, Task<int>> callback, CancellationToken cancellationToken = default)
         {
             if (!_isInitialized)
-                throw new InvalidOperationException($"Dependencies for this instance ({GetType().Name}) are not initialized.");
+                throw new InvalidOperationException($"Dependencies for this instance ({GetType().Name}) are not initialized. Commit is not meaningful, set dependencies or call SaveChanges.");
 
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));

@@ -53,9 +53,9 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             unit.GetRepository<Entity>().InsertMany(clientPersons);
             com.ExecuteCommit();
 
-            var entities = unit.GetRepository<Entity>().GetAllAsync().GetAwaiter().GetResult();
+            var entities = unit.GetRepository<Entity>().GetAllAsync().AwaitSynchronously();
 
-            var client = man.GetChange(null, entities).GetAwaiter().GetResult();
+            var client = man.GetChange(null, entities).AwaitSynchronously();
         }
         
         [Fact]
@@ -72,9 +72,7 @@ namespace Pentagon.EntityFrameworkCore.Tests {
             var com = di.GetRequiredService<IApplicationContext>();
             var change = new DatabaseChangeManager<IApplicationContext>(unitFactory);
 
-            var unit = unitFactory.CreateContext();
-
-            var rep = unit.GetRepository<Entity>();
+            var rep = com.GetRepository<Entity>();
 
             rep.Insert(new Entity{Value = "1"});
             rep.Insert(new Entity{Value = "2"});
