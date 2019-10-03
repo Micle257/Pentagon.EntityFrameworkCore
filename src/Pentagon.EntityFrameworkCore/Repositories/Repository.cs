@@ -230,6 +230,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                                                                           CancellationToken cancellationToken = default)
         {
             var specification = new GetPageSpecification<TEntity>(criteria, order, isDescendingOrder, pageSize, pageIndex);
+
             return GetPageAsync(selector, specification, cancellationToken);
         }
 
