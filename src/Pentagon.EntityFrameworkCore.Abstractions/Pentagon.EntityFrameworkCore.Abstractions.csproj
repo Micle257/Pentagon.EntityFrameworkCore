@@ -7,7 +7,7 @@
     <Description>Provides abstraction for Pentagon.EntityFrameworkCore library.</Description>
     <Copyright>Copyright (c) Michal Pokorný. All Rights Reserved.</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <LangVersion>Latest</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PackageProjectUrl>https://github.com/Micle257/Pentagon.EntityFrameworkCore</PackageProjectUrl>
   </PropertyGroup>
