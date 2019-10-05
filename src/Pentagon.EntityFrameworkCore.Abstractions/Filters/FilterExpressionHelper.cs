@@ -208,5 +208,7 @@ namespace Pentagon.EntityFrameworkCore.Specifications.Filters
 
             return Expression.Lambda<Func<TEntity, string>>(fixedBody, parameter);
         }
+
+
     }
 }
