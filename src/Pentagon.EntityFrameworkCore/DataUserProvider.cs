@@ -6,10 +6,12 @@
 
 namespace Pentagon.EntityFrameworkCore
 {
-    using Abstractions;
+    using System;
+    using Interfaces;
+    using JetBrains.Annotations;
     using Microsoft.Extensions.Logging;
 
-    public class DataUserProvider : IDataUserProvider
+    public class DataUserProvider : IDataUserProvider, IDataUserIdentityWriter
     {
         readonly ILogger<DataUserProvider> _logger;
         object _userId;
@@ -21,25 +23,21 @@ namespace Pentagon.EntityFrameworkCore
         }
 
         /// <inheritdoc />
-        public object UserId
-        {
-            get => _userId;
-            set
-            {
-                _logger.LogDebug($"Setting user id to: {value} (previous value: {_userId})");
-                _userId = value;
-            }
-        }
+        public object UserId => _userId;
 
         /// <inheritdoc />
-        public string UserName
+        public string UserName => _userName;
+
+        /// <inheritdoc />
+        public void SetIdentity( object id, string userName)
         {
-            get => _userName;
-            set
-            {
-                _logger.LogDebug($"Setting user name to: {value} (previous value: {_userName})");
-                _userName = value;
-            }
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+
+            _logger.LogDebug("Setting user identity: ID {Id}, Name {Name} (previous value: ID {PrevId}, Name {PrevName})", id, userName, _userId, _userName);
+
+            _userId = id;
+            _userName = userName;
         }
     }
 }

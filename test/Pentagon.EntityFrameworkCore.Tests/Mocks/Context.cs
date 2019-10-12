@@ -1,11 +1,11 @@
 namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 {
     using System;
-    using Abstractions;
-    using Abstractions.Entities;
-    using Abstractions.Repositories;
+    using System.Diagnostics.CodeAnalysis;
     using EntityFrameworkCore;
+    using Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using Repositories;
 
     public interface INewContext : IApplicationContext
@@ -20,6 +20,13 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
     public class NewContext : BaseApplicationContext, INewContext
     {
+        public NewContext([NotNull] ILogger logger,
+                       [NotNull] IDbContextChangeService deleteService,
+                       DbContextOptions options) : base(logger, deleteService, options)
+        {
+
+        }
+
         public DbSet<Simple> Simples { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -31,6 +38,18 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
     public class Context : BaseApplicationContext, IContext
     {
+        public Context()
+        {
+            
+        }
+
+        public Context([NotNull] ILogger logger,
+                       [NotNull] IDbContextChangeService deleteService,
+                       DbContextOptions options) : base(logger, deleteService, options)
+        {
+            
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());

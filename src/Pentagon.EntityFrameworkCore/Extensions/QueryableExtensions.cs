@@ -7,6 +7,7 @@
 namespace Pentagon.EntityFrameworkCore.Extensions
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -21,28 +22,6 @@ namespace Pentagon.EntityFrameworkCore.Extensions
 
     public static class QueryableExtensions
     {
-        static readonly TypeInfo QueryCompilerTypeInfo = typeof(QueryCompiler).GetTypeInfo();
-
-        static readonly FieldInfo QueryCompilerField = typeof(EntityQueryProvider).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryCompiler");
-        static readonly FieldInfo QueryModelGeneratorField = typeof(QueryCompiler).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryModelGenerator");
-        static readonly FieldInfo DataBaseField = QueryCompilerTypeInfo.DeclaredFields.Single(x => x.Name == "_database");
-        static readonly PropertyInfo DatabaseDependenciesField = typeof(Database).GetTypeInfo().DeclaredProperties.Single(x => x.Name == "Dependencies");
-
-        public static string ToSql<TEntity>(this IQueryable<TEntity> query)
-        {
-            var queryCompiler = (QueryCompiler) QueryCompilerField.GetValue(query.Provider);
-            var queryModelGenerator = (QueryModelGenerator) QueryModelGeneratorField.GetValue(queryCompiler);
-            var queryModel = queryModelGenerator.ParseQuery(query.Expression);
-            var database = DataBaseField.GetValue(queryCompiler);
-            var databaseDependencies = (DatabaseDependencies) DatabaseDependenciesField.GetValue(database);
-            var queryCompilationContext = databaseDependencies.QueryCompilationContextFactory.Create(false);
-            var modelVisitor = (RelationalQueryModelVisitor) queryCompilationContext.CreateQueryModelVisitor();
-            modelVisitor.CreateQueryExecutor<TEntity>(queryModel);
-            var sql = modelVisitor.Queries.First().ToString();
-
-            return sql;
-        }
-
         public static Task<PagedList<TEntity>> ToPagedListAsync<TEntity>([NotNull] this IQueryable<TEntity> query, int pageNumber, int pageSize)
         {
             return ToPagedListAsync(query, new PaginationParameters {PageSize = pageSize, PageNumber = pageNumber});
@@ -59,12 +38,16 @@ namespace Pentagon.EntityFrameworkCore.Extensions
             if (parameters.AreValid == false)
                 throw new InvalidPaginationParametersException(parameters);
 
+            // query count of all items under filter
             var count = await query.CountAsync().ConfigureAwait(false);
 
-            var possiblePageCount = count / parameters.PageSize + 1;
+            // create blank paged list for computation
+            var blankPagedList = PagedList<TEntity>.CreateBlank(parameters.PageSize, count, parameters.PageSize, parameters.PageNumber - 1);
 
-            if (parameters.PageNumber > possiblePageCount + 1)
-                throw new ArgumentOutOfRangeException(nameof(parameters.PageNumber), message: "The page number is out of range.");
+            Debug.Assert(blankPagedList != null, nameof(blankPagedList) + " != null");
+
+            if (parameters.PageNumber > blankPagedList.TotalPages)
+                throw new PageOutOfRangeException(nameof(parameters.PageNumber), parameters.PageNumber, blankPagedList.TotalPages);
             
             query = query.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize);
 

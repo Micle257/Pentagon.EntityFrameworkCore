@@ -10,22 +10,10 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
+    using Interfaces;
+    using Interfaces.Entities;
     using Microsoft.EntityFrameworkCore.Internal;
     using Specifications;
-
-    class EntityUuidEqualityComparer<T> : IEqualityComparer<T>
-        where T : class, ICreateStampSupport
-    {
-        public static EntityUuidEqualityComparer<T> Instance { get; } = new EntityUuidEqualityComparer<T>();
-
-        /// <inheritdoc />
-        public bool Equals(T x, T y) => x.Uuid == y.Uuid;
-
-        /// <inheritdoc />
-        public int GetHashCode(T obj) => obj.Uuid.GetHashCode();
-    }
 
     public class DatabaseChangeManager<TContext> : IDatabaseChangeManager<TContext>
             where TContext : IApplicationContext

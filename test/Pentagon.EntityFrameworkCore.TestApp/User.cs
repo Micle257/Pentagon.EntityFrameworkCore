@@ -1,6 +1,6 @@
 ﻿namespace Pentagon.EntityFrameworkCore.TestApp {
     using System;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     class User : Entity, ICreateStampSupport, IConcurrencyStampSupport, IUpdatedUserEntitySupport, IUpdateTimeStampSupport, IUpdateTimeStampIdentitySupport<int?>
     {

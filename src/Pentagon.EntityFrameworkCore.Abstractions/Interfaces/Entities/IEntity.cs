@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
+namespace Pentagon.EntityFrameworkCore.Interfaces.Entities
 {
     /// <summary> Represents an entity with typed boxed id. </summary>
     public interface IEntity

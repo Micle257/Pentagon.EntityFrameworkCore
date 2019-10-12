@@ -8,8 +8,8 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 {
     using System;
     using System.Linq;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
+    using Interfaces.Entities;
+    using Interfaces.Specifications;
 
     public static class QuerySpecificationExtensions
     {

@@ -12,9 +12,9 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
-    using Abstractions.Repositories;
+    using Interfaces;
+    using Interfaces.Entities;
+    using Interfaces.Repositories;
     using Specifications;
 
     /// <summary> Represents a synchronization session. </summary>

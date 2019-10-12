@@ -4,12 +4,12 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions
+namespace Pentagon.EntityFrameworkCore.Interfaces
 {
     public interface IDataUserProvider
     {
-        object UserId { get; set; }
+        object UserId { get;  }
         
-        string UserName { get; set; }
+        string UserName { get;  }
     }
 }

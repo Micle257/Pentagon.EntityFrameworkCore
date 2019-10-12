@@ -9,8 +9,8 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
+    using Interfaces;
+    using Interfaces.Entities;
 
     public interface IDatabaseChangeManager
     {

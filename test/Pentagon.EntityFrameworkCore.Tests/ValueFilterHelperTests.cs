@@ -6,10 +6,9 @@
 
 namespace Pentagon.EntityFrameworkCore.Tests
 {
-    using Abstractions.Entities;
+    using Filters;
     using Mocks;
     using Specifications;
-    using Specifications.Filters;
     using Xunit;
 
     public class ValueFilterHelperTests

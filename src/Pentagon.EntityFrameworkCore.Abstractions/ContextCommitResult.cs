@@ -8,14 +8,11 @@ namespace Pentagon.EntityFrameworkCore
 {
     using System;
     using System.Collections.Generic;
+    using OperationResults;
 
-    public class UnitOfWorkCommitResult
+    public class ContextCommitResult : OperationResult<int>
     {
-        public bool IsSuccessful => Exception == null && !HasConcurrencyConflicts;
-
         public bool HasConcurrencyConflicts => Conflicts != null && Conflicts.Count > 0;
-
-        public Exception Exception { get; set; }
 
         public List<ConcurrencyConflictPair> Conflicts { get; set; } = new List<ConcurrencyConflictPair>();
 

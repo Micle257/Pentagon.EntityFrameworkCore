@@ -6,8 +6,8 @@
 namespace Pentagon.EntityFrameworkCore.Abstractions.Tests {
     using System;
     using System.Linq.Expressions;
-    using Entities;
-    using EntityFrameworkCore.Specifications.Filters;
+    using Filters;
+    using Interfaces.Entities;
     using Xunit;
 
     public class FilterExpressionHelperTests

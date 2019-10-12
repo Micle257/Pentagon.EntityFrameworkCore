@@ -8,7 +8,7 @@ namespace Pentagon.EntityFrameworkCore.Extensions
 {
     using System;
     using System.Linq;
-    using Abstractions;
+    using Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Repositories;
@@ -145,14 +145,8 @@ namespace Pentagon.EntityFrameworkCore.Extensions
 
         internal static IServiceCollection AddDefaultUnitOfWork(this IServiceCollection builder, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
-            builder.AddTransient<IUnitOfWork, UnitOfWork<IApplicationContext>>();
-            builder.AddTransient<IUnitOfWork<IApplicationContext>, UnitOfWork<IApplicationContext>>();
-            
             builder.AddTransient<IDatabaseChangeManager, DatabaseChangeManager<IApplicationContext>>();
             builder.AddTransient<IDatabaseChangeManager<IApplicationContext>, DatabaseChangeManager<IApplicationContext>>();
-
-            //builder.AddTransient<IConcurrencyConflictResolver, ConcurrencyConflictResolver<IApplicationContext>>();
-           // builder.AddTransient<IConcurrencyConflictResolver<IApplicationContext>, ConcurrencyConflictResolver<IApplicationContext>>();
 
             return builder;
         }
@@ -166,9 +160,7 @@ namespace Pentagon.EntityFrameworkCore.Extensions
             builder.AddTransient<IDbContextChangeService, DbContextChangeService>();
 
             builder.Add(new ServiceDescriptor(typeof(IDataUserProvider), typeof(DataUserProvider), lifetime));
-            
-           // builder.AddTransient<IConcurrencyConflictResolver<TContext>, ConcurrencyConflictResolver<TContext>>();
-            builder.AddTransient<IUnitOfWork<TContext>, UnitOfWork<TContext>>();
+            builder.Add(new ServiceDescriptor(typeof(IDataUserIdentityWriter), c => (DataUserProvider)c.GetService<IDataUserProvider>(), lifetime));
 
             builder.AddTransient<IDatabaseChangeManager<TContext>, DatabaseChangeManager<TContext>>();
             

@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
+namespace Pentagon.EntityFrameworkCore.Interfaces.Entities
 {
     public interface IUpdateTimeStampIdentitySupport
     {

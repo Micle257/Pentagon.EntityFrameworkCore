@@ -10,9 +10,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
     using Extensions;
+    using Interfaces;
+    using Interfaces.Entities;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
 
@@ -60,7 +60,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 {
                     return new ConcurrencyConflictResolveResult
                            {
-                                   CanBeDetermine = false
+                                   CanBeDetermined = false
                            };
                 }
 

@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions
+namespace Pentagon.EntityFrameworkCore.Interfaces
 {
     using System;
     using System.Threading;
@@ -21,9 +21,9 @@ namespace Pentagon.EntityFrameworkCore.Abstractions
 
         event EventHandler<CommitEventArgs> Commiting;
 
-        Task<UnitOfWorkCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default);
+        Task<ContextCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default);
 
-        UnitOfWorkCommitResult ExecuteCommit();
+        ContextCommitResult ExecuteCommit();
 
         /// <summary> Gets the repository of given entity. </summary>
         /// <typeparam name="TEntity"> The type of the entity. </typeparam>

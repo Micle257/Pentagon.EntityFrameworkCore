@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
+namespace Pentagon.EntityFrameworkCore.Interfaces.Entities
 {
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,6 +13,6 @@ namespace Pentagon.EntityFrameworkCore.Abstractions.Entities
         /// <summary> Gets or sets the user that created this entity. </summary>
         /// <value> The <see cref="object" />. </value>
         [Column(Order = OrderConstants.CreatedUserId)]
-        TUserId CreatedUserId { get; set; }
+        new TUserId CreatedUserId { get; set; }
     }
 }

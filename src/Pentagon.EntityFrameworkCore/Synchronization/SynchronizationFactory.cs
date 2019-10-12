@@ -6,8 +6,8 @@
 
 namespace Pentagon.EntityFrameworkCore.Synchronization
 {
-    using Abstractions;
-    using Abstractions.Entities;
+    using Interfaces;
+    using Interfaces.Entities;
 
     public class SynchronizationFactory<TRemoteContext,TLocalContext> : ISynchronizationFactory
             where TRemoteContext : IApplicationContext

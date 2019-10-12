@@ -9,7 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using System;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     /// <summary> Represent a remote-local database synchronization service. </summary>
     public interface IDbContextSynchronizator

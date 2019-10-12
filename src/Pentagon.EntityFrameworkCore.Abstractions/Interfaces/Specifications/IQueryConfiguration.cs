@@ -4,13 +4,13 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
+namespace Pentagon.EntityFrameworkCore.Interfaces.Specifications
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Entities;
-    
+
     public interface IQueryConfiguration<TEntity>
             where TEntity : IEntity
     {

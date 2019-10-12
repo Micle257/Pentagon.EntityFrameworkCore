@@ -1,7 +1,6 @@
 namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System.Linq;
-    using Abstractions;
     using EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Xunit;

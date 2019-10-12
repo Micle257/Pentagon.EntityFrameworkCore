@@ -2,8 +2,8 @@
 {
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using Abstractions;
     using Extensions;
+    using Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging.Abstractions;
@@ -19,10 +19,9 @@
 
             var di = services.BuildServiceProvider();
 
-            var userProvider = di.GetRequiredService<IDataUserProvider>();
+            var userProvider = di.GetRequiredService<IDataUserIdentityWriter>();
 
-            userProvider.UserId = 3;
-            userProvider.UserName = "test";
+            userProvider.SetIdentity(3, "test");
 
             using (var c = di.GetRequiredService<Context>())
             {

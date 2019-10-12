@@ -4,12 +4,12 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
+namespace Pentagon.EntityFrameworkCore.Interfaces.Filters
 {
     using System;
     using System.Linq.Expressions;
     using Entities;
-    using EntityFrameworkCore.Specifications.Filters;
+    using EntityFrameworkCore.Filters;
 
     public interface IFilterBuilder<TEntity>
             where TEntity : IEntity

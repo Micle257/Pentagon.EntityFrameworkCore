@@ -1,16 +1,16 @@
-﻿namespace Pentagon.EntityFrameworkCore.Specifications.Filters {
+﻿namespace Pentagon.EntityFrameworkCore.Filters {
     using System;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
+    using Interfaces.Entities;
+    using Interfaces.Filters;
 
     public static class FilterBuilderExtensions
     {
         /// <inheritdoc />
-        public static IConnectedCompositeFilterBuilder<TEntity> AddCompositeFilter<TEntity>(this IFilterBuilder<TEntity> that, Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value = null)
+        public static IConnectedCompositeFilterBuilder<TEntity> AddCompositeFilter<TEntity>(this IFilterBuilder<TEntity> that, Expression<Func<TEntity, string>> propertySelector, TextFilter filter, string value = null, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
                 where TEntity : IEntity
         {
-            return that.AddCompositeFilter(FilterExpressionHelper.GetObjectPropertySelector(propertySelector), FilterExpressionHelper.GetTextFilterCallback(propertySelector, filter, value));
+            return that.AddCompositeFilter(FilterExpressionHelper.GetObjectPropertySelector(propertySelector), FilterExpressionHelper.GetTextFilterCallback(propertySelector, filter, value, stringComparison));
         }
 
         /// <inheritdoc />

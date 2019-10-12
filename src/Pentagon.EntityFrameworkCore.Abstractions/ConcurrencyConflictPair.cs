@@ -10,18 +10,6 @@ namespace Pentagon.EntityFrameworkCore
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-
-    public class ConflictPairDifference
-    {
-        public string PropertyName { get; set; }
-
-        public PropertyInfo PropertyInfo { get; set; }
-
-        public object LocalValue { get; set; }
-
-        public object RemoteValue { get; set; }
-    }
 
     public class ConcurrencyConflictPair
     {
@@ -47,7 +35,6 @@ namespace Pentagon.EntityFrameworkCore
 
             var local = Local.Entity;
             var remote = Remote.Entity;
-            var type = Local.Entity.GetType();
 
             var props = EntityHelper.GetPureProperties(local)
                             .Where(a => a.PropertyType.IsPrimitive || (Nullable.GetUnderlyingType(a.PropertyType)?.IsPrimitive ?? false)

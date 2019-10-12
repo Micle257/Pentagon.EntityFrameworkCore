@@ -4,10 +4,8 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions
+namespace Pentagon.EntityFrameworkCore.Interfaces
 {
-    using System;
-
     /// <summary> Represents a service for delete behavior of database context. </summary>
     public interface IDbContextChangeService
     {

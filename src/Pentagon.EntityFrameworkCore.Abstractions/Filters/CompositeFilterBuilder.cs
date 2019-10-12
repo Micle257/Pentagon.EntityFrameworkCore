@@ -1,10 +1,10 @@
-﻿namespace Pentagon.EntityFrameworkCore.Specifications.Filters
+﻿namespace Pentagon.EntityFrameworkCore.Filters
 {
     using System;
     using System.Linq;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
+    using Interfaces.Entities;
+    using Interfaces.Filters;
 
     public class CompositeFilterBuilder<TEntity> : FilterBuilder<TEntity>, IConnectedCompositeFilterBuilder<TEntity>
             where TEntity : IEntity
@@ -47,7 +47,7 @@
         }
 
         /// <inheritdoc />
-        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
+        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
         {
             var lastTextFilter = CompositeFilters.FirstOrDefault(a => a.Id == ParentFilterId);
 
@@ -55,7 +55,7 @@
                 throw new ArgumentNullException(nameof(lastTextFilter), "Text filter is missing");
 
             lastTextFilter.Operation = operation;
-            lastTextFilter.SecondCondition = FilterExpressionHelper.GetTextFilterCallback( FilterExpressionHelper.GetStringPropertySelector(lastTextFilter.Property), filter, value);
+            lastTextFilter.SecondCondition = FilterExpressionHelper.GetTextFilterCallback( FilterExpressionHelper.GetStringPropertySelector(lastTextFilter.Property), filter, value, stringComparison);
 
             return this;
         }

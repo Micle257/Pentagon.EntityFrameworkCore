@@ -4,13 +4,12 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.EntityFrameworkCore.Abstractions.Specifications
+namespace Pentagon.EntityFrameworkCore.Interfaces.Specifications
 {
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using Entities;
-    using EntityFrameworkCore.Specifications;
 
     /// <summary> Represents an entity specification for query, adding filter condition for returned entities (WHERE in T-SQL). </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>

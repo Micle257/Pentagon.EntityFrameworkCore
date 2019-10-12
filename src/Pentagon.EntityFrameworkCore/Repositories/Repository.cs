@@ -11,15 +11,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
-    using Abstractions.Repositories;
-    using Abstractions.Specifications;
     using Collections;
+    using Interfaces.Entities;
+    using Interfaces.Repositories;
+    using Interfaces.Specifications;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Extensions.Internal;
     using Microsoft.Extensions.Logging;
     using Specifications;
 
@@ -41,10 +40,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
         
         /// <inheritdoc />
-        public Task<TEntity> GetByIdAsync(object id) => _set.FindAsync(id);
+        public Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default) => _set.FindAsync( new [] {id}, cancellationToken).AsTask();
         
         /// <inheritdoc />
-        public Task<int> CountAsync() => _set.CountAsync();
+        public Task<int> CountAsync(CancellationToken cancellationToken = default) => _set.CountAsync(cancellationToken);
 
         /// <inheritdoc />
         public virtual void Insert(TEntity entity)
@@ -100,34 +99,34 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         #region GetOne
 
         /// <inheritdoc />
-        public Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector)
+        public Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector, CancellationToken cancellationToken = default)
         {
-            return GetOneAsync(e => e, entitySelector);
+            return GetOneAsync(e => e, entitySelector, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate)
+        public Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate, CancellationToken cancellationToken = default)
         {
             var spec = new GetOneSpecification<TEntity>(entityPredicate);
 
-            return GetOneAsync(selector, spec);
+            return GetOneAsync(selector, spec, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification)
+        public Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>
         {
-            return GetOneAsync(e => e, specification);
+            return GetOneAsync(e => e, specification, cancellationToken);
         }
 
-        public Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification)
+        public Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>
         {
             var set = (IQueryable<TEntity>) _set;
             
             set = specification.Apply(set);
 
-            return set.Select(entitySelector).SingleOrDefaultAsync();
+            return set.Select(entitySelector).SingleOrDefaultAsync(cancellationToken: cancellationToken);
         }
 
         #endregion
@@ -135,35 +134,35 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         #region GetAll
 
         /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetAllAsync()
+        public Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return GetAllAsync(e => e);
+            return GetAllAsync(e => e, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector)
+        public Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, CancellationToken cancellationToken = default)
         {
             var spec = new GetAllSpecification<TEntity>();
 
-            return GetAllAsync(selector, spec);
+            return GetAllAsync(selector, spec, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetAllAsync<TSpecification>(TSpecification specification)
+        public Task<IEnumerable<TEntity>> GetAllAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IOrderSpecification<TEntity>
         {
-            return GetAllAsync(e => e, specification);
+            return GetAllAsync(e => e, specification, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+        public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IOrderSpecification<TEntity>
         {
             var set = (IQueryable<TEntity>) _set;
             
             set = specification.Apply(set);
 
-            return await set.Select(selector).ToListAsync().ConfigureAwait(false);
+            return await set.Select(selector).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -173,31 +172,33 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector,
                                                        Expression<Func<TEntity, object>> orderSelector,
-                                                       bool isDescending)
+                                                       bool isDescending,
+                                                       CancellationToken cancellationToken = default)
         {
-            return GetManyAsync(e => e, entitiesSelector, orderSelector, isDescending);
+            return GetManyAsync(e => e, entitiesSelector, orderSelector, isDescending, cancellationToken);
         }
 
         /// <inheritdoc />
         public Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                   Expression<Func<TEntity, bool>> entitiesSelector,
                                                                                   Expression<Func<TEntity, object>> orderSelector,
-                                                                                  bool isDescending)
+                                                                                  bool isDescending,
+                                                                                  CancellationToken cancellationToken = default)
         {
             var spec = new GetManySpecification<TEntity>(entitiesSelector, orderSelector, isDescending);
 
-            return GetManyAsync(selector, spec);
+            return GetManyAsync(selector, spec, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification)
+        public Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
-            return GetManyAsync(e => e, specification);
+            return GetManyAsync(e => e, specification, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+        public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             var set = (IQueryable<TEntity>) _set;
@@ -206,16 +207,16 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             var query = set.Select(selector);
 
-            return await query.ToListAsync().ConfigureAwait(false);
+            return await query.ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
         
         #region GetPage
 
-        public Task<PagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex)
+        public Task<PagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex, CancellationToken cancellationToken = default)
         {
-            return GetPageAsync(e => e, criteria, order, isDescendingOrder, pageSize, pageIndex);
+            return GetPageAsync(e => e, criteria, order, isDescendingOrder, pageSize, pageIndex, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -224,20 +225,22 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                                                                           Expression<Func<TEntity, object>> order,
                                                                           bool isDescendingOrder,
                                                                           int pageSize,
-                                                                          int pageIndex)
+                                                                          int pageIndex,
+                                                                          CancellationToken cancellationToken = default)
         {
             var specification = new GetPageSpecification<TEntity>(criteria, order, isDescendingOrder, pageSize, pageIndex);
-            return GetPageAsync(selector, specification);
+
+            return GetPageAsync(selector, specification, cancellationToken);
         }
 
-        public Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification)
+        public Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
-            return GetPageAsync(e => e, specification);
+            return GetPageAsync(e => e, specification, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification)
+        public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
             var set = (IQueryable<TEntity>) _set;

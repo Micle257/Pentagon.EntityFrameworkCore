@@ -8,10 +8,10 @@ namespace Pentagon.EntityFrameworkCore.Specifications
     using System;
     using System.Linq;
     using System.Linq.Expressions;
-    using Abstractions.Entities;
-    using Abstractions.Specifications;
     using Filters;
     using Helpers;
+    using Interfaces.Entities;
+    using Interfaces.Filters;
     using JetBrains.Annotations;
 
     public static class QueryableExtensions

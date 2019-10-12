@@ -6,7 +6,7 @@
 
 namespace Pentagon.EntityFrameworkCore
 {
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     /// <summary> Provides information about <see cref="IEntity" /> that changes its state. </summary>
     public class Entry

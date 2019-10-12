@@ -6,9 +6,9 @@
 namespace Pentagon.EntityFrameworkCore.Tests
 {
     using System;
-    using Abstractions;
     using EntityFrameworkCore;
     using Extensions;
+    using Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Mocks;
     using Xunit;
@@ -35,10 +35,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
         {
             var unit = DI.GetService<IApplicationContext>();
             var service = DI.GetService<IDbContextChangeService>();
-            var user = DI.GetService<IDataUserProvider>();
+            var user = DI.GetService<IDataUserIdentityWriter>();
 
-            user.UserId = 2;
-            user.UserName = "bis";
+            user.SetIdentity(2, "bis");
 
             var db = unit.GetRepository<Entity>();
 
@@ -66,11 +65,10 @@ namespace Pentagon.EntityFrameworkCore.Tests
         public void ShouldApplyWhenEntityIsModified()
         {
             var service = DI.GetService<IDbContextChangeService>();
-            var ex = DI.GetService<IUnitOfWork<IApplicationContext>>();
             var unit = DI.GetService<IContextFactory>().CreateContext( );
-            var user = DI.GetService<IDataUserProvider>();
+            var user = DI.GetService<IDataUserIdentityWriter>();
 
-            user.UserId = 2;
+            user.SetIdentity(2, null);
 
             var db = unit.GetRepository<Entity>();
 
@@ -78,9 +76,9 @@ namespace Pentagon.EntityFrameworkCore.Tests
 
             db.Insert(entity);
 
-            ex.ExecuteCommit(unit);
+            var result = unit.ExecuteCommit();
 
-            var e = db.GetOneAsync(a => true).GetAwaiter().GetResult();
+            var e = db.GetOneAsync(a => a.Value == "ss").GetAwaiter().GetResult();
             e.Value = "qwe";
 
             db.Update(e);

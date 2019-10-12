@@ -12,10 +12,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Abstractions;
-    using Abstractions.Entities;
-    using Abstractions.Repositories;
     using Extensions;
+    using Interfaces;
+    using Interfaces.Entities;
+    using Interfaces.Repositories;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -50,6 +50,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _changeService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
             _isInitialized = true;
 
+            ChangeTracker.AutoDetectChangesEnabled = false;
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
@@ -58,6 +59,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             _logger = NullLogger.Instance;
 
+            ChangeTracker.AutoDetectChangesEnabled = false;
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
@@ -66,6 +68,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         {
             _logger = NullLogger.Instance;
 
+            ChangeTracker.AutoDetectChangesEnabled = false;
             ChangeTracker.StateChanged += OnStateChanged;
             ChangeTracker.Tracked += OnTracked;
         }
@@ -85,13 +88,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 where TEntity : class, IEntity, new() => new Repository<TEntity>(Set<TEntity>());
 
         /// <inheritdoc />
-        public Task<UnitOfWorkCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default)
+        public Task<ContextCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default)
         {
             return CommitCoreAsync(async (db, ct) => await db.SaveChangesAsync(false, ct).ConfigureAwait(false), cancellationToken);
         }
 
         /// <inheritdoc />
-        public UnitOfWorkCommitResult ExecuteCommit()
+        public ContextCommitResult ExecuteCommit()
         {
             return CommitCoreAsync((db, ct) => Task.FromResult(db.SaveChanges(false))).GetAwaiter().GetResult();
         }
@@ -116,10 +119,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             SetupCoreModel(modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder)));
         }
 
-        async Task<UnitOfWorkCommitResult> CommitCoreAsync([NotNull] Func<DbContext, CancellationToken, Task<int>> callback, CancellationToken cancellationToken = default)
+        async Task<ContextCommitResult> CommitCoreAsync([NotNull] Func<DbContext, CancellationToken, Task<int>> callback, CancellationToken cancellationToken = default)
         {
             if (!_isInitialized)
-                throw new InvalidOperationException($"Dependencies for this instance ({GetType().Name}) are not initialized.");
+                throw new InvalidOperationException($"Dependencies for this instance ({GetType().Name}) are not initialized. Commit is not meaningful, set dependencies or call SaveChanges.");
 
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
@@ -129,7 +132,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 ChangeTracker.DetectChanges();
 
                 if (!ChangeTracker.HasChanges())
-                    return new UnitOfWorkCommitResult();
+                    return new ContextCommitResult();
 
                 _changeService.ApplyUpdate(this, UseTimeSourceFromEntities);
                 _changeService.ApplyDelete(this, UseTimeSourceFromEntities);
@@ -144,7 +147,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 // accept changes
                 ChangeTracker.AcceptAllChanges();
 
-                return new UnitOfWorkCommitResult
+                return new ContextCommitResult
                        {
                                CommitResult = result,
                                Conflicts = conflictPairs
@@ -154,19 +157,19 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             {
                 _logger.LogError(message: "Unexpected concurrency error from SaveChanges method.");
 
-                return new UnitOfWorkCommitResult {Exception = e};
+                return new ContextCommitResult {Exception = e};
             }
             catch (DbUpdateException e)
             {
                 _logger.LogError($"Database update error occured. ({e.Message})");
 
-                return new UnitOfWorkCommitResult {Exception = e};
+                return new ContextCommitResult {Exception = e};
             }
             catch (Exception e)
             {
                 _logger.LogError($"Unexpected error occured while committing database context. ({e.Message})");
 
-                return new UnitOfWorkCommitResult {Exception = e};
+                return new ContextCommitResult {Exception = e};
             }
         }
 
@@ -176,7 +179,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             var conflictPairs = new List<ConcurrencyConflictPair>();
 
-            if (conflictResult.CanBeDetermine && conflictResult.HasConflicts)
+            if (conflictResult.CanBeDetermined && conflictResult.HasConflicts)
             {
                 conflictPairs = conflictResult.ConflictedEntities.ToList();
 

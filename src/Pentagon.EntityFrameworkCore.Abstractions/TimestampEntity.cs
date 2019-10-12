@@ -7,7 +7,7 @@
 namespace Pentagon.EntityFrameworkCore
 {
     using System;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
 
     /// <summary> Represents an typed entity, with support for synchronization. </summary>
     /// <typeparam name="TKey"> The type of the key. </typeparam>

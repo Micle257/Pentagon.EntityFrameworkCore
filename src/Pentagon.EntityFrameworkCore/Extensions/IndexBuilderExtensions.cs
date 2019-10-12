@@ -9,7 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Extensions
     using System;
     using System.Linq;
     using System.Reflection;
-    using Abstractions.Entities;
+    using Interfaces.Entities;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

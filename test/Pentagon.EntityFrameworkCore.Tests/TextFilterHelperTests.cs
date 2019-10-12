@@ -1,7 +1,6 @@
 namespace Pentagon.EntityFrameworkCore.Tests {
     using Mocks;
     using Specifications;
-    using Specifications.Filters;
     using Xunit;
 
     public class TextFilterHelperTests

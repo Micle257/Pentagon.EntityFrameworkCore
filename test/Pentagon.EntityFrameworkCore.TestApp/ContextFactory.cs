@@ -1,5 +1,5 @@
 ﻿namespace Pentagon.EntityFrameworkCore.TestApp {
-    using Abstractions;
+    using Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
