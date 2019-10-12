@@ -7,6 +7,7 @@
 namespace Pentagon.EntityFrameworkCore.Extensions
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -37,12 +38,16 @@ namespace Pentagon.EntityFrameworkCore.Extensions
             if (parameters.AreValid == false)
                 throw new InvalidPaginationParametersException(parameters);
 
+            // query count of all items under filter
             var count = await query.CountAsync().ConfigureAwait(false);
 
-            var possiblePageCount = count / parameters.PageSize + 1;
+            // create blank paged list for computation
+            var blankPagedList = PagedList<TEntity>.CreateBlank(parameters.PageSize, count, parameters.PageSize, parameters.PageNumber - 1);
 
-            if (parameters.PageNumber > possiblePageCount + 1)
-                throw new ArgumentOutOfRangeException(nameof(parameters.PageNumber), message: "The page number is out of range.");
+            Debug.Assert(blankPagedList != null, nameof(blankPagedList) + " != null");
+
+            if (parameters.PageNumber > blankPagedList.TotalPages)
+                throw new PageOutOfRangeException(nameof(parameters.PageNumber), parameters.PageNumber, blankPagedList.TotalPages);
             
             query = query.Skip((parameters.PageNumber - 1) * parameters.PageSize).Take(parameters.PageSize);
 
