@@ -1,8 +1,10 @@
 ﻿namespace Pentagon.EntityFrameworkCore.TestApp
 {
+    using System;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using Extensions;
+    using Filters;
     using Interfaces;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
@@ -25,19 +27,15 @@
 
             using (var c = di.GetRequiredService<Context>())
             {
-                var j = c.Set<User>().AsTracking().ToList();
+                c.Add(new User {Name = "tgT"});
 
-                j[0].Name = "FF";
-                
-                var r = c.ExecuteCommit();
+                c.ExecuteCommit();
 
-                if (r.HasConcurrencyConflicts)
-                {
-                    foreach (var concurrencyConflictPair in r.Conflicts)
-                    {
-                        var d = concurrencyConflictPair.GetDifference();
-                    }
-                }
+                var filter = new FilterBuilder<User>()
+                       .AddCompositeFilter(a => a.Name, TextFilter.Contain, "TgT")
+                            .BuildFilter();
+
+                var j = c.Set<User>().Where(filter).ToList();
             }
         }
     }

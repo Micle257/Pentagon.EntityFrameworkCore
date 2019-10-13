@@ -47,7 +47,7 @@
         }
 
         /// <inheritdoc />
-        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
+        public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
         {
             var lastTextFilter = CompositeFilters.FirstOrDefault(a => a.Id == ParentFilterId);
 
@@ -55,7 +55,7 @@
                 throw new ArgumentNullException(nameof(lastTextFilter), "Text filter is missing");
 
             lastTextFilter.Operation = operation;
-            lastTextFilter.SecondCondition = FilterExpressionHelper.GetTextFilterCallback( FilterExpressionHelper.GetStringPropertySelector(lastTextFilter.Property), filter, value, stringComparison);
+            lastTextFilter.SecondCondition = FilterExpressionHelper.GetTextFilterCallback( FilterExpressionHelper.GetStringPropertySelector(lastTextFilter.Property), filter, value);
 
             return this;
         }
