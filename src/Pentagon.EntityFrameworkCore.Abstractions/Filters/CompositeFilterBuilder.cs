@@ -47,6 +47,12 @@
         }
 
         /// <inheritdoc />
+        public IFilterBuilder<TEntity> AddOr(NumberFilter filter, object value = null) => AddSubFilter(FilterLogicOperation.Or, filter, value);
+
+        /// <inheritdoc />
+        public IFilterBuilder<TEntity> AddAnd(NumberFilter filter, object value = null) => AddSubFilter(FilterLogicOperation.And, filter, value);
+
+        /// <inheritdoc />
         public IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null)
         {
             var lastTextFilter = CompositeFilters.FirstOrDefault(a => a.Id == ParentFilterId);
@@ -59,5 +65,11 @@
 
             return this;
         }
+
+        /// <inheritdoc />
+        public IFilterBuilder<TEntity> AddOr(TextFilter filter, string value = null) => AddSubFilter(FilterLogicOperation.Or, filter, value);
+
+        /// <inheritdoc />
+        public IFilterBuilder<TEntity> AddAnd(TextFilter filter, string value = null) => AddSubFilter(FilterLogicOperation.And, filter, value);
     }
 }
