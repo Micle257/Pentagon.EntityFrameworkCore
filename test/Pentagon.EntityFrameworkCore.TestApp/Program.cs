@@ -27,12 +27,9 @@
 
             using (var c = di.GetRequiredService<Context>())
             {
-                c.Add(new User {Name = "tgT"});
-
-                c.ExecuteCommit();
-
                 var filter = new FilterBuilder<User>()
-                       .AddCompositeFilter(a => a.Name, TextFilter.Contain, "TgT")
+                       .AddCompositeFilter(a => a.Name, TextFilter.Contain, "2")
+                            .AddSubFilter(FilterLogicOperation.Or, TextFilter.Contain, "TgT")
                             .BuildFilter();
 
                 var j = c.Set<User>().Where(filter).ToList();

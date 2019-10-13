@@ -20,7 +20,7 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetTextFilterCallback``1(System.Linq.Expressions.Expression{System.Func{``0,System.String}},Pentagon.EntityFrameworkCore.Filters.TextFilter,System.String,System.StringComparison)">
+  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetTextFilterCallback``1(System.Linq.Expressions.Expression{System.Func{``0,System.String}},Pentagon.EntityFrameworkCore.Filters.TextFilter,System.String)">
     <parameter name="propertySelector">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>

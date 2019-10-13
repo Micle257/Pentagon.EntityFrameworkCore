@@ -73,14 +73,14 @@ namespace Pentagon.EntityFrameworkCore.Filters
 
             return textFilter switch
             {
-                TextFilter.Equal => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.ToLower().Equals(value.ToLower()))),
-                TextFilter.NotEqual => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.ToLower().Equals(value.ToLower()))),
+                TextFilter.Equal => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Equals(value))),
+                TextFilter.NotEqual => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Equals(value))),
                 TextFilter.Empty => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => string.IsNullOrWhiteSpace(v))),
                 TextFilter.NotEmpty => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !string.IsNullOrWhiteSpace(v))),
-                TextFilter.StartWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.ToLower().StartsWith(value.ToLower()))),
-                TextFilter.EndWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.ToLower().EndsWith(value.ToLower()))),
-                TextFilter.Contain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.ToLower().Contains(value.ToLower()))),
-                TextFilter.NotContain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.ToLower().Contains(value.ToLower()))),
+                TextFilter.StartWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.StartsWith(value))),
+                TextFilter.EndWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.EndsWith(value))),
+                TextFilter.Contain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Contains(value))),
+                TextFilter.NotContain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Contains(value))),
                 _ => throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null)
             };
         }
@@ -128,11 +128,21 @@ namespace Pentagon.EntityFrameworkCore.Filters
         {
             var body = propertySelector.Body;
 
-            var toStringCall = Expression.Call(body, body.Type.GetMethod(nameof(ToString), Array.Empty<Type>()));
+            if (body is UnaryExpression ue && body.NodeType == ExpressionType.Convert)
+            {
+                if (ue.Operand.Type == typeof(string))
+                {
+                    body = ue.Operand;
+                }
+            }
+            else
+            {
+                body = Expression.Call(body, body.Type.GetMethod(nameof(ToString), Array.Empty<Type>()));
+            }
 
             var parameter = Expression.Parameter(typeof(TEntity), "a");
 
-            var fixedBody = ExpressionParameterReplacer.Replace(toStringCall, parameter);
+            var fixedBody = ExpressionParameterReplacer.Replace(body, parameter);
 
             return Expression.Lambda<Func<TEntity, string>>(fixedBody, parameter);
         }
