@@ -19,6 +19,8 @@ namespace Pentagon.EntityFrameworkCore.Interfaces
 
         bool AutoResolveConflictsFromSameUser { get; set; }
 
+        bool UseCachedRepositories { get; set; }
+
         event EventHandler<CommitEventArgs> Commiting;
 
         Task<ContextCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default);
@@ -29,6 +31,18 @@ namespace Pentagon.EntityFrameworkCore.Interfaces
         /// <typeparam name="TEntity"> The type of the entity. </typeparam>
         /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
         IRepository<TEntity> GetRepository<TEntity>()
+                where TEntity : class, IEntity, new();
+
+        /// <summary> Gets the repository of given entity. </summary>
+        /// <typeparam name="TEntity"> The type of the entity. </typeparam>
+        /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
+        IRepositoryTransient<TEntity> GetTransientRepository<TEntity>()
+                where TEntity : class, IEntity, new();
+
+        /// <summary> Gets the repository of given entity. </summary>
+        /// <typeparam name="TEntity"> The type of the entity. </typeparam>
+        /// <returns> A <see cref="IRepository{TEntity}" />. </returns>
+        IRepositoryCached<TEntity> GetCachedRepository<TEntity>()
                 where TEntity : class, IEntity, new();
     }
 }

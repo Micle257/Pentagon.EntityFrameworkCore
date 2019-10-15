@@ -38,5 +38,20 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             return query.AsEnumerable();
         }
+
+        [NotNull]
+        [Pure]
+        public static IEnumerable<TEntity> ApplyPagination<TEntity>([NotNull] IEnumerable<TEntity> collection, [NotNull] IPaginationSpecification<TEntity> specification)
+                where TEntity : IEntity
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+
+            var query = collection.AsQueryable();
+
+            query = specification.ApplyPagination(query: query);
+
+            return query.AsEnumerable();
+        }
     }
 }

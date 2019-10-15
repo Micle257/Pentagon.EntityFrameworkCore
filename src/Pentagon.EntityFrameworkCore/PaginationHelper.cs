@@ -7,6 +7,7 @@
 namespace Pentagon.EntityFrameworkCore
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
@@ -35,10 +36,37 @@ namespace Pentagon.EntityFrameworkCore
                 throw new ArgumentOutOfRangeException(nameof(specification.PageNumber), message: "The page number is out of range.");
 
             query = specification.ApplyPagination(query);
+
             var list = await query.Select(selector).ToListAsync().ConfigureAwait(false);
+
             return new PagedList<TSelectEntity>(list, count, specification.PageSize, specification.PageNumber - 1);
         }
-        
+
+        public static PagedList<TSelectEntity> Create<TSelectEntity, TEntity>(Func<TEntity, TSelectEntity> selector,
+                                                                                               IEnumerable<TEntity> queryIteration,
+                                                                                               IPaginationSpecification<TEntity> specification)
+                where TEntity : IEntity
+        {
+            var query = queryIteration.ToList();
+
+            var count = query.Count;
+
+            var possiblePageCount = count / specification.PageSize + 1;
+
+            if (count < specification.PageSize)
+                possiblePageCount = 1;
+
+            // If page index is overflowed.
+            if (specification.PageNumber > possiblePageCount + 1)
+                throw new ArgumentOutOfRangeException(nameof(specification.PageNumber), message: "The page number is out of range.");
+
+            query = SpecificationHelper.ApplyPagination(query, specification).ToList();
+
+            var list = query.Select(selector);
+
+            return new PagedList<TSelectEntity>(list, count, specification.PageSize, specification.PageNumber - 1);
+        }
+
         public static async Task<PagedList<TEntity>> CreateAsync<TEntity>(IQueryable<TEntity> query, IPaginationSpecification<TEntity> specification)
                 where TEntity : IEntity
         {

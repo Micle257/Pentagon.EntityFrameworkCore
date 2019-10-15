@@ -2,7 +2,10 @@
     using System.Reflection;
     using Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Options;
     using Repositories;
 
     class Context : BaseApplicationContext
@@ -14,7 +17,9 @@
 
         public Context(ILogger<Context> logger,
                        IDbContextChangeService deleteService,
-                       DbContextOptions<Context> options) : base(logger, deleteService, options)
+                       IMemoryCache cache,
+                       IOptions<RepositoryCacheOptions> repositoryOptions,
+                       DbContextOptions<Context> options) : base(logger, deleteService, cache, repositoryOptions, options)
         {
         }
 

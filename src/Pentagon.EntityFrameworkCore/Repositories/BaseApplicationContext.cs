@@ -19,8 +19,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.ChangeTracking;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
+    using Microsoft.Extensions.Options;
+    using Options;
 
     public abstract class BaseApplicationContext : DbContext, IApplicationContext
     {
@@ -41,13 +46,19 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         readonly bool _isInitialized;
 
         readonly IDbContextChangeService _changeService;
+        readonly IMemoryCache _cache;
+        readonly IOptions<RepositoryCacheOptions> _repositoryOptions;
 
         protected BaseApplicationContext([NotNull] ILogger logger,
                                          [NotNull] IDbContextChangeService deleteService,
+                                         IMemoryCache cache,
+                                         IOptions<RepositoryCacheOptions> repositoryOptions,
                                          DbContextOptions options) : base(options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _changeService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
+            _cache = cache;
+            _repositoryOptions = repositoryOptions;
             _isInitialized = true;
 
             ChangeTracker.AutoDetectChangesEnabled = false;
@@ -77,8 +88,12 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public event EventHandler<CommitEventArgs> Commiting;
 
         /// <inheritdoc />
+        public bool UseCachedRepositories { get; set; }
+
+        /// <inheritdoc />
         public bool UseTimeSourceFromEntities { get; set; }
 
+        /// <inheritdoc />
         public bool AutoResolveConflictsFromSameUser { get; set; }
 
         protected virtual IModelConfiguration ModelConfiguration { get; } = new SqlServerModelConfiguration();
@@ -86,6 +101,14 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new() => new Repository<TEntity>(Set<TEntity>());
+
+        /// <inheritdoc />
+        public IRepositoryTransient<TEntity> GetTransientRepository<TEntity>()
+                where TEntity : class, IEntity, new() => new Repository<TEntity>(Set<TEntity>());
+
+        /// <inheritdoc />
+        public IRepositoryCached<TEntity> GetCachedRepository<TEntity>()
+                where TEntity : class, IEntity, new() => new RepositoryCacheProxy<TEntity>(new Repository<TEntity>(Set<TEntity>()), _cache, _repositoryOptions);
 
         /// <inheritdoc />
         public Task<ContextCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default)

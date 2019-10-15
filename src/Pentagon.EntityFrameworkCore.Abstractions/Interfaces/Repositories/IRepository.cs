@@ -64,7 +64,7 @@ namespace Pentagon.EntityFrameworkCore.Interfaces.Repositories
 
         /// <summary> Removes all rows from repository. </summary>
         void Truncate();
-        
+
         Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate, CancellationToken cancellationToken = default);
 
         Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification, CancellationToken cancellationToken = default)

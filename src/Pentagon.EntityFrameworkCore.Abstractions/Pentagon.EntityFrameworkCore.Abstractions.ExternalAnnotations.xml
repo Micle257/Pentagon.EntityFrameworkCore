@@ -68,6 +68,12 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Options.RepositoryCacheOptions.Default">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Options.RepositoryCacheOptions.Entities">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
   <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetAllSpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
     <parameter name="order">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
@@ -165,6 +171,16 @@
     </parameter>
   </member>
   <member name="M:Pentagon.EntityFrameworkCore.Specifications.SpecificationHelper.Apply``1(System.Collections.Generic.IEnumerable{``0},Pentagon.EntityFrameworkCore.Interfaces.Specifications.ISpecification{``0})">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="collection">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="specification">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.SpecificationHelper.ApplyPagination``1(System.Collections.Generic.IEnumerable{``0},Pentagon.EntityFrameworkCore.Interfaces.Specifications.IPaginationSpecification{``0})">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
     <parameter name="collection">
