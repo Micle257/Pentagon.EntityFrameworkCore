@@ -11,6 +11,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq.Expressions;
+    using Extensions;
     using Helpers;
     using JetBrains.Annotations;
 
@@ -66,20 +67,20 @@ namespace Pentagon.EntityFrameworkCore.Filters
             };
         }
 
-        public static Expression<Func<TEntity, bool>> GetTextFilterCallback<TEntity>([NotNull] Expression<Func<TEntity, string>> propertySelector, TextFilter textFilter, string value, StringComparison stringComparison)
+        public static Expression<Func<TEntity, bool>> GetTextFilterCallback<TEntity>([NotNull] Expression<Func<TEntity, string>> propertySelector, TextFilter textFilter, string value)
         {
             var callBody = propertySelector.Body;
 
             return textFilter switch
             {
-                TextFilter.Equal => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Equals(value, stringComparison))),
-                TextFilter.NotEqual => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Equals(value, stringComparison))),
+                TextFilter.Equal => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Equals(value))),
+                TextFilter.NotEqual => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Equals(value))),
                 TextFilter.Empty => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => string.IsNullOrWhiteSpace(v))),
                 TextFilter.NotEmpty => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !string.IsNullOrWhiteSpace(v))),
-                TextFilter.StartWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.StartsWith(value, stringComparison))),
-                TextFilter.EndWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.EndsWith(value, stringComparison))),
-                TextFilter.Contain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Contains(value, stringComparison))),
-                TextFilter.NotContain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Contains(value, stringComparison))),
+                TextFilter.StartWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.StartsWith(value))),
+                TextFilter.EndWith => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.EndsWith(value))),
+                TextFilter.Contain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => v.Contains(value))),
+                TextFilter.NotContain => ConvertBodyToLambda<TEntity>(GetBody<string>(callBody, v => !v.Contains(value))),
                 _ => throw new ArgumentOutOfRangeException(nameof(textFilter), textFilter, null)
             };
         }
@@ -127,11 +128,21 @@ namespace Pentagon.EntityFrameworkCore.Filters
         {
             var body = propertySelector.Body;
 
-            var toStringCall = Expression.Call(body, body.Type.GetMethod(nameof(ToString), Array.Empty<Type>()));
+            if (body is UnaryExpression ue && body.NodeType == ExpressionType.Convert)
+            {
+                if (ue.Operand.Type == typeof(string))
+                {
+                    body = ue.Operand;
+                }
+            }
+            else
+            {
+                body = Expression.Call(body, body.Type.GetMethod(nameof(ToString), Array.Empty<Type>()));
+            }
 
             var parameter = Expression.Parameter(typeof(TEntity), "a");
 
-            var fixedBody = ExpressionParameterReplacer.Replace(toStringCall, parameter);
+            var fixedBody = ExpressionParameterReplacer.Replace(body, parameter);
 
             return Expression.Lambda<Func<TEntity, string>>(fixedBody, parameter);
         }

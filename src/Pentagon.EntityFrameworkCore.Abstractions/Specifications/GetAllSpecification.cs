@@ -36,15 +36,15 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
         /// <inheritdoc />
         public IReadOnlyList<SpecificationOrder<TEntity>> Orders => _orders;
-        
+
         /// <inheritdoc />
         public IOrderSpecification<TEntity> AddOrder(Expression<Func<TEntity, object>> order, bool isDescending)
         {
             _orders.Add(new SpecificationOrder<TEntity>
-                        {
-                                Order = order,
-                                IsDescending = isDescending
-                        });
+            {
+                Order = order,
+                IsDescending = isDescending
+            });
 
             return this;
         }

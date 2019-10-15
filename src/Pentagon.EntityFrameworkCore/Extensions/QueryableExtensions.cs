@@ -46,6 +46,13 @@ namespace Pentagon.EntityFrameworkCore.Extensions
 
             Debug.Assert(blankPagedList != null, nameof(blankPagedList) + " != null");
 
+            // if no data...
+            if (count == 0)
+            {
+                // return blank paged list
+                return blankPagedList;
+            }
+
             if (parameters.PageNumber > blankPagedList.TotalPages)
                 throw new PageOutOfRangeException(nameof(parameters.PageNumber), parameters.PageNumber, blankPagedList.TotalPages);
             

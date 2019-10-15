@@ -2,7 +2,10 @@
     using System;
     using Interfaces.Entities;
 
-    class User : Entity, ICreateStampSupport, IConcurrencyStampSupport, IUpdatedUserEntitySupport, IUpdateTimeStampSupport, IUpdateTimeStampIdentitySupport<int?>
+    class User : Entity, ICreateStampSupport,
+                 IConcurrencyStampSupport,
+                 IUpdatedUserEntitySupport, IUpdateTimeStampSupport, IUpdateTimeStampIdentitySupport<int?>,
+                 ICreatedUserEntitySupport, ICreateTimeStampSupport, ICreateTimeStampIdentitySupport<int?>
     {
         int _updatedUserId;
 
@@ -35,5 +38,21 @@
 
         /// <inheritdoc />
         public int? UpdatedUserId { get; set; }
+
+        /// <inheritdoc />
+        public string CreatedUser { get; set; }
+
+        /// <inheritdoc />
+        public DateTimeOffset CreatedAt { get; set; }
+
+        /// <inheritdoc />
+        object ICreateTimeStampIdentitySupport.CreatedUserId
+        {
+            get => CreatedUserId;
+            set => CreatedUserId = (int?) value;
+        }
+
+        /// <inheritdoc />
+        public int? CreatedUserId { get; set; }
     }
 }

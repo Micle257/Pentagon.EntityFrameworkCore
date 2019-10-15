@@ -20,7 +20,7 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetTextFilterCallback``1(System.Linq.Expressions.Expression{System.Func{``0,System.String}},Pentagon.EntityFrameworkCore.Filters.TextFilter,System.String,System.StringComparison)">
+  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetTextFilterCallback``1(System.Linq.Expressions.Expression{System.Func{``0,System.String}},Pentagon.EntityFrameworkCore.Filters.TextFilter,System.String)">
     <parameter name="propertySelector">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -161,6 +161,16 @@
   </member>
   <member name="M:Pentagon.EntityFrameworkCore.Specifications.QueryableExtensions.ThenSortBy``1(System.Linq.IOrderedQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Boolean)">
     <parameter name="query">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.SpecificationHelper.Apply``1(System.Collections.Generic.IEnumerable{``0},Pentagon.EntityFrameworkCore.Interfaces.Specifications.ISpecification{``0})">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="collection">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="specification">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
