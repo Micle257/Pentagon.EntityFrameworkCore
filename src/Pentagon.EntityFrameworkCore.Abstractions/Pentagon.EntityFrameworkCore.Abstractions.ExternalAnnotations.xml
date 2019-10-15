@@ -164,6 +164,16 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Specifications.SpecificationHelper.Apply``1(System.Collections.Generic.IEnumerable{``0},Pentagon.EntityFrameworkCore.Interfaces.Specifications.ISpecification{``0})">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+    <parameter name="collection">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="specification">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
   <member name="M:Pentagon.EntityFrameworkCore.Specifications.Specifications.Many``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
     <parameter name="filter">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
