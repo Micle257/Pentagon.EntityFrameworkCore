@@ -15,6 +15,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using Interfaces;
     using Interfaces.Entities;
     using Interfaces.Repositories;
+    using Repositories;
     using Specifications;
 
     /// <summary> Represents a synchronization session. </summary>

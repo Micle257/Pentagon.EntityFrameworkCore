@@ -211,68 +211,12 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             }
         }
 
-        #region GetOne
-
-        /// <inheritdoc />
-        public Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector, CancellationToken cancellationToken = default)
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetOneAsync(entitySelector, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate, CancellationToken cancellationToken = default)
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetOneAsync(selector,  entityPredicate, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-                where TSpecification : IFilterSpecification<TEntity>
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetOneAsync(specification, cancellationToken);
-        }
-
         public Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>
         {
             var repository = _context.GetRepository<TEntity>();
 
             return repository.GetOneAsync(entitySelector, specification, cancellationToken);
-        }
-
-        #endregion
-
-        #region GetAll
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetAllAsync(cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, CancellationToken cancellationToken = default)
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetAllAsync(selector, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetAllAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-                where TSpecification : IOrderSpecification<TEntity>
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetAllAsync( specification, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -284,42 +228,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             return repository.GetAllAsync(selector, specification, cancellationToken);
         }
 
-        #endregion
-
-        #region GetMany
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector,
-                                                       Expression<Func<TEntity, object>> orderSelector,
-                                                       bool isDescending,
-                                                       CancellationToken cancellationToken = default)
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetManyAsync(entitiesSelector, orderSelector, isDescending, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
-                                                                                  Expression<Func<TEntity, bool>> entitiesSelector,
-                                                                                  Expression<Func<TEntity, object>> orderSelector,
-                                                                                  bool isDescending,
-                                                                                  CancellationToken cancellationToken = default)
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetManyAsync(selector, entitiesSelector, orderSelector, isDescending, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-                where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetManyAsync(  specification, cancellationToken);
-        }
-
         /// <inheritdoc />
         public Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
@@ -327,39 +235,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             var repository = _context.GetRepository<TEntity>();
 
             return repository.GetManyAsync(selector, specification, cancellationToken);
-        }
-
-        #endregion
-        
-        #region GetPage
-
-        public Task<PagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria, Expression<Func<TEntity, object>> order, bool isDescendingOrder, int pageSize, int pageIndex, CancellationToken cancellationToken = default)
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetPageAsync(criteria, order, isDescendingOrder, pageSize, pageIndex, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
-                                                                          Expression<Func<TEntity, bool>> criteria,
-                                                                          Expression<Func<TEntity, object>> order,
-                                                                          bool isDescendingOrder,
-                                                                          int pageSize,
-                                                                          int pageIndex,
-                                                                          CancellationToken cancellationToken = default)
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetPageAsync(selector, criteria, order, isDescendingOrder, pageSize, pageIndex, cancellationToken);
-        }
-
-        public Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
-        {
-            var repository = _context.GetRepository<TEntity>();
-
-            return repository.GetPageAsync(specification, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -370,7 +245,5 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             return repository.GetPageAsync(selector, specification, cancellationToken);
         }
-
-        #endregion
     }
 }

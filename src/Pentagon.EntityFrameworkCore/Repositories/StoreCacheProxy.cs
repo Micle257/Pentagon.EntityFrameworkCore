@@ -178,29 +178,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             return value;
         }
 
-        #region GetOne
-
-        /// <inheritdoc />
-        public Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> entitySelector, CancellationToken cancellationToken = default)
-        {
-            return GetOneAsync(e => e, entityPredicate: entitySelector, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<TSelectEntity> GetOneAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, Expression<Func<TEntity, bool>> entityPredicate, CancellationToken cancellationToken = default)
-        {
-            var spec = new GetOneSpecification<TEntity>(filter: entityPredicate);
-
-            return GetOneAsync(entitySelector: selector, specification: spec, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<TEntity> GetOneAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-                where TSpecification : IFilterSpecification<TEntity>
-        {
-            return GetOneAsync(e => e, specification: specification, cancellationToken: cancellationToken);
-        }
-
         public async Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector,
                                                                                     TSpecification specification,
                                                                                     CancellationToken cancellationToken = default)
@@ -212,31 +189,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 set = SpecificationHelper.Apply(collection: set, specification: specification).ToList();
 
             return set.Select(entitySelector.Compile()).SingleOrDefault();
-        }
-
-        #endregion
-
-        #region GetAll
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
-        {
-            return GetAllAsync(e => e, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector, CancellationToken cancellationToken = default)
-        {
-            var spec = new GetAllSpecification<TEntity>();
-
-            return GetAllAsync(selector: selector, specification: spec, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetAllAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-                where TSpecification : IOrderSpecification<TEntity>
-        {
-            return GetAllAsync(e => e, specification: specification, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc />
@@ -253,38 +205,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             return set.Select(selector.Compile()).ToList();
         }
 
-        #endregion
-
-        #region GetMany
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> entitiesSelector,
-                                                       Expression<Func<TEntity, object>> orderSelector,
-                                                       bool isDescending,
-                                                       CancellationToken cancellationToken = default)
-        {
-            return GetManyAsync(e => e, entitiesSelector: entitiesSelector, orderSelector: orderSelector, isDescending: isDescending, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
-                                                                            Expression<Func<TEntity, bool>> entitiesSelector,
-                                                                            Expression<Func<TEntity, object>> orderSelector,
-                                                                            bool isDescending,
-                                                                            CancellationToken cancellationToken = default)
-        {
-            var spec = new GetManySpecification<TEntity>(filter: entitiesSelector, order: orderSelector, isDescending: isDescending);
-
-            return GetManyAsync(selector: selector, specification: spec, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<TEntity>> GetManyAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-                where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
-        {
-            return GetManyAsync(e => e, specification: specification, cancellationToken: cancellationToken);
-        }
-
         /// <inheritdoc />
         public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                                   TSpecification specification,
@@ -297,40 +217,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 set = SpecificationHelper.Apply(collection: set, specification: specification).ToList();
 
             return set.Select(selector.Compile()).ToList();
-        }
-
-        #endregion
-
-        #region GetPage
-
-        public Task<PagedList<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> criteria,
-                                                     Expression<Func<TEntity, object>> order,
-                                                     bool isDescendingOrder,
-                                                     int pageSize,
-                                                     int pageIndex,
-                                                     CancellationToken cancellationToken = default)
-        {
-            return GetPageAsync(e => e, criteria: criteria, order: order, isDescendingOrder: isDescendingOrder, pageSize: pageSize, pageIndex: pageIndex, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity>(Expression<Func<TEntity, TSelectEntity>> selector,
-                                                                          Expression<Func<TEntity, bool>> criteria,
-                                                                          Expression<Func<TEntity, object>> order,
-                                                                          bool isDescendingOrder,
-                                                                          int pageSize,
-                                                                          int pageIndex,
-                                                                          CancellationToken cancellationToken = default)
-        {
-            var specification = new GetPageSpecification<TEntity>(filter: criteria, order: order, isDescending: isDescendingOrder, pageSize: pageSize, pageNumber: pageIndex);
-
-            return GetPageAsync(selector: selector, specification: specification, cancellationToken: cancellationToken);
-        }
-
-        public Task<PagedList<TEntity>> GetPageAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
-        {
-            return GetPageAsync(e => e, specification: specification, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc />
@@ -346,7 +232,5 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             return PaginationHelper.Create(selector.Compile(), queryIteration: set, specification: specification);
         }
-
-        #endregion
     }
 }

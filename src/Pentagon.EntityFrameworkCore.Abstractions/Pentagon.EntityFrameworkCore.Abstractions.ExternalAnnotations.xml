@@ -3,7 +3,16 @@
   <member name="P:Pentagon.EntityFrameworkCore.ConcurrencyConflictEntity.UpdatedUserId">
     <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetFilter``2(Pentagon.EntityFrameworkCore.Filters.CompositeFilter{``0,``1})">
+  <member name="F:Pentagon.EntityFrameworkCore.Filters.FilterBuilder`1._compositeFilters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="F:Pentagon.EntityFrameworkCore.Filters.FilterBuilder`1._filters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="F:Pentagon.EntityFrameworkCore.Filters.FilterBuilder`1._valueFilters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Filters.FilterExpressionHelper.GetFilter``1(Pentagon.EntityFrameworkCore.Filters.ICompositeFilter)">
     <parameter name="filter">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -24,6 +33,15 @@
     <parameter name="propertySelector">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Interfaces.Filters.IFilterBuilder`1.CompositeFilters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Interfaces.Filters.IFilterBuilder`1.Filters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Interfaces.Filters.IFilterBuilder`1.ValueFilters">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
   <member name="M:Pentagon.EntityFrameworkCore.Interfaces.IConcurrencyConflictResolver.ResolveAsync(Pentagon.EntityFrameworkCore.Interfaces.IApplicationContext,System.Func{Pentagon.EntityFrameworkCore.Interfaces.IApplicationContext})">
     <parameter name="appContext">
@@ -68,10 +86,40 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="P:Pentagon.EntityFrameworkCore.Options.RepositoryCacheOptions.Default">
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Stores.IDeleteStore`1.DeleteAsync(`0)">
+    <parameter name="entity">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Stores.IDeleteStore`1.DeleteManyAsync(`0[])">
+    <parameter name="entities">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Stores.IInsertStore`1.InsertAsync(`0)">
+    <parameter name="entity">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Stores.IInsertStore`1.InsertManyAsync(`0[])">
+    <parameter name="entities">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Stores.IUpdateStore`1.UpdateAsync(`0)">
+    <parameter name="entity">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Interfaces.Stores.IUpdateStore`1.UpdateManyAsync(`0[])">
+    <parameter name="entities">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="P:Pentagon.EntityFrameworkCore.Options.StoreCacheOptions.Default">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
-  <member name="P:Pentagon.EntityFrameworkCore.Options.RepositoryCacheOptions.Entities">
+  <member name="P:Pentagon.EntityFrameworkCore.Options.StoreCacheOptions.Entities">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
   <member name="M:Pentagon.EntityFrameworkCore.Specifications.GetAllSpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">

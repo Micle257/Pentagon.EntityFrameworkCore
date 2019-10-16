@@ -44,7 +44,19 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Repositories.BaseApplicationContext.#ctor(Microsoft.Extensions.Logging.ILogger,Pentagon.EntityFrameworkCore.Interfaces.IDbContextChangeService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Options.IOptions{Pentagon.EntityFrameworkCore.Options.RepositoryCacheOptions},Microsoft.EntityFrameworkCore.DbContextOptions)">
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.ServiceCollectionExtensions.AddStoreCached``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="services">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.ServiceCollectionExtensions.AddStoreTransient``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="services">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.BaseApplicationContext.#ctor(Microsoft.Extensions.Logging.ILogger,Pentagon.EntityFrameworkCore.Interfaces.IDbContextChangeService,Microsoft.EntityFrameworkCore.DbContextOptions)">
     <parameter name="logger">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -67,7 +79,7 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Repositories.RepositoryCacheProxy`1.#ctor(Pentagon.EntityFrameworkCore.Interfaces.Repositories.IRepositoryTransient{`0},Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Options.IOptions{Pentagon.EntityFrameworkCore.Options.RepositoryCacheOptions})">
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.StoreCacheProxy`1.#ctor(Pentagon.EntityFrameworkCore.Interfaces.Stores.IStoreTransient{`0},Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Options.IOptions{Pentagon.EntityFrameworkCore.Options.StoreCacheOptions})">
     <parameter name="transient">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
@@ -75,8 +87,8 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Repositories.RepositoryCacheProxy`1.InsertMany(`0[])">
-    <parameter name="entities">
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.StoreTransient`1.#ctor(Pentagon.EntityFrameworkCore.Interfaces.IApplicationContext)">
+    <parameter name="context">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>

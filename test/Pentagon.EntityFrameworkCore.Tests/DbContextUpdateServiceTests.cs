@@ -11,6 +11,7 @@ namespace Pentagon.EntityFrameworkCore.Tests
     using Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Mocks;
+    using Repositories;
     using Xunit;
     using Entity = Mocks.Entity;
 
