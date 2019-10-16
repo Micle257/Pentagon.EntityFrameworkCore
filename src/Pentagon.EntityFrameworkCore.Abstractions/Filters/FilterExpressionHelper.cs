@@ -27,9 +27,10 @@ namespace Pentagon.EntityFrameworkCore.Filters
             if (filter is CompositeFilter<TEntity> basicCompositeFilter)
             {
                 builder = BasicCompositeFilterSetupBuild(builder, basicCompositeFilter);
-            } else if (filter.GetType().GenericTypeArguments?.Length == 2)
+            }
+            else if (filter.GetType().GenericTypeArguments?.Length == 2)
             {
-                //builder = CompositeFilterSetupBuild(builder, filter);
+                builder = CompositeFilterSetupBuild(builder, filter);
             }
 
             var predicate = builder.Build();
@@ -37,40 +38,52 @@ namespace Pentagon.EntityFrameworkCore.Filters
             return predicate;
         }
 
-     // [Pure]
-     // [NotNull]
-     // static IPredicateBuilder<TEntity> CompositeFilterSetupBuild<TEntity>([NotNull] IPredicateBuilder<TEntity> builder, [NotNull] ICompositeFilter filter)
-     // {
-     //     var type = filter.GetType();
-     //
-     //     var valueType = type.GenericTypeArguments[1];
-     //
-     //     var firstConditionPropertyInfo = type.GetProperty(nameof(CompositeFilter<int, int>.FirstCondition));
-     //
-     //     var firstCallback = (Expression) firstConditionPropertyInfo.GetValue(filter);
-     //
-     //     builder = (IPredicateBuilder<TEntity>)builder.Start((firstCallback));
-     //
-     //     if (filter.Type == FilterCompositionType.Double)
-     //     {
-     //         var secondCallback = filter.SecondCondition;
-     //
-     //         switch (filter.Operation)
-     //         {
-     //             case FilterLogicOperation.Or:
-     //                 builder = (IPredicateBuilder<TEntity>)builder.Or((secondCallback));
-     //                 break;
-     //
-     //             case FilterLogicOperation.And:
-     //                 builder = (IPredicateBuilder<TEntity>)builder.And((secondCallback));
-     //                 break;
-     //         }
-     //     }
-     //
-     //     return builder;
-     //
-     //
-     // }
+        [Pure]
+        [NotNull]
+        static IPredicateBuilder<TEntity> CompositeFilterSetupBuild<TEntity>([NotNull] IPredicateBuilder<TEntity> builder, [NotNull] ICompositeFilter filter)
+        {
+            var type = filter.GetType();
+
+            var valueType = type.GenericTypeArguments[1];
+
+            var selector = GetEntitySelector<TEntity>(filter);
+
+            var firstConditionPropertyInfo = type.GetProperty(nameof(CompositeFilter<int, int>.FirstCondition));
+
+            var firstCallback = (LambdaExpression)firstConditionPropertyInfo.GetValue(filter);
+
+            var firstCallbackBody = firstCallback.Body;
+
+            var result = firstCallbackBody;
+
+            if (filter.Type == FilterCompositionType.Double)
+            {
+                var secondConditionPropertyInfo = type.GetProperty(nameof(CompositeFilter<int, int>.SecondCondition));
+
+                var secondCallback = (LambdaExpression)secondConditionPropertyInfo.GetValue(filter);
+
+                var secondCallbackBody = secondCallback.Body;
+
+                switch (filter.Operation)
+                {
+                    case FilterLogicOperation.Or:
+                        result = Expression.OrElse(firstCallbackBody, secondCallbackBody);
+                        break;
+
+                    case FilterLogicOperation.And:
+                        result = Expression.AndAlso(firstCallbackBody, secondCallbackBody);
+                        break;
+                }
+            }
+
+            builder.Start();
+        }
+
+        static Expression<Func<TEntity>> GetEntitySelector<TEntity>(ICompositeFilter filter)
+        {
+
+            var firstConditionPropertyInfo = type.GetProperty(nameof(CompositeFilter<int, int>.S));
+        }
 
         [Pure]
         [NotNull]
@@ -195,6 +208,20 @@ namespace Pentagon.EntityFrameworkCore.Filters
             var fixedBody = ExpressionParameterReplacer.Replace(body, parameter);
 
             return Expression.Lambda<Func<TEntity, string>>(fixedBody, parameter);
+        }
+
+        [NotNull]
+        public static Expression<Func<TEntity, bool>> FlattenComposedFilter<TEntity, TProperty>([NotNull] CompositeFilter<TEntity, TProperty> filter)
+        {
+            var first = filter.FirstCondition;
+            var second = filter.SecondCondition;
+            var select = filter.Property;
+
+            var firstBody  = first.Body;
+            var secondBody = second.Body;
+            var selectBody = select.Body;
+
+
         }
     }
 }
