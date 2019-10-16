@@ -17,13 +17,65 @@ namespace Pentagon.EntityFrameworkCore.Filters
 
     public static class FilterExpressionHelper
     {
-        public static Expression<Func<TEntity, bool>> GetFilter<TEntity, TValue>([NotNull] CompositeFilter<TEntity, TValue> filter)
+        public static Expression<Func<TEntity, bool>> GetFilter<TEntity>([NotNull] ICompositeFilter filter)
         {
             if (filter.Type == 0)
                 return null;
 
             IPredicateBuilder<TEntity> builder = new PredicateBuilder<TEntity>();
 
+            if (filter is CompositeFilter<TEntity> basicCompositeFilter)
+            {
+                builder = BasicCompositeFilterSetupBuild(builder, basicCompositeFilter);
+            } else if (filter.GetType().GenericTypeArguments?.Length == 2)
+            {
+                //builder = CompositeFilterSetupBuild(builder, filter);
+            }
+
+            var predicate = builder.Build();
+
+            return predicate;
+        }
+
+     // [Pure]
+     // [NotNull]
+     // static IPredicateBuilder<TEntity> CompositeFilterSetupBuild<TEntity>([NotNull] IPredicateBuilder<TEntity> builder, [NotNull] ICompositeFilter filter)
+     // {
+     //     var type = filter.GetType();
+     //
+     //     var valueType = type.GenericTypeArguments[1];
+     //
+     //     var firstConditionPropertyInfo = type.GetProperty(nameof(CompositeFilter<int, int>.FirstCondition));
+     //
+     //     var firstCallback = (Expression) firstConditionPropertyInfo.GetValue(filter);
+     //
+     //     builder = (IPredicateBuilder<TEntity>)builder.Start((firstCallback));
+     //
+     //     if (filter.Type == FilterCompositionType.Double)
+     //     {
+     //         var secondCallback = filter.SecondCondition;
+     //
+     //         switch (filter.Operation)
+     //         {
+     //             case FilterLogicOperation.Or:
+     //                 builder = (IPredicateBuilder<TEntity>)builder.Or((secondCallback));
+     //                 break;
+     //
+     //             case FilterLogicOperation.And:
+     //                 builder = (IPredicateBuilder<TEntity>)builder.And((secondCallback));
+     //                 break;
+     //         }
+     //     }
+     //
+     //     return builder;
+     //
+     //
+     // }
+
+        [Pure]
+        [NotNull]
+        static IPredicateBuilder<TEntity> BasicCompositeFilterSetupBuild<TEntity>([NotNull] IPredicateBuilder<TEntity> builder, [NotNull] CompositeFilter<TEntity> filter)
+        {
             var firstCallback = filter.FirstCondition;
 
             builder = (IPredicateBuilder<TEntity>)builder.Start((firstCallback));
@@ -44,9 +96,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
                 }
             }
 
-            var predicate = builder.Build();
-
-            return predicate;
+            return builder;
         }
 
         public static Expression<Func<TEntity, bool>> GetNumberFilterCallback<TEntity, TValue>(Expression<Func<TEntity, TValue>> propertySelector, NumberFilter textFilter, TValue value)

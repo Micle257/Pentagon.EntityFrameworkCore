@@ -16,4 +16,10 @@ namespace Pentagon.EntityFrameworkCore.Interfaces.Filters
     {
         IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, Expression<Func<TEntity, bool>> condition);
     }
+
+    public interface ICompositeFilterBuilder<TEntity, TProperty> : IFilterBuilder<TEntity>
+            where TEntity : IEntity
+    {
+        IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, Expression<Func<TProperty, bool>> condition);
+    }
 }

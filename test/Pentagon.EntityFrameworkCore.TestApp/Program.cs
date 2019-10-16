@@ -34,6 +34,17 @@
 
                 var j = c.Set<User>().Where(filter).ToList();
             }
+
+            var builder = new FilterBuilder<User>();
+
+            builder.AddCompositeFilter(a => a.CreatedAt, d => d.Day == 3)
+                   .AddSubFilter(FilterLogicOperation.Or, d => d.Day > 8);
+
+            builder.AddCompositeFilter(a => a.Name == "we")
+                   .AddSubFilter(FilterLogicOperation.And, c => c.UpdatedAt.HasValue);
+
+            builder.AddCompositeFilter(c => c.Name, TextFilter.EndWith, "po")
+                   .AddSubFilter(FilterLogicOperation.And, TextFilter.Contain, "aw");
         }
     }
 }

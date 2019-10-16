@@ -9,9 +9,5 @@ namespace Pentagon.EntityFrameworkCore.Interfaces.Filters
     using Entities;
     using EntityFrameworkCore.Filters;
 
-    public interface IConnectedCompositeFilterBuilder<TEntity> : IConnectedCompositeNumberFilterBuilder<TEntity>, IConnectedCompositeTextFilterBuilder<TEntity>
-            where TEntity : IEntity
-    {
-        IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, NumberFilter filter, object value = null);
-    }
+    
 }
