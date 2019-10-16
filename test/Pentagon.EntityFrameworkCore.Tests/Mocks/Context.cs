@@ -25,9 +25,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
     {
         public NewContext([NotNull] ILogger logger,
                        [NotNull] IDbContextChangeService deleteService,
-                          IMemoryCache cache,
-                          IOptions<RepositoryCacheOptions> repositoryOptions,
-                       DbContextOptions options) : base(logger, deleteService, cache, repositoryOptions, options)
+                       DbContextOptions options) : base(logger, deleteService, options)
         {
 
         }
@@ -51,8 +49,8 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
         public Context([NotNull] ILogger logger,
                        [NotNull] IDbContextChangeService deleteService,
                        IMemoryCache cache,
-                       IOptions<RepositoryCacheOptions> repositoryOptions,
-                       DbContextOptions options) : base(logger, deleteService, cache, repositoryOptions, options)
+                       IOptions<StoreCacheOptions> repositoryOptions,
+                       DbContextOptions options) : base(logger, deleteService,  options)
         {
             
         }

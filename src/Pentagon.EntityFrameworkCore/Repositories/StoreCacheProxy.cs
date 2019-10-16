@@ -17,17 +17,18 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Interfaces.Entities;
     using Interfaces.Repositories;
     using Interfaces.Specifications;
+    using Interfaces.Stores;
     using JetBrains.Annotations;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Options;
     using Options;
     using Specifications;
 
-    public class RepositoryCacheProxy<TEntity> : IRepositoryCached<TEntity>
+    public class StoreCacheProxy<TEntity> : IStoreCached<TEntity>
             where TEntity : IEntity
     {
         [NotNull]
-        readonly IRepositoryTransient<TEntity> _transient;
+        readonly IStoreTransient<TEntity> _transient;
 
         [NotNull]
         readonly IMemoryCache _cache;
@@ -38,24 +39,15 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         [NotNull]
         readonly EntityCacheOptions _options;
 
-        public RepositoryCacheProxy([NotNull] IRepositoryTransient<TEntity> transient,
+        public StoreCacheProxy([NotNull] IStoreTransient<TEntity> transient,
                                     [NotNull] IMemoryCache cache,
-                                    IOptions<RepositoryCacheOptions> options)
+                                    IOptions<StoreCacheOptions> options)
         {
             _transient = transient;
             _cache     = cache;
 
-            _options = GetOptions(options?.Value ?? new RepositoryCacheOptions());
+            _options = GetOptions(options?.Value ?? new StoreCacheOptions());
         }
-
-        /// <inheritdoc />
-        public Type ElementType => _transient.AsQueryable().ElementType;
-
-        /// <inheritdoc />
-        public Expression Expression => _transient.AsQueryable().Expression;
-
-        /// <inheritdoc />
-        public IQueryProvider Provider => _transient.AsQueryable().Provider;
 
         /// <inheritdoc />
         public Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default) => _transient.GetByIdAsync(id: id, cancellationToken: cancellationToken);
@@ -69,45 +61,81 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public virtual void Insert(TEntity entity)
+        public async Task<ContextCommitResult> DeleteAsync(TEntity entity)
         {
-            _transient.Insert(entity: entity);
+            var result = await _transient.DeleteAsync(entity: entity);
+
+            if (result.IsSuccessful)
+            {
+                await ReloadAsync();
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
-        public virtual void InsertMany([NotNull] params TEntity[] entities)
+        public async Task<ContextCommitResult> DeleteManyAsync(params TEntity[] entities)
         {
-            _transient.InsertMany(entities: entities);
+            var result = await _transient.DeleteManyAsync(entities: entities);
+
+            if (result.IsSuccessful)
+            {
+                await ReloadAsync();
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
-        public virtual void Update(TEntity entity)
+        public async Task<ContextCommitResult<TEntity>> InsertAsync(TEntity entity)
         {
-            _transient.Update(entity: entity);
+            var result = await _transient.InsertAsync(entity: entity);
+
+            if (result.IsSuccessful)
+            {
+                await ReloadAsync();
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
-        public void UpdateMany(params TEntity[] entities)
+        public async Task<ContextCommitResult<IReadOnlyCollection<TEntity>>> InsertManyAsync(params TEntity[] entities)
         {
-            _transient.UpdateMany(entities: entities);
+            var result = await _transient.InsertManyAsync(entities: entities);
+
+            if (result.IsSuccessful)
+            {
+                await ReloadAsync();
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
-        public virtual void Delete(TEntity entity)
+        public async Task<ContextCommitResult<TEntity>> UpdateAsync(TEntity entity)
         {
-            _transient.Delete(entity: entity);
+            var result = await _transient.UpdateAsync(entity: entity);
+
+            if (result.IsSuccessful)
+            {
+                await ReloadAsync();
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
-        public void DeleteMany(params TEntity[] entities)
+        public async Task<ContextCommitResult<IReadOnlyCollection<TEntity>>> UpdateManyAsync(params TEntity[] entities)
         {
-            _transient.DeleteMany(entities: entities);
-        }
+           var result = await _transient.UpdateManyAsync(entities: entities);
 
-        /// <inheritdoc />
-        public void Truncate()
-        {
-            _transient.Truncate();
+           if (result.IsSuccessful)
+           {
+               await ReloadAsync();
+           }
+
+           return result;
         }
 
         /// <inheritdoc />
@@ -118,14 +146,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             _cache.Set(key: _cacheKey, value: value, GetCacheOptions());
         }
 
-        /// <inheritdoc />
-        public IEnumerator<TEntity> GetEnumerator() => _transient.AsQueryable().GetEnumerator();
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
         [NotNull]
-        EntityCacheOptions GetOptions([NotNull] RepositoryCacheOptions options)
+        EntityCacheOptions GetOptions([NotNull] StoreCacheOptions options)
         {
             if (options.Entities.TryGetValue(key: typeof(TEntity).Name, out var entityCacheOptions))
                 return entityCacheOptions;

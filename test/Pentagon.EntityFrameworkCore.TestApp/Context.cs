@@ -17,9 +17,7 @@
 
         public Context(ILogger<Context> logger,
                        IDbContextChangeService deleteService,
-                       IMemoryCache cache,
-                       IOptions<RepositoryCacheOptions> repositoryOptions,
-                       DbContextOptions<Context> options) : base(logger, deleteService, cache, repositoryOptions, options)
+                       DbContextOptions<Context> options) : base(logger, deleteService, options)
         {
         }
 

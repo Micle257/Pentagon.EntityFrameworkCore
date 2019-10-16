@@ -24,7 +24,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
     /// <summary> Represents a repository for the entity framework provider. It has similar behavior like <see cref="DbSet{TEntity}" />. Marks and gets data from database. </summary>
     /// <typeparam name="TEntity"> The type of the entity. </typeparam>
-    public class Repository<TEntity> : IRepositoryTransient<TEntity>
+    public class Repository<TEntity> : IRepository<TEntity>
             where TEntity : class, IEntity, new()
     {
         /// <summary> The inner set. </summary>

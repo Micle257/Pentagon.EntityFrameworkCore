@@ -2,7 +2,7 @@ namespace Pentagon.EntityFrameworkCore.Options {
     using System.Collections.Generic;
     using JetBrains.Annotations;
 
-    public class RepositoryCacheOptions
+    public class StoreCacheOptions
     {
         [NotNull]
         public IDictionary<string, EntityCacheOptions> Entities { get; set; } = new Dictionary<string, EntityCacheOptions>();

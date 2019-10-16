@@ -15,7 +15,10 @@ namespace Pentagon.EntityFrameworkCore
         public bool HasConcurrencyConflicts => Conflicts != null && Conflicts.Count > 0;
 
         public List<ConcurrencyConflictPair> Conflicts { get; set; } = new List<ConcurrencyConflictPair>();
+    }
 
-        public int CommitResult { get; set; }
+    public class ContextCommitResult<TResult> : ContextCommitResult
+    {
+        public TResult Result { get; set; }
     }
 }

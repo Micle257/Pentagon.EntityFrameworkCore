@@ -10,12 +10,12 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
     {
         readonly ILoggerFactory _loggerFactory;
         readonly IMemoryCache _cache;
-        readonly IOptions<RepositoryCacheOptions> _repositoryOptions;
+        readonly IOptions<StoreCacheOptions> _repositoryOptions;
         readonly IDbContextChangeService _changeService;
 
         public ContextFactory(ILoggerFactory loggerFactory,
                               IMemoryCache cache,
-                              IOptions<RepositoryCacheOptions> repositoryOptions, IDbContextChangeService changeService)
+                              IOptions<StoreCacheOptions> repositoryOptions, IDbContextChangeService changeService)
         {
             _loggerFactory = loggerFactory;
             _cache = cache;
@@ -33,24 +33,18 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
     public class NewContextFactory : IContextFactory<INewContext>
     {
         readonly ILoggerFactory _loggerFactory;
-        readonly IMemoryCache _cache;
-        readonly IOptions<RepositoryCacheOptions> _repositoryOptions;
         readonly IDbContextChangeService _changeService;
 
-        public NewContextFactory(ILoggerFactory loggerFactory,
-                                 IMemoryCache cache,
-                                 IOptions<RepositoryCacheOptions> repositoryOptions, IDbContextChangeService changeService)
+        public NewContextFactory(ILoggerFactory loggerFactory,IDbContextChangeService changeService)
         {
             _loggerFactory = loggerFactory;
-            _cache = cache;
-            _repositoryOptions = repositoryOptions;
             _changeService = changeService;
         }
 
         /// <inheritdoc />
         public IApplicationContext CreateContext(string[] args = null)
         {
-            return new NewContext(_loggerFactory.CreateLogger<NewContext>(), _changeService, _cache, _repositoryOptions, new DbContextOptions<NewContext>());
+            return new NewContext(_loggerFactory.CreateLogger<NewContext>(), _changeService,  new DbContextOptions<NewContext>());
         }
     }
 }

@@ -46,19 +46,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         readonly bool _isInitialized;
 
         readonly IDbContextChangeService _changeService;
-        readonly IMemoryCache _cache;
-        readonly IOptions<RepositoryCacheOptions> _repositoryOptions;
 
         protected BaseApplicationContext([NotNull] ILogger logger,
                                          [NotNull] IDbContextChangeService deleteService,
-                                         IMemoryCache cache,
-                                         IOptions<RepositoryCacheOptions> repositoryOptions,
                                          DbContextOptions options) : base(options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _changeService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
-            _cache = cache;
-            _repositoryOptions = repositoryOptions;
             _isInitialized = true;
 
             ChangeTracker.AutoDetectChangesEnabled = false;
@@ -88,9 +82,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public event EventHandler<CommitEventArgs> Commiting;
 
         /// <inheritdoc />
-        public bool UseCachedRepositories { get; set; }
-
-        /// <inheritdoc />
         public bool UseTimeSourceFromEntities { get; set; }
 
         /// <inheritdoc />
@@ -101,14 +92,6 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public IRepository<TEntity> GetRepository<TEntity>()
                 where TEntity : class, IEntity, new() => new Repository<TEntity>(Set<TEntity>());
-
-        /// <inheritdoc />
-        public IRepositoryTransient<TEntity> GetTransientRepository<TEntity>()
-                where TEntity : class, IEntity, new() => new Repository<TEntity>(Set<TEntity>());
-
-        /// <inheritdoc />
-        public IRepositoryCached<TEntity> GetCachedRepository<TEntity>()
-                where TEntity : class, IEntity, new() => new RepositoryCacheProxy<TEntity>(new Repository<TEntity>(Set<TEntity>()), _cache, _repositoryOptions);
 
         /// <inheritdoc />
         public Task<ContextCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default)
@@ -156,8 +139,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 if (!ChangeTracker.HasChanges())
                     return new ContextCommitResult();
-
+                
                 _changeService.ApplyUpdate(this, UseTimeSourceFromEntities);
+
                 _changeService.ApplyDelete(this, UseTimeSourceFromEntities);
 
                 var conflictPairs = await ApplyConcurrencyCheckAsync();
@@ -172,7 +156,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
                 return new ContextCommitResult
                        {
-                               CommitResult = result,
+                               Content = result,
                                Conflicts = conflictPairs
                        };
             }

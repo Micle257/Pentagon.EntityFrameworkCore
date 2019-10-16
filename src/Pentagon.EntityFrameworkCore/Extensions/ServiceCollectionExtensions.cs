@@ -9,6 +9,9 @@ namespace Pentagon.EntityFrameworkCore.Extensions
     using System;
     using System.Linq;
     using Interfaces;
+    using Interfaces.Entities;
+    using Interfaces.Stores;
+    using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Repositories;
@@ -167,6 +170,28 @@ namespace Pentagon.EntityFrameworkCore.Extensions
             builder.AddDefaultUnitOfWork();
 
             return builder;
+        }
+
+        [NotNull]
+        public static IServiceCollection AddStoreCached<T>([NotNull] this IServiceCollection services)
+                where T : class, IEntity, new()
+        {
+            services.AddScoped<IStoreTransient<T>, StoreTransient<T>>();
+            services.AddScoped<IStoreCached<T>, StoreCacheProxy<T>>();
+            services.AddScoped<IStore<T>>(c => c.GetRequiredService<IStoreCached<T>>());
+
+            return services;
+        }
+
+        [NotNull]
+        public static IServiceCollection AddStoreTransient<T>([NotNull] this IServiceCollection services)
+                where T : class, IEntity, new()
+        {
+            services.AddScoped<IStoreTransient<T>, StoreTransient<T>>();
+            services.AddScoped<IStoreCached<T>, StoreCacheProxy<T>>();
+            services.AddScoped<IStore<T>>(c => c.GetRequiredService<IStoreTransient<T>>());
+
+            return services;
         }
     }
 }
