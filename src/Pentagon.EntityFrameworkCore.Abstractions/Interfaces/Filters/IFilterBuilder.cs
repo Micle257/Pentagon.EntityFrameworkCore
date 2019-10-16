@@ -37,8 +37,6 @@ namespace Pentagon.EntityFrameworkCore.Interfaces.Filters
 
         ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, bool>> condition);
 
-        ICompositeFilterBuilder<TEntity, TProperty> AddCompositeFilter<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector, Expression<Func<TProperty, bool>> condition);
-
         IFilterBuilder<TEntity> AddFilter(Expression<Func<TEntity, bool>> condition);
 
         Expression<Func<TEntity, bool>> BuildFilter();

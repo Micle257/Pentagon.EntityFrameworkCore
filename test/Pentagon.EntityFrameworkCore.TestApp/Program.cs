@@ -37,9 +37,6 @@
 
             var builder = new FilterBuilder<User>();
 
-            builder.AddCompositeFilter(a => a.CreatedAt, d => d.Day == 3)
-                   .AddSubFilter(FilterLogicOperation.Or, d => d.Day > 8);
-
             builder.AddCompositeFilter(a => a.CreatedAt.Day == 3)
                    .AddSubFilter(FilterLogicOperation.Or, d => d.CreatedAt.Day > 8);
 
