@@ -107,18 +107,18 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IOrderSpecification<TEntity>
         {
             var set = (IQueryable<TEntity>) _set;
             
             set = specification.Apply(set);
 
-            return await set.Select(selector).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return (await set.Select(selector).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).AsReadOnly();
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             var set = (IQueryable<TEntity>) _set;
@@ -127,7 +127,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
             var query = set.Select(selector);
 
-            return await query.ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            return (await query.ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).AsReadOnly();
         }
 
         /// <inheritdoc />

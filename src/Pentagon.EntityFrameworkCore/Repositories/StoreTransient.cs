@@ -220,7 +220,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
+        public Task<IReadOnlyList<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IOrderSpecification<TEntity>
         {
             var repository = _context.GetRepository<TEntity>();
@@ -229,7 +229,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
+        public Task<IReadOnlyList<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
             var repository = _context.GetRepository<TEntity>();

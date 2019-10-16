@@ -192,7 +192,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector,
+        public async Task<IReadOnlyList<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                                  TSpecification specification,
                                                                                                  CancellationToken cancellationToken = default)
                 where TSpecification : IOrderSpecification<TEntity>
@@ -202,11 +202,11 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             if (specification != null)
                 set = SpecificationHelper.Apply(collection: set, specification: specification).ToList();
 
-            return set.Select(selector.Compile()).ToList();
+            return set.Select(selector.Compile()).ToList().AsReadOnly();
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector,
+        public async Task<IReadOnlyList<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                                   TSpecification specification,
                                                                                                   CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
@@ -216,7 +216,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             if (specification != null)
                 set = SpecificationHelper.Apply(collection: set, specification: specification).ToList();
 
-            return set.Select(selector.Compile()).ToList();
+            return set.Select(selector.Compile()).ToList().AsReadOnly();
         }
 
         /// <inheritdoc />

@@ -43,14 +43,14 @@
         #region GetAll
 
         /// <inheritdoc />
-        public static Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(this IRetriever<TEntity> store, CancellationToken cancellationToken = default)
+        public static Task<IReadOnlyList<TEntity>> GetAllAsync<TEntity>(this IRetriever<TEntity> store, CancellationToken cancellationToken = default)
                 where TEntity : IEntity
         {
             return store.GetAllAsync(e => e, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc />
-        public static Task<IEnumerable<TSelectEntity>> GetAllAsync<TEntity, TSelectEntity>(this IRetriever<TEntity> store, Expression<Func<TEntity, TSelectEntity>> selector, CancellationToken cancellationToken = default)
+        public static Task<IReadOnlyList<TSelectEntity>> GetAllAsync<TEntity, TSelectEntity>(this IRetriever<TEntity> store, Expression<Func<TEntity, TSelectEntity>> selector, CancellationToken cancellationToken = default)
                 where TEntity : IEntity
         {
             var spec = new GetAllSpecification<TEntity>();
@@ -59,7 +59,7 @@
         }
 
         /// <inheritdoc />
-        public static Task<IEnumerable<TEntity>> GetAllAsync<TEntity, TSpecification>(this IRetriever<TEntity> store, TSpecification specification, CancellationToken cancellationToken = default)
+        public static Task<IReadOnlyList<TEntity>> GetAllAsync<TEntity, TSpecification>(this IRetriever<TEntity> store, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IOrderSpecification<TEntity>
                 where TEntity : IEntity
         {
@@ -71,7 +71,7 @@
         #region GetMany
 
         /// <inheritdoc />
-        public static Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(this IRetriever<TEntity> store, Expression<Func<TEntity, bool>> entitiesSelector,
+        public static Task<IReadOnlyList<TEntity>> GetManyAsync<TEntity>(this IRetriever<TEntity> store, Expression<Func<TEntity, bool>> entitiesSelector,
                                                                        Expression<Func<TEntity, object>> orderSelector,
                                                                        bool isDescending,
                                                                        CancellationToken cancellationToken = default)
@@ -81,7 +81,7 @@
         }
 
         /// <inheritdoc />
-        public static Task<IEnumerable<TSelectEntity>> GetManyAsync<TEntity, TSelectEntity>(this IRetriever<TEntity> store, Expression<Func<TEntity, TSelectEntity>> selector,
+        public static Task<IReadOnlyList<TSelectEntity>> GetManyAsync<TEntity, TSelectEntity>(this IRetriever<TEntity> store, Expression<Func<TEntity, TSelectEntity>> selector,
                                                                                             Expression<Func<TEntity, bool>> entitiesSelector,
                                                                                             Expression<Func<TEntity, object>> orderSelector,
                                                                                             bool isDescending,
@@ -94,7 +94,7 @@
         }
 
         /// <inheritdoc />
-        public static Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TSpecification>(this IRetriever<TEntity> store, TSpecification specification, CancellationToken cancellationToken = default)
+        public static Task<IReadOnlyList<TEntity>> GetManyAsync<TEntity, TSpecification>(this IRetriever<TEntity> store, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
                 where TEntity : IEntity
         {
@@ -132,6 +132,39 @@
         }
 
         public static Task<PagedList<TEntity>> GetPageAsync<TEntity, TSpecification>(this IRetriever<TEntity> store, TSpecification specification, CancellationToken cancellationToken = default)
+                where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
+                where TEntity : IEntity
+        {
+            return store.GetPageAsync(e => e, specification: specification, cancellationToken: cancellationToken);
+        }
+
+        public static Task<PagedList<TEntity>> GetPagedAsync<TEntity>(this IRetriever<TEntity> store, Expression<Func<TEntity, bool>> criteria,
+                                                                     Expression<Func<TEntity, object>> order,
+                                                                     bool isDescendingOrder,
+                                                                     int pageSize,
+                                                                     int pageIndex,
+                                                                     CancellationToken cancellationToken = default)
+                where TEntity : IEntity
+        {
+            return store.GetPageAsync(e => e, criteria: criteria, order: order, isDescendingOrder: isDescendingOrder, pageSize: pageSize, pageIndex: pageIndex, cancellationToken: cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public static Task<PagedList<TSelectEntity>> GetPagedAsync<TEntity, TSelectEntity>(this IRetriever<TEntity> store, Expression<Func<TEntity, TSelectEntity>> selector,
+                                                                                          Expression<Func<TEntity, bool>> criteria,
+                                                                                          Expression<Func<TEntity, object>> order,
+                                                                                          bool isDescendingOrder,
+                                                                                          int pageSize,
+                                                                                          int pageIndex,
+                                                                                          CancellationToken cancellationToken = default)
+                where TEntity : IEntity
+        {
+            var specification = new GetPageSpecification<TEntity>(filter: criteria, order: order, isDescending: isDescendingOrder, pageSize: pageSize, pageNumber: pageIndex);
+
+            return store.GetPageAsync(selector: selector, specification: specification, cancellationToken: cancellationToken);
+        }
+
+        public static Task<PagedList<TEntity>> GetPagedAsync<TEntity, TSpecification>(this IRetriever<TEntity> store, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
                 where TEntity : IEntity
         {
