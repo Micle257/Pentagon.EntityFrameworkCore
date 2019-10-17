@@ -20,13 +20,18 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using Interfaces.Stores;
     using JetBrains.Annotations;
     using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Microsoft.Extensions.Primitives;
     using Options;
     using Specifications;
 
     public class StoreCacheProxy<TEntity> : IStoreCached<TEntity>
             where TEntity : IEntity
     {
+        [NotNull]
+        readonly ILogger<StoreCacheProxy<TEntity>> _logger;
+
         [NotNull]
         readonly IStoreTransient<TEntity> _transient;
 
@@ -39,14 +44,17 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         [NotNull]
         readonly EntityCacheOptions _options;
 
-        public StoreCacheProxy([NotNull] IStoreTransient<TEntity> transient,
+        public StoreCacheProxy([NotNull] ILogger<StoreCacheProxy<TEntity>> logger,
+                               [NotNull] IStoreTransient<TEntity> transient,
                                     [NotNull] IMemoryCache cache,
-                                    IOptions<StoreCacheOptions> options)
+                                    IOptions<StoreCacheOptions> options,
+                                    IOptionsMonitor<EntityCacheOptions> singleOptions)
         {
+            _logger = logger;
             _transient = transient;
             _cache     = cache;
 
-            _options = GetOptions(options?.Value ?? new StoreCacheOptions());
+            _options = singleOptions?.Get(typeof(TEntity).Name) ?? GetOptions(options?.Value ?? new StoreCacheOptions());
         }
 
         /// <inheritdoc />
@@ -141,6 +149,8 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public async Task ReloadAsync()
         {
+            _logger.LogDebug("Store cache ({Name}): reload", _cacheKey);
+
             var value = await _transient.GetAllAsync();
 
             _cache.Set(key: _cacheKey, value: value, GetCacheOptions());
@@ -160,13 +170,28 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         MemoryCacheEntryOptions GetCacheOptions()
         {
+            var cacheCancel = new CancellationTokenSource();
+
             var opt = new MemoryCacheEntryOptions();
 
-            opt.AbsoluteExpiration              = _options.AbsoluteExpiration;
-            opt.AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow;
-            opt.SlidingExpiration               = _options.SlidingExpiration;
+            if (_options.AbsoluteExpirationRelativeToNow.HasValue)
+                opt.SetAbsoluteExpiration(_options.AbsoluteExpirationRelativeToNow.Value);
+
+            if (_options.SlidingExpiration.HasValue)
+            {
+                //opt.SetSlidingExpiration(_options.SlidingExpiration.Value);
+                cacheCancel.CancelAfter(_options.SlidingExpiration.Value);
+            }
+
+            opt.AddExpirationToken(new CancellationChangeToken(cacheCancel.Token))
+               .RegisterPostEvictionCallback(CacheEvictionCallback);
 
             return opt;
+        }
+
+        void CacheEvictionCallback(object key, object value, EvictionReason reason, object state)
+        {
+            _logger.LogDebug("Store cache ({Name}): eviction for {Key} because of {Reason}", _cacheKey, key, reason);
         }
 
         async Task<IReadOnlyList<TEntity>> ReloadAndGetItemsAsync()

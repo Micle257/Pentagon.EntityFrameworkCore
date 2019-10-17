@@ -44,9 +44,21 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Extensions.ServiceCollectionExtensions.AddStoreCached``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.ServiceCollectionExtensions.AddStoreCached``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Pentagon.EntityFrameworkCore.Options.EntityCacheOptions})">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     <parameter name="services">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:Pentagon.EntityFrameworkCore.Extensions.ServiceCollectionExtensions.AddStoreCacheOptions(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    <parameter name="services">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="configuration">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+    <parameter name="section">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
@@ -79,7 +91,7 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Repositories.StoreCacheProxy`1.#ctor(Pentagon.EntityFrameworkCore.Interfaces.Stores.IStoreTransient{`0},Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Options.IOptions{Pentagon.EntityFrameworkCore.Options.StoreCacheOptions})">
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.StoreCacheProxy`1.#ctor(Pentagon.EntityFrameworkCore.Interfaces.Stores.IStoreTransient{`0},Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Options.IOptions{Pentagon.EntityFrameworkCore.Options.StoreCacheOptions},Microsoft.Extensions.Options.IOptionsMonitor{Pentagon.EntityFrameworkCore.Options.EntityCacheOptions})">
     <parameter name="transient">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>

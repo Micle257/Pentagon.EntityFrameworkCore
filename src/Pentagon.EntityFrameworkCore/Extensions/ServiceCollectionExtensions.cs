@@ -13,7 +13,9 @@ namespace Pentagon.EntityFrameworkCore.Extensions
     using Interfaces.Stores;
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Options;
     using Repositories;
     using Synchronization;
 
@@ -172,10 +174,37 @@ namespace Pentagon.EntityFrameworkCore.Extensions
             return builder;
         }
 
+        /// <summary>
+        /// Adds the store cache options from configuration.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns>The services.</returns>
+        /// <exception cref="ArgumentNullException">configuration</exception>
         [NotNull]
-        public static IServiceCollection AddStoreCached<T>([NotNull] this IServiceCollection services)
+        public static IServiceCollection AddStoreCacheOptions([NotNull] this IServiceCollection services, [NotNull] IConfiguration configuration, [NotNull] string section = "StoreCache")
+        {
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
+            services.AddOptions();
+            services.Configure<StoreCacheOptions>(configuration.GetSection(section));
+
+            return services;
+        }
+
+        [NotNull]
+        public static IServiceCollection AddStoreCached<T>([NotNull] this IServiceCollection services, Action<EntityCacheOptions> configure = null)
                 where T : class, IEntity, new()
         {
+            if (configure != null)
+            {
+                // configure entity named options
+                services.Configure(typeof(T).Name,configure);
+            }
+
+            services.AddMemoryCache();
+
             services.AddScoped<IStoreTransient<T>, StoreTransient<T>>();
             services.AddScoped<IStoreCached<T>, StoreCacheProxy<T>>();
             services.AddScoped<IStore<T>>(c => c.GetRequiredService<IStoreCached<T>>());
