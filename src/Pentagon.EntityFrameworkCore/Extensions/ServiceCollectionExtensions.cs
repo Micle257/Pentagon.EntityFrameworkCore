@@ -216,6 +216,9 @@ namespace Pentagon.EntityFrameworkCore.Extensions
         public static IServiceCollection AddStoreTransient<T>([NotNull] this IServiceCollection services)
                 where T : class, IEntity, new()
         {
+
+            services.AddMemoryCache();
+
             services.AddScoped<IStoreTransient<T>, StoreTransient<T>>();
             services.AddScoped<IStoreCached<T>, StoreCacheProxy<T>>();
             services.AddScoped<IStore<T>>(c => c.GetRequiredService<IStoreTransient<T>>());

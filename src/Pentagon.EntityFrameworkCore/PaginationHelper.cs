@@ -12,6 +12,7 @@ namespace Pentagon.EntityFrameworkCore
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Collections;
+    using Exceptions;
     using Interfaces.Entities;
     using Interfaces.Specifications;
     using Microsoft.EntityFrameworkCore;
@@ -24,16 +25,22 @@ namespace Pentagon.EntityFrameworkCore
                                                                                         IPaginationSpecification<TEntity> specification)
                 where TEntity : IEntity
         {
+
+            // query count of all items under filter
             var count = await query.CountAsync().ConfigureAwait(false);
 
-            var possiblePageCount = count / specification.PageSize + 1;
+            // create blank paged list for computation
+            var blankPagedList = PagedList<TSelectEntity>.CreateBlank(specification.PageSize, count, specification.PageSize, specification.PageNumber - 1);
 
-            if (count < specification.PageSize)
-                possiblePageCount = 1;
+            // if no data...
+            if (count == 0)
+            {
+                // return blank paged list
+                return blankPagedList;
+            }
 
-            // If page index is overflowed.
-            if (specification.PageNumber > possiblePageCount + 1)
-                throw new ArgumentOutOfRangeException(nameof(specification.PageNumber), message: "The page number is out of range.");
+            if (specification.PageNumber > blankPagedList.TotalPages)
+                throw new PageOutOfRangeException(nameof(specification.PageNumber), specification.PageNumber, blankPagedList.TotalPages);
 
             query = specification.ApplyPagination(query);
 

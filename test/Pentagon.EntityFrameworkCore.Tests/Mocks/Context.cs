@@ -48,8 +48,6 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
         public Context([NotNull] ILogger logger,
                        [NotNull] IDbContextChangeService deleteService,
-                       IMemoryCache cache,
-                       IOptions<StoreCacheOptions> repositoryOptions,
                        DbContextOptions options) : base(logger, deleteService,  options)
         {
             

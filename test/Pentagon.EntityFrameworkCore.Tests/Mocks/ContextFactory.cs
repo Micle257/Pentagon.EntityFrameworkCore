@@ -9,24 +9,18 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
     public class ContextFactory : IContextFactory<IContext>
     {
         readonly ILoggerFactory _loggerFactory;
-        readonly IMemoryCache _cache;
-        readonly IOptions<StoreCacheOptions> _repositoryOptions;
         readonly IDbContextChangeService _changeService;
 
-        public ContextFactory(ILoggerFactory loggerFactory,
-                              IMemoryCache cache,
-                              IOptions<StoreCacheOptions> repositoryOptions, IDbContextChangeService changeService)
+        public ContextFactory(ILoggerFactory loggerFactory, IDbContextChangeService changeService)
         {
             _loggerFactory = loggerFactory;
-            _cache = cache;
-            _repositoryOptions = repositoryOptions;
             _changeService = changeService;
         }
 
         /// <inheritdoc />
         public IApplicationContext CreateContext(string[] args = null)
         {
-            return new Context(_loggerFactory.CreateLogger<Context>(), _changeService, _cache, _repositoryOptions, new DbContextOptions<Context>());
+            return new Context(_loggerFactory.CreateLogger<Context>(), _changeService, new DbContextOptions<Context>());
         }
     }
 

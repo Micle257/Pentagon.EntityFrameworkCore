@@ -33,9 +33,6 @@ namespace Pentagon.EntityFrameworkCore.Specifications
 
             query = specification.Apply(query: query);
 
-            if (specification is IPaginationSpecification<TEntity> pagination)
-                query = pagination.ApplyPagination(query: query);
-
             return query.AsEnumerable();
         }
 

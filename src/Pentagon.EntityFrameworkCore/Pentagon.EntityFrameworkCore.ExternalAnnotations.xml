@@ -91,7 +91,10 @@
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
   </member>
-  <member name="M:Pentagon.EntityFrameworkCore.Repositories.StoreCacheProxy`1.#ctor(Pentagon.EntityFrameworkCore.Interfaces.Stores.IStoreTransient{`0},Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Options.IOptions{Pentagon.EntityFrameworkCore.Options.StoreCacheOptions},Microsoft.Extensions.Options.IOptionsMonitor{Pentagon.EntityFrameworkCore.Options.EntityCacheOptions})">
+  <member name="M:Pentagon.EntityFrameworkCore.Repositories.StoreCacheProxy`1.#ctor(Microsoft.Extensions.Logging.ILogger{Pentagon.EntityFrameworkCore.Repositories.StoreCacheProxy{`0}},Pentagon.EntityFrameworkCore.Interfaces.Stores.IStoreTransient{`0},Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Options.IOptions{Pentagon.EntityFrameworkCore.Options.StoreCacheOptions},Microsoft.Extensions.Options.IOptionsMonitor{Pentagon.EntityFrameworkCore.Options.EntityCacheOptions})">
+    <parameter name="logger">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
     <parameter name="transient">
       <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
     </parameter>
