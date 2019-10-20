@@ -17,13 +17,27 @@ namespace Pentagon.EntityFrameworkCore.Filters
 
     public static class FilterExpressionHelper
     {
-        public static Expression<Func<TEntity, bool>> GetFilter<TEntity, TValue>([NotNull] CompositeFilter<TEntity, TValue> filter)
+        public static Expression<Func<TEntity, bool>> GetFilter<TEntity>([NotNull] ICompositeFilter filter)
         {
             if (filter.Type == 0)
                 return null;
 
             IPredicateBuilder<TEntity> builder = new PredicateBuilder<TEntity>();
 
+            if (filter is CompositeFilter<TEntity> basicCompositeFilter)
+            {
+                builder = BasicCompositeFilterSetupBuild(builder, basicCompositeFilter);
+            }
+
+            var predicate = builder.Build();
+
+            return predicate;
+        }
+
+        [Pure]
+        [NotNull]
+        static IPredicateBuilder<TEntity> BasicCompositeFilterSetupBuild<TEntity>([NotNull] IPredicateBuilder<TEntity> builder, [NotNull] CompositeFilter<TEntity> filter)
+        {
             var firstCallback = filter.FirstCondition;
 
             builder = (IPredicateBuilder<TEntity>)builder.Start((firstCallback));
@@ -44,9 +58,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
                 }
             }
 
-            var predicate = builder.Build();
-
-            return predicate;
+            return builder;
         }
 
         public static Expression<Func<TEntity, bool>> GetNumberFilterCallback<TEntity, TValue>(Expression<Func<TEntity, TValue>> propertySelector, NumberFilter textFilter, TValue value)

@@ -1,7 +1,10 @@
 namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
     using Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Options;
 
     public class ContextFactory : IContextFactory<IContext>
     {
@@ -26,7 +29,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
         readonly ILoggerFactory _loggerFactory;
         readonly IDbContextChangeService _changeService;
 
-        public NewContextFactory(ILoggerFactory loggerFactory, IDbContextChangeService changeService)
+        public NewContextFactory(ILoggerFactory loggerFactory,IDbContextChangeService changeService)
         {
             _loggerFactory = loggerFactory;
             _changeService = changeService;
@@ -35,7 +38,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
         /// <inheritdoc />
         public IApplicationContext CreateContext(string[] args = null)
         {
-            return new NewContext(_loggerFactory.CreateLogger<NewContext>(), _changeService, new DbContextOptions<NewContext>());
+            return new NewContext(_loggerFactory.CreateLogger<NewContext>(), _changeService,  new DbContextOptions<NewContext>());
         }
     }
 }

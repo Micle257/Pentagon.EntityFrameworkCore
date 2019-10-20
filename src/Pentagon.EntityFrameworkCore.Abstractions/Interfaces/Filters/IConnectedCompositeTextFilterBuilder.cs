@@ -9,7 +9,7 @@ namespace Pentagon.EntityFrameworkCore.Interfaces.Filters
     using Entities;
     using EntityFrameworkCore.Filters;
 
-    public interface IConnectedCompositeTextFilterBuilder<TEntity> : ICompositeFilterBuilder<TEntity>
+    public interface IConnectedCompositeTextFilterBuilder<TEntity> : IFilterBuilder<TEntity>
             where TEntity : IEntity
     {
         IFilterBuilder<TEntity> AddSubFilter(FilterLogicOperation operation, TextFilter filter, string value = null);

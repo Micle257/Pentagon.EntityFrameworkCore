@@ -9,8 +9,13 @@ namespace Pentagon.EntityFrameworkCore.Extensions
     using System;
     using System.Linq;
     using Interfaces;
+    using Interfaces.Entities;
+    using Interfaces.Stores;
+    using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Options;
     using Repositories;
     using Synchronization;
 
@@ -167,6 +172,58 @@ namespace Pentagon.EntityFrameworkCore.Extensions
             builder.AddDefaultUnitOfWork();
 
             return builder;
+        }
+
+        /// <summary>
+        /// Adds the store cache options from configuration.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns>The services.</returns>
+        /// <exception cref="ArgumentNullException">configuration</exception>
+        [NotNull]
+        public static IServiceCollection AddStoreCacheOptions([NotNull] this IServiceCollection services, [NotNull] IConfiguration configuration, [NotNull] string section = "StoreCache")
+        {
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
+            services.AddOptions();
+            services.Configure<StoreCacheOptions>(configuration.GetSection(section));
+
+            return services;
+        }
+
+        [NotNull]
+        public static IServiceCollection AddStoreCached<T>([NotNull] this IServiceCollection services, Action<EntityCacheOptions> configure = null)
+                where T : class, IEntity, new()
+        {
+            if (configure != null)
+            {
+                // configure entity named options
+                services.Configure(typeof(T).Name,configure);
+            }
+
+            services.AddMemoryCache();
+
+            services.AddScoped<IStoreTransient<T>, StoreTransient<T>>();
+            services.AddScoped<IStoreCached<T>, StoreCacheProxy<T>>();
+            services.AddScoped<IStore<T>>(c => c.GetRequiredService<IStoreCached<T>>());
+
+            return services;
+        }
+
+        [NotNull]
+        public static IServiceCollection AddStoreTransient<T>([NotNull] this IServiceCollection services)
+                where T : class, IEntity, new()
+        {
+
+            services.AddMemoryCache();
+
+            services.AddScoped<IStoreTransient<T>, StoreTransient<T>>();
+            services.AddScoped<IStoreCached<T>, StoreCacheProxy<T>>();
+            services.AddScoped<IStore<T>>(c => c.GetRequiredService<IStoreTransient<T>>());
+
+            return services;
         }
     }
 }

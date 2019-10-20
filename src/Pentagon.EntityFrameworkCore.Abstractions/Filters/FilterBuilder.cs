@@ -19,13 +19,19 @@ namespace Pentagon.EntityFrameworkCore.Filters
             where TEntity : IEntity
     {
         [NotNull]
-        internal List<Expression<Func<TEntity, bool>>> Filters = new List<Expression<Func<TEntity, bool>>>();
+        protected List<Expression<Func<TEntity, bool>>> _filters = new List<Expression<Func<TEntity, bool>>>();
 
         [NotNull]
-        internal List<CompositeFilter<TEntity, object>> CompositeFilters = new List<CompositeFilter<TEntity, object>>();
+        protected List<ICompositeFilter> _compositeFilters = new List<ICompositeFilter>();
 
         [NotNull]
-        internal List<Expression<Func<TEntity, bool>>> ValueFilters = new List<Expression<Func<TEntity, bool>>>();
+        protected List<Expression<Func<TEntity, bool>>> _valueFilters = new List<Expression<Func<TEntity, bool>>>();
+
+        public IReadOnlyList<Expression<Func<TEntity, bool>>> Filters => _filters.AsReadOnly();
+
+        public IReadOnlyList<ICompositeFilter> CompositeFilters => _compositeFilters.AsReadOnly();
+
+        public IReadOnlyList<Expression<Func<TEntity, bool>>> ValueFilters => _valueFilters.AsReadOnly();
 
         /// <inheritdoc />
         public FilterLogicOperation ValueFilterConcatOperation { get; set; } = FilterLogicOperation.Or;
@@ -41,7 +47,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
         {
             var expression = ValueFilterExpressionHelper.GetFilter(propertySelector, values);
 
-            ValueFilters.Add(expression);
+            _valueFilters.Add(expression);
 
             return this;
         }
@@ -51,7 +57,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
         {
             var id = Guid.NewGuid();
 
-            CompositeFilters.Add(new CompositeFilter<TEntity, object>
+            _compositeFilters.Add(new CompositeFilter<TEntity>
                                  {
                                          Id = id,
                                          FirstCondition = condition
@@ -60,17 +66,16 @@ namespace Pentagon.EntityFrameworkCore.Filters
             return new CompositeFilterBuilder<TEntity>(this, id);
         }
 
-        /// <inheritdoc />
-        public IConnectedCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, Expression<Func<TEntity, bool>> condition)
+        public ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> selector, Expression<Func<TEntity, bool>> condition)
         {
             var id = Guid.NewGuid();
 
-            CompositeFilters.Add(new CompositeFilter<TEntity, object>
-                                 {
-                                         Id = id,
-                                         FirstCondition = condition,
-                                         Property = propertySelector
-                                 });
+            _compositeFilters.Add(new CompositeFilter<TEntity>
+                                  {
+                                          Id             = id,
+                                          FirstCondition = condition,
+                                          Property = selector
+                                  });
 
             return new CompositeFilterBuilder<TEntity>(this, id);
         }
@@ -78,7 +83,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
         /// <inheritdoc />
         public IFilterBuilder<TEntity> AddFilter(Expression<Func<TEntity, bool>> condition)
         {
-            Filters.Add(condition);
+            _filters.Add(condition);
 
             return this;
         }
@@ -122,7 +127,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
                                         {
                                             foreach (var textFilter in CompositeFilters)
                                             {
-                                                var predicate = FilterExpressionHelper.GetFilter(textFilter);
+                                                var predicate = FilterExpressionHelper.GetFilter<TEntity>(textFilter);
 
                                                 b.Or(predicate);
                                             }
@@ -134,7 +139,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
                                         {
                                             foreach (var textFilter in CompositeFilters)
                                             {
-                                                var predicate = FilterExpressionHelper.GetFilter(textFilter);
+                                                var predicate = FilterExpressionHelper.GetFilter<TEntity>(textFilter);
 
                                                 b.And(predicate);
                                             }
@@ -162,7 +167,7 @@ namespace Pentagon.EntityFrameworkCore.Filters
 
             var predicate = builder.Build();
 
-            Filters.Add(predicate);
+            _filters.Add(predicate);
 
             return this;
         }

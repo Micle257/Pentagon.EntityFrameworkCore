@@ -2,7 +2,10 @@
     using System.Reflection;
     using Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Options;
     using Repositories;
 
     class Context : BaseApplicationContext

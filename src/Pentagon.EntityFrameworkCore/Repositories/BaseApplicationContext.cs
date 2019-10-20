@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="ApplicationContext.cs">
+//  <copyright file="BaseApplicationContext.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
@@ -44,41 +44,45 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         protected BaseApplicationContext([NotNull] ILogger logger,
                                          [NotNull] IDbContextChangeService deleteService,
-                                         DbContextOptions options) : base(options)
+                                         DbContextOptions options) : base(options: options)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger        = logger ?? throw new ArgumentNullException(nameof(logger));
             _changeService = deleteService ?? throw new ArgumentNullException(nameof(deleteService));
             _isInitialized = true;
 
-            ChangeTracker.AutoDetectChangesEnabled = false;
-            ChangeTracker.StateChanged += OnStateChanged;
-            ChangeTracker.Tracked += OnTracked;
+            ChangeTracker.AutoDetectChangesEnabled =  false;
+            ChangeTracker.StateChanged             += OnStateChanged;
+            ChangeTracker.Tracked                  += OnTracked;
         }
 
-        protected BaseApplicationContext(DbContextOptions options) : base(options)
+        protected BaseApplicationContext(DbContextOptions options) : base(options: options)
         {
             _logger = NullLogger.Instance;
 
-            ChangeTracker.AutoDetectChangesEnabled = false;
-            ChangeTracker.StateChanged += OnStateChanged;
-            ChangeTracker.Tracked += OnTracked;
+            ChangeTracker.AutoDetectChangesEnabled =  false;
+            ChangeTracker.StateChanged             += OnStateChanged;
+            ChangeTracker.Tracked                  += OnTracked;
         }
 
         protected BaseApplicationContext()
         {
             _logger = NullLogger.Instance;
 
-            ChangeTracker.AutoDetectChangesEnabled = false;
-            ChangeTracker.StateChanged += OnStateChanged;
-            ChangeTracker.Tracked += OnTracked;
+            ChangeTracker.AutoDetectChangesEnabled =  false;
+            ChangeTracker.StateChanged             += OnStateChanged;
+            ChangeTracker.Tracked                  += OnTracked;
         }
 
         /// <inheritdoc />
         public event EventHandler<CommitEventArgs> Commiting;
 
         /// <inheritdoc />
+        public sealed override ChangeTracker ChangeTracker => base.ChangeTracker;
+
+        /// <inheritdoc />
         public bool UseTimeSourceFromEntities { get; set; }
 
+        /// <inheritdoc />
         public bool AutoResolveConflictsFromSameUser { get; set; }
 
         protected virtual IModelConfiguration ModelConfiguration { get; } = new SqlServerModelConfiguration();
@@ -90,7 +94,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public Task<ContextCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default)
         {
-            return CommitCoreAsync(async (db, ct) => await db.SaveChangesAsync(false, ct).ConfigureAwait(false), cancellationToken);
+            return CommitCoreAsync(async (db, ct) => await db.SaveChangesAsync(false, cancellationToken: ct).ConfigureAwait(false), cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc />
@@ -103,18 +107,18 @@ namespace Pentagon.EntityFrameworkCore.Repositories
 
         protected virtual void SetupCoreModel([NotNull] ModelBuilder modelBuilder)
         {
-            ModelConfiguration?.SetupModel(modelBuilder, Database.ProviderName);
+            ModelConfiguration?.SetupModel(builder: modelBuilder, providerName: Database.ProviderName);
         }
 
         /// <inheritdoc />
         protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder: modelBuilder);
 
-            if (!_supportedProviders.Contains(Database.ProviderName))
+            if (!_supportedProviders.Contains(item: Database.ProviderName))
                 _logger.LogWarning($"Provider ({Database.ProviderName}) is not fully supported by model. Custom operations might be needed.");
 
-            OnModelCreatingCore(modelBuilder);
+            OnModelCreatingCore(modelBuilder: modelBuilder);
 
             SetupCoreModel(modelBuilder ?? throw new ArgumentNullException(nameof(modelBuilder)));
         }
@@ -134,22 +138,23 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                 if (!ChangeTracker.HasChanges())
                     return new ContextCommitResult();
 
-                _changeService.ApplyUpdate(this, UseTimeSourceFromEntities);
-                _changeService.ApplyDelete(this, UseTimeSourceFromEntities);
+                _changeService.ApplyUpdate(this, useTimestampFromEntity: UseTimeSourceFromEntities);
+
+                _changeService.ApplyDelete(this, useTimestampFromEntity: UseTimeSourceFromEntities);
 
                 var conflictPairs = await ApplyConcurrencyCheckAsync();
 
                 _changeService.ApplyConcurrency(this);
 
                 // save the database without applying changes
-                var result = await callback(this, cancellationToken);
+                var result = await callback(this, arg2: cancellationToken);
 
                 // accept changes
                 ChangeTracker.AcceptAllChanges();
 
                 return new ContextCommitResult
                        {
-                               CommitResult = result,
+                               Content   = result,
                                Conflicts = conflictPairs
                        };
             }
@@ -188,25 +193,25 @@ namespace Pentagon.EntityFrameworkCore.Repositories
                     var userConflicts = conflictResult.ConflictedEntities
                                                       .Where(a => a.Local.UpdatedUserId != null && a.Remote.UpdatedUserId != null)
                                                       .Where(a => a.Local.UpdatedAt != null && a.Remote.UpdatedAt != null)
-                                                      .Where(a => a.Local.UpdatedUserId.Equals(a.Remote.UpdatedUserId));
+                                                      .Where(a => a.Local.UpdatedUserId.Equals(obj: a.Remote.UpdatedUserId));
 
                     foreach (var userConflict in userConflicts)
                     {
-                        Debug.Assert(userConflict.Local.UpdatedAt != null, "userConflict.Local.UpdatedAt != null");
-                        Debug.Assert(userConflict.Remote.UpdatedAt != null, "userConflict.Remote.UpdatedAt != null");
+                        Debug.Assert(userConflict.Local.UpdatedAt != null, message: "userConflict.Local.UpdatedAt != null");
+                        Debug.Assert(userConflict.Remote.UpdatedAt != null, message: "userConflict.Remote.UpdatedAt != null");
 
                         var isLocalNewer = userConflict.Local.UpdatedAt.Value > userConflict.Remote.UpdatedAt.Value;
 
                         if (isLocalNewer)
                         {
-                            conflictPairs.Remove(userConflict);
+                            conflictPairs.Remove(item: userConflict);
                             //Entry(userConflict.Local.Entity).State = EntityState.Modified;
                         }
                     }
                 }
 
                 // remove conflicted entities from change tracker
-                foreach (var entityEntry in conflictPairs.Select(a => Entry(a.Local.Entity)))
+                foreach (var entityEntry in conflictPairs.Select(a => Entry(entity: a.Local.Entity)))
                     entityEntry.State = EntityState.Detached;
             }
 
@@ -218,13 +223,13 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             var entity = args.Entry.Entity as IEntity;
 
             // entity has been tracked (get, add ...), commited is like added (for UI change)
-            OnCommiting(new CommitEventArgs(new Entry(entity, EntityStateType.Added)));
+            OnCommiting(new CommitEventArgs(new Entry(entity: entity, state: EntityStateType.Added)));
         }
 
         void OnStateChanged(object sender, EntityStateChangedEventArgs args)
         {
-            var entity = args.Entry.Entity as IEntity;
-            var state = args.NewState.ToEntityStateType();
+            var entity   = args.Entry.Entity as IEntity;
+            var state    = args.NewState.ToEntityStateType();
             var oldState = args.OldState;
 
             // if state has not changed for the API, cancel
@@ -236,7 +241,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             if (oldState == EntityState.Unchanged && state == EntityStateType.Added)
                 return;
 
-            OnCommiting(new CommitEventArgs(new Entry(entity, state)));
+            OnCommiting(new CommitEventArgs(new Entry(entity: entity, state: state)));
         }
 
         void OnCommiting(CommitEventArgs commitEventArgs)

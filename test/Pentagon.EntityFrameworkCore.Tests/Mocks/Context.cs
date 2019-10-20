@@ -5,7 +5,10 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
     using EntityFrameworkCore;
     using Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Options;
     using Repositories;
 
     public interface INewContext : IApplicationContext
@@ -45,7 +48,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks
 
         public Context([NotNull] ILogger logger,
                        [NotNull] IDbContextChangeService deleteService,
-                       DbContextOptions options) : base(logger, deleteService, options)
+                       DbContextOptions options) : base(logger, deleteService,  options)
         {
             
         }

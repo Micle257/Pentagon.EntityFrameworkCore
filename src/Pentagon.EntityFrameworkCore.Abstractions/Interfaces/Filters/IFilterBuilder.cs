@@ -7,13 +7,24 @@
 namespace Pentagon.EntityFrameworkCore.Interfaces.Filters
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq.Expressions;
     using Entities;
     using EntityFrameworkCore.Filters;
+    using JetBrains.Annotations;
 
     public interface IFilterBuilder<TEntity>
             where TEntity : IEntity
     {
+        [NotNull]
+        IReadOnlyList<Expression<Func<TEntity, bool>>> Filters { get; }
+
+        [NotNull]
+        IReadOnlyList<ICompositeFilter> CompositeFilters { get; }
+
+        [NotNull]
+        IReadOnlyList<Expression<Func<TEntity, bool>>> ValueFilters { get; }
+
         bool HasAnyFilter { get; }
 
         FilterLogicOperation ValueFilterConcatOperation { get; set; }
@@ -26,7 +37,7 @@ namespace Pentagon.EntityFrameworkCore.Interfaces.Filters
 
         ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, bool>> condition);
 
-        IConnectedCompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> propertySelector, Expression<Func<TEntity, bool>> condition);
+        ICompositeFilterBuilder<TEntity> AddCompositeFilter(Expression<Func<TEntity, object>> selector, Expression<Func<TEntity, bool>> condition);
 
         IFilterBuilder<TEntity> AddFilter(Expression<Func<TEntity, bool>> condition);
 

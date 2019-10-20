@@ -13,6 +13,7 @@ namespace Pentagon.EntityFrameworkCore.Synchronization
     using Interfaces;
     using Interfaces.Entities;
     using Microsoft.EntityFrameworkCore.Internal;
+    using Repositories;
     using Specifications;
 
     public class DatabaseChangeManager<TContext> : IDatabaseChangeManager<TContext>
