@@ -56,16 +56,18 @@ namespace Pentagon.EntityFrameworkCore
         {
             var query = queryIteration.ToList();
 
+            // query count of all items under filter
             var count = query.Count;
 
-            var possiblePageCount = count / specification.PageSize + 1;
+            // create blank paged list for computation
+            var blankPagedList = PagedList<TSelectEntity>.CreateBlank(specification.PageSize, count, specification.PageSize, specification.PageNumber - 1);
 
-            if (count < specification.PageSize)
-                possiblePageCount = 1;
-
-            // If page index is overflowed.
-            if (specification.PageNumber > possiblePageCount + 1)
-                throw new ArgumentOutOfRangeException(nameof(specification.PageNumber), message: "The page number is out of range.");
+            // if no data...
+            if (count == 0)
+            {
+                // return blank paged list
+                return blankPagedList;
+            }
 
             query = SpecificationHelper.ApplyPagination(query, specification).ToList();
 
@@ -77,12 +79,21 @@ namespace Pentagon.EntityFrameworkCore
         public static async Task<PagedList<TEntity>> CreateAsync<TEntity>(IQueryable<TEntity> query, IPaginationSpecification<TEntity> specification)
                 where TEntity : IEntity
         {
+            // query count of all items under filter
             var count = await query.CountAsync().ConfigureAwait(false);
 
-            var possiblePageCount = count / specification.PageSize + 1;
+            // create blank paged list for computation
+            var blankPagedList = PagedList<TEntity>.CreateBlank(specification.PageSize, count, specification.PageSize, specification.PageNumber - 1);
 
-            if (specification.PageNumber > possiblePageCount + 1)
-                throw new ArgumentOutOfRangeException(nameof(specification.PageNumber), message: "The page number is out of range.");
+            // if no data...
+            if (count == 0)
+            {
+                // return blank paged list
+                return blankPagedList;
+            }
+
+            if (specification.PageNumber > blankPagedList.TotalPages)
+                throw new PageOutOfRangeException(nameof(specification.PageNumber), specification.PageNumber, blankPagedList.TotalPages);
 
             var list = await specification.ApplyPagination(query).ToListAsync().ConfigureAwait(false);
 
