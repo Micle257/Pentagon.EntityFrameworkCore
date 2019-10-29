@@ -1,13 +1,13 @@
 # Pentagon.EntityFrameworkCore
 
-This repository provides extension types for EntityFramework Core.
+Pentagon.EntityFrameworkCore is a library for .NET applications. Provides extension types for EntityFramework Core.
 
-## Packages
+### Packages
 
 Package name|Stable                                      
 ---|---
-`Pentagon.EntityFrameworkCore`| [![NuGet][nuget-badge]][nuget]   
-`Pentagon.EntityFrameworkCore.Abstractions`| [![NuGet][nuget-badge-a]][nuget-a]       
+`Pentagon.EntityFrameworkCore.Abstractions`| [![NuGet][nuget-badge-a]][nuget-a]
+`Pentagon.EntityFrameworkCore`| [![NuGet][nuget-badge]][nuget]          
 
 
 [nuget]: https://www.nuget.org/packages/Pentagon.EntityFrameworkCore/

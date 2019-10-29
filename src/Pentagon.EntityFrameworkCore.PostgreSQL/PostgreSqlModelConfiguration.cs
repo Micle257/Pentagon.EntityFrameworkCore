@@ -7,8 +7,10 @@
 namespace Pentagon.EntityFrameworkCore.PostgreSQL
 {
     using Extensions;
+    using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
 
+    [PublicAPI]
     public class PostgreSqlModelConfiguration : ModelConfiguration
     {
         /// <inheritdoc />
