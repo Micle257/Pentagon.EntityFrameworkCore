@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------
 //  <copyright file="IApplicationContext.cs">
-//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//   Copyright (c) Michal PokornÃ½. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
@@ -15,11 +15,13 @@ namespace Pentagon.EntityFrameworkCore.Interfaces
     /// <summary> Represents a database application context. </summary>
     public interface IApplicationContext : IDisposable
     {
+        event EventHandler<CommitEventArgs> Commiting;
+
         bool UseTimeSourceFromEntities { get; set; }
 
         bool AutoResolveConflictsFromSameUser { get; set; }
 
-        event EventHandler<CommitEventArgs> Commiting;
+        bool UseCreateStampFromEntities { get; set; }
 
         Task<ContextCommitResult> ExecuteCommitAsync(CancellationToken cancellationToken = default);
 

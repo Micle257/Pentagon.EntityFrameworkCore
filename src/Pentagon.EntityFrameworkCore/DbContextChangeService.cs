@@ -51,7 +51,7 @@ namespace Pentagon.EntityFrameworkCore
                                                         : DateTimeOffset.Now;
                     }
 
-                    if (entry.Entity is ICreateStampSupport createStamp)
+                    if (entry.Entity is ICreateStampSupport createStamp && (!appContext.UseCreateStampFromEntities || createStamp.Uuid == Guid.Empty))
                         createStamp.Uuid = Guid.NewGuid();
 
                     if (entry.Entity is ICreateTimeStampIdentitySupport identity)
