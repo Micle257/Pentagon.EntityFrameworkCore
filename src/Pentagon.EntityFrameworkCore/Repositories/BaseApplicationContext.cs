@@ -85,6 +85,9 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public bool AutoResolveConflictsFromSameUser { get; set; }
 
+        /// <inheritdoc />
+        public bool UseCreateStampFromEntities { get; set; }
+
         protected virtual IModelConfiguration ModelConfiguration { get; } = new SqlServerModelConfiguration();
 
         /// <inheritdoc />
