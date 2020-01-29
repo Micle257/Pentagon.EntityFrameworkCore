@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<assembly name="Pentagon.EntityFrameworkCore.PostgreSQL">
-  <member name="T:Pentagon.EntityFrameworkCore.PostgreSQL.PostgreSqlModelConfiguration">
-    <attribute ctor="M:JetBrains.Annotations.PublicAPIAttribute.#ctor" />
-  </member>
-</assembly>
