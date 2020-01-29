@@ -18,7 +18,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
         }
 
         /// <inheritdoc />
-        public IApplicationContext CreateContext(string[] args = null)
+        public IApplicationContext CreateContext()
         {
             return new Context(_loggerFactory.CreateLogger<Context>(), _changeService, new DbContextOptions<Context>());
         }
@@ -36,7 +36,7 @@ namespace Pentagon.EntityFrameworkCore.Tests.Mocks {
         }
 
         /// <inheritdoc />
-        public IApplicationContext CreateContext(string[] args = null)
+        public IApplicationContext CreateContext()
         {
             return new NewContext(_loggerFactory.CreateLogger<NewContext>(), _changeService,  new DbContextOptions<NewContext>());
         }

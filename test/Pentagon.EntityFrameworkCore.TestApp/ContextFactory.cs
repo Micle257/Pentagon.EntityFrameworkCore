@@ -18,6 +18,6 @@
         }
 
         /// <inheritdoc />
-        public IApplicationContext CreateContext(string[] args = null) => new Context(_logger.CreateLogger<Context>(), _deleteService,  new DbContextOptions<Context>()) {AutoResolveConflictsFromSameUser = true};
+        public IApplicationContext CreateContext() => new Context(_logger.CreateLogger<Context>(), _deleteService,  new DbContextOptions<Context>()) {AutoResolveConflictsFromSameUser = true};
     }
 }

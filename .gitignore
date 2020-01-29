@@ -5,3 +5,5 @@ obj
 bin
 *.user
 nuget.config
+*.ExternalAnnotations.xml
+FodyWeavers.xml
