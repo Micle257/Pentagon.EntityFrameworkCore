@@ -22,6 +22,7 @@ namespace Pentagon.EntityFrameworkCore.Repositories
     using JetBrains.Annotations;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Pentagon.Extensions.Logging;
     using Specifications;
 
     /// <summary> Represents a repository for the entity framework provider. It has similar behavior like <see cref="DbSet{TEntity}" />. Marks and gets data from database. </summary>
@@ -30,27 +31,45 @@ namespace Pentagon.EntityFrameworkCore.Repositories
             where TEntity : class, IEntity, new()
     {
         [NotNull]
-        readonly IApplicationContext _context;
-        
+        readonly ILogger<StoreTransient<TEntity>> _logger;
+
+        [NotNull]
+        readonly IContextFactory _contextFactory;
+
         /// <summary> Initializes a new instance of the <see cref="Repository{TEntity}" /> class. </summary>
         /// <param name="context"> The database context. </param>
-        public StoreTransient([NotNull] IApplicationContext context)
+        public StoreTransient([NotNull] ILogger<StoreTransient<TEntity>> logger,
+                              [NotNull] IContextFactory context)
         {
-            _context = context;
+            _logger = logger;
+            _contextFactory = context;
         }
-        
+
+        [NotNull]
+        IApplicationContext CreateContext()
+        {
+            _logger.LogDebug("Creating application context.");
+
+            return _contextFactory.CreateContext();
+        }
+
         /// <inheritdoc />
         public Task<TEntity> GetByIdAsync(object id, CancellationToken cancellationToken = default)
         {
-            var repository = _context.GetRepository<TEntity>();
+            using var _ = _logger.LogMethod($"Id: {id}");
 
-            return repository.GetByIdAsync(new[] {id}, cancellationToken);
+            var repository = _contextFactory.CreateContext().GetRepository<TEntity>();
+
+            return repository.GetByIdAsync(id, cancellationToken);
         }
 
         /// <inheritdoc />
         public Task<int> CountAsync(CancellationToken cancellationToken = default)
         {
-            var repository = _context.GetRepository<TEntity>();
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            var repository = CreateContext().GetRepository<TEntity>();
 
             return repository.CountAsync(cancellationToken);
         }
@@ -58,163 +77,136 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         /// <inheritdoc />
         public async Task<ContextCommitResult> DeleteAsync(TEntity entity)
         {
-            try
-            {
-                var repository = _context.GetRepository<TEntity>();
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
 
-                repository.Delete(entity);
+            using var context = CreateContext();
 
-                var result = await _context.ExecuteCommitAsync();
+            var repository = context.GetRepository<TEntity>();
 
-                return result;
-            }
-            catch (Exception e)
-            {
-                return new ContextCommitResult
-                       {
-                               Exception = e
-                       };
-            }
+            repository.Delete(entity);
+
+            var result = await context.ExecuteCommitAsync().ConfigureAwait(false);
+
+            return result;
         }
 
         /// <inheritdoc />
         public async Task<ContextCommitResult> DeleteManyAsync(params TEntity[] entities)
         {
-            try
-            {
-                var repository = _context.GetRepository<TEntity>();
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
 
-                repository.DeleteMany(entities);
+            using var context = CreateContext();
 
-                var result = await _context.ExecuteCommitAsync();
+            var repository = context.GetRepository<TEntity>();
 
-                return result;
-            }
-            catch (Exception e)
-            {
-                return new ContextCommitResult
-                       {
-                               Exception = e
-                       };
-            }
+            repository.DeleteMany(entities);
+
+            var result = await context.ExecuteCommitAsync().ConfigureAwait(false);
+
+            return result;
         }
 
         /// <inheritdoc />
         public async Task<ContextCommitResult<TEntity>> InsertAsync(TEntity entity)
         {
-            try
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            using var context = CreateContext();
+
+            var repository = context.GetRepository<TEntity>();
+
+            repository.Insert(entity);
+
+            var result = await context.ExecuteCommitAsync().ConfigureAwait(false);
+
+            return new ContextCommitResult<TEntity>
             {
-                var repository = _context.GetRepository<TEntity>();
-
-                repository.Insert(entity);
-
-                var result = await _context.ExecuteCommitAsync();
-
-                return new ContextCommitResult<TEntity>
-                       {
-                               Result = entity,
-                               Exception = result.Exception,
-                               Conflicts = result.Conflicts,
-                               Content = result.Content
-                       };
-            }
-            catch (Exception e)
-            {
-                return new ContextCommitResult<TEntity>
-                {
-                               Exception = e
-                       };
-            }
+                Result = entity,
+                Exception = result.Exception,
+                Conflicts = result.Conflicts,
+                Content = result.Content
+            };
         }
 
         /// <inheritdoc />
         public async Task<ContextCommitResult<IReadOnlyCollection<TEntity>>> InsertManyAsync(params TEntity[] entities)
         {
-            try
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            using var context = CreateContext();
+
+            var repository = context.GetRepository<TEntity>();
+
+            repository.InsertMany(entities);
+
+            var result = await context.ExecuteCommitAsync().ConfigureAwait(false);
+
+            return new ContextCommitResult<IReadOnlyCollection<TEntity>>
             {
-                var repository = _context.GetRepository<TEntity>();
-
-                repository.InsertMany(entities);
-
-                var result = await _context.ExecuteCommitAsync();
-
-                return new ContextCommitResult<IReadOnlyCollection<TEntity>>
-                       {
-                               Result    = entities,
-                               Exception = result.Exception,
-                               Conflicts = result.Conflicts,
-                               Content   = result.Content
-                       };
-            }
-            catch (Exception e)
-            {
-                return new ContextCommitResult<IReadOnlyCollection<TEntity>>
-                {
-                               Exception = e
-                       };
-            }
+                Result = entities,
+                Exception = result.Exception,
+                Conflicts = result.Conflicts,
+                Content = result.Content
+            };
         }
 
         /// <inheritdoc />
         public async Task<ContextCommitResult<TEntity>> UpdateAsync(TEntity entity)
         {
-            try
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            using var context = CreateContext();
+
+            var repository = context.GetRepository<TEntity>();
+
+            repository.Update(entity);
+
+            var result = await context.ExecuteCommitAsync().ConfigureAwait(false);
+
+            return new ContextCommitResult<TEntity>
             {
-                var repository = _context.GetRepository<TEntity>();
-
-                repository.Update(entity);
-
-                var result = await _context.ExecuteCommitAsync();
-
-                return new ContextCommitResult<TEntity>
-                       {
-                               Result    = entity,
-                               Exception = result.Exception,
-                               Conflicts = result.Conflicts,
-                               Content   = result.Content
-                       };
-            }
-            catch (Exception e)
-            {
-                return new ContextCommitResult<TEntity>
-                       {
-                               Exception = e
-                       };
-            }
+                Result = entity,
+                Exception = result.Exception,
+                Conflicts = result.Conflicts,
+                Content = result.Content
+            };
         }
 
         /// <inheritdoc />
         public async Task<ContextCommitResult<IReadOnlyCollection<TEntity>>> UpdateManyAsync(params TEntity[] entities)
         {
-            try
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            using var context = CreateContext();
+
+            var repository = context.GetRepository<TEntity>();
+
+            repository.UpdateMany(entities);
+
+            var result = await context.ExecuteCommitAsync().ConfigureAwait(false);
+
+            return new ContextCommitResult<IReadOnlyCollection<TEntity>>
             {
-                var repository = _context.GetRepository<TEntity>();
-
-                repository.UpdateMany(entities);
-
-                var result = await _context.ExecuteCommitAsync();
-
-                return new ContextCommitResult<IReadOnlyCollection<TEntity>>
-                       {
-                               Result    = entities,
-                               Exception = result.Exception,
-                               Conflicts = result.Conflicts,
-                               Content   = result.Content
-                       };
-            }
-            catch (Exception e)
-            {
-                return new ContextCommitResult<IReadOnlyCollection<TEntity>>
-                       {
-                               Exception = e
-                       };
-            }
+                Result = entities,
+                Exception = result.Exception,
+                Conflicts = result.Conflicts,
+                Content = result.Content
+            };
         }
 
         public Task<TSelectEntity> GetOneAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> entitySelector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>
         {
-            var repository = _context.GetRepository<TEntity>();
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            var repository = CreateContext().GetRepository<TEntity>();
 
             return repository.GetOneAsync(entitySelector, specification, cancellationToken);
         }
@@ -223,7 +215,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public Task<IReadOnlyList<TSelectEntity>> GetAllAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IOrderSpecification<TEntity>
         {
-            var repository = _context.GetRepository<TEntity>();
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            var repository = CreateContext().GetRepository<TEntity>();
 
             return repository.GetAllAsync(selector, specification, cancellationToken);
         }
@@ -232,7 +227,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public Task<IReadOnlyList<TSelectEntity>> GetManyAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IFilterSpecification<TEntity>, IOrderSpecification<TEntity>
         {
-            var repository = _context.GetRepository<TEntity>();
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            var repository = CreateContext().GetRepository<TEntity>();
 
             return repository.GetManyAsync(selector, specification, cancellationToken);
         }
@@ -241,7 +239,10 @@ namespace Pentagon.EntityFrameworkCore.Repositories
         public Task<PagedList<TSelectEntity>> GetPageAsync<TSelectEntity, TSpecification>(Expression<Func<TEntity, TSelectEntity>> selector, TSpecification specification, CancellationToken cancellationToken = default)
                 where TSpecification : IPaginationSpecification<TEntity>, IOrderSpecification<TEntity>, IFilterSpecification<TEntity>
         {
-            var repository = _context.GetRepository<TEntity>();
+            using var _ = _logger.LogMethod();
+            using var __ = _logger.InScope(("EntityType", typeof(TEntity).Name));
+
+            var repository = CreateContext().GetRepository<TEntity>();
 
             return repository.GetPageAsync(selector, specification, cancellationToken);
         }

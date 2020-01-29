@@ -19,7 +19,7 @@ namespace Pentagon.EntityFrameworkCore.Interfaces
     {
         /// <summary> Creates the context. </summary>
         /// <param name="args"> The arguments. </param>
-        /// <returns> A <see cref="TContext" />. </returns>
-        IApplicationContext CreateContext(string[] args = null);
+        /// <returns> A <see cref="IApplicationContext" />. </returns>
+        IApplicationContext CreateContext();
     }
 }
